@@ -1,2 +1,2 @@
 # poline
-color palette lib that 
+color palette generator mico-lib

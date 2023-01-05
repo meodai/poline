@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "noEmitOnError": true,
+    "removeComments": false,
+    "sourceMap": true,
+    "target": "es2015",
+    "outDir": "dist",
+    "declaration": true,
+    "emitDeclarationOnly": true,
+    "noUncheckedIndexedAccess": true,
+    "strict": true
+  },
+  "include": ["src/**/*"]
+}

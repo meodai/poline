@@ -1,0 +1,46 @@
+{
+  "name": "poline",
+  "version": "0.1.0",
+  "description": "color palette generator mico-lib",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.min.mjs",
+  "browser": "./dist/index.min.js",
+  "jsdelivr": "./dist/index.umd.js",
+  "exports": {
+    "require": "./dist/index.cjs",
+    "import": "./dist/index.mjs"
+  },
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run lint && tsc --build && node ./build.js",
+    "test": "npm run lint && echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint . --ext .ts && npx prettier --check ./src/",
+    "prettier": "npx prettier --write ./src/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meodai/poline.git"
+  },
+  "keywords": [
+    "color",
+    "generative-art",
+    "colour",
+    "palette-generation",
+    "generative"
+  ],
+  "author": "meodai@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meodai/poline/issues"
+  },
+  "homepage": "https://github.com/meodai/poline#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.48.0",
+    "@typescript-eslint/parser": "^5.48.0",
+    "esbuild": "^0.16.14",
+    "eslint": "^8.31.0",
+    "prettier": "^2.8.1",
+    "typescript": "^4.9.4"
+  }
+}
