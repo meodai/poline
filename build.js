@@ -79,7 +79,7 @@ build({
       } else if (typeof module === 'object' && module.exports) {
       	module.exports = factory();
       } else {
-      	root.fettepalette = factory();
+      	root.poline = factory();
       }
     }
     (typeof self !== 'undefined' ? self : this, function() {`,
