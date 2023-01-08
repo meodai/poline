@@ -37,20 +37,118 @@
       background: #202124;
       color: #fff;
     }
+
+    body::after {
+      position: absolute;
+      content: "";
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 5vmin;
+      background: linear-gradient(90deg, var(--prev));
+    }
+
+    .picker {
+      position: relative;
+      width: 75vmin;
+      aspect-ratio: 1;
+      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(var(--grad));
+      --s: 1;
+      --l: .5;
+      margin: 5rem auto;
+    }
+
+    svg {
+      position: relative;
+      z-index: 2;
+      overflow: visible !important;
+    }
+
+    svg line {
+      stroke: #000;
+      stroke-width: 0.25;
+      stroke-dasharray: 0.5 0.5;
+    }
+
+    svg circle {
+      stroke: #000;
+      stroke-width: 0.25;
+    }
+
+    .wheel__huelabel {
+      -webkit-user-select: none;
+        -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+      pointer-events: none;
+      font-weight: normal;
+      box-sizing: border-box;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: calc(100% + 18vmin);
+      transform: translate(-50%, -50%) rotate(calc(-90deg + var(--i, 0) * 360deg));
+      font-size: 2vmin;
+      padding: 0.2em 1em 0.2em 94%;
+      z-index: 1;
+      font-family: monospace;
+      text-align: right;
+      pointer-events: none;
+    }
+
+    .wheel__huelabel::before,
+    .wheel__huelabel::after {
+      content: "";
+      position: absolute;
+      bottom: 50%;
+      left: 91%;
+      right: 6vmin;
+      height: 1px;
+      background: #202124;
+      transform: translateY(50%);
+    }
+
+    .wheel__huelabel::after {
+      height: 30%;
+      aspect-ratio: 1;
+      right: auto;
+      left: 90%;
+      background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
+      border-radius: 50%;
+      border: 1px solid #fff;
+      transform: translate(-50%, 50%);
+    }
   </style>
 </head>
 
 <body>
-  <h1>Poline 123</h1>
+  <h1>Poline</h1>
+
+  <div data-picker class="picker"></div>
 
   <script type="module">
+    console.clear();
+
     import {
       Poline,
     } from "./index.mjs";
 
-    new Poline();
+    const colorArrToSteppedGradient = (colorsArr) => colorsArr.map(
+      (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
+    ).join();
 
-    console.clear();
+    let poline = new Poline();
+
+    const $picker = document.querySelector('[data-picker]');
+    const hueSteps = 360 / 10;
+
+
+    console.log(poline);
+    
+    document.documentElement.style.setProperty(
+      '--prev',
+      colorArrToSteppedGradient(poline.colorsCSS)
+    )
 
   </script>
 </body>
