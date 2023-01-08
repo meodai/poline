@@ -9,7 +9,8 @@
     "declaration": true,
     "emitDeclarationOnly": true,
     "noUncheckedIndexedAccess": true,
-    "strict": true
+    "strict": true,
+    "strictPropertyInitialization": false
   },
   "include": ["src/**/*"]
 }
