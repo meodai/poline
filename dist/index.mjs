@@ -23,7 +23,7 @@ var hslToPoint = (hsl) => {
   const z = s;
   return [x, y, z];
 };
-var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.2, previousColor = null) => {
+var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.25, previousColor = null) => {
   let h1, s1, l1;
   if (previousColor) {
     [h1, s1, l1] = previousColor;
@@ -40,11 +40,11 @@ var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.2, previousColor 
     [h2, s2, l2]
   ];
 };
-var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, p) => t) => {
+var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, r) => t, invert = false) => {
   const points = [];
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
-    const tModified = f(t, numPoints);
+    const tModified = f(t, invert);
     const x = (1 - tModified) * p1[0] + tModified * p2[0];
     const y = (1 - tModified) * p1[1] + tModified * p2[1];
     const z = (1 - tModified) * p1[2] + tModified * p2[2];
@@ -52,55 +52,46 @@ var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, p) => t) => {
   }
   return points;
 };
-var linearPosition = (t) => {
+var linearPosition = (t, reverse = false) => {
   return t;
 };
-var exponentialPosition = (t) => {
+var exponentialPosition = (t, reverse = false) => {
+  if (reverse) {
+    return 1 - __pow(1 - t, 2);
+  }
   return __pow(t, 2);
 };
-var quadraticPosition = (t) => {
+var quadraticPosition = (t, reverse = false) => {
+  if (reverse) {
+    return 1 - __pow(1 - t, 3);
+  }
   return __pow(t, 3);
 };
-var cubicPosition = (t) => {
-  return __pow(t, 4);
-};
-var quarticPosition = (t) => {
-  return __pow(t, 5);
-};
-var quinticPosition = (t) => {
-  return __pow(t, 6);
-};
-var sinusoidalPosition = (t) => {
+var sinusoidalPosition = (t, reverse = false) => {
+  if (reverse) {
+    return 1 - Math.sin((1 - t) * Math.PI / 2);
+  }
   return Math.sin(t * Math.PI / 2);
 };
-var reverseSinusoidalPosition = (t) => {
-  return 1 - Math.sin((1 - t) * Math.PI / 2);
-};
-var circularPosition = (t) => {
+var circularPosition = (t, reverse = false) => {
+  if (reverse) {
+    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
+  }
   return 1 - Math.sqrt(1 - __pow(t, 2));
 };
-var reverseCircularPosition = (t) => {
-  return Math.sqrt(1 - __pow(1 - t, 2));
-};
-var arcPosition = (t) => {
+var arcPosition = (t, reverse = false) => {
+  if (reverse) {
+    return Math.sqrt(1 - __pow(1 - t, 2));
+  }
   return 1 - Math.sqrt(1 - t);
-};
-var reverseArcPosition = (t) => {
-  return Math.sqrt(1 - __pow(1 - t, 2));
 };
 var positionFunctions = {
   linearPosition,
   exponentialPosition,
   quadraticPosition,
-  cubicPosition,
-  quarticPosition,
-  quinticPosition,
   sinusoidalPosition,
-  reverseSinusoidalPosition,
   circularPosition,
-  reverseCircularPosition,
-  arcPosition,
-  reverseArcPosition
+  arcPosition
 };
 var distance = (p1, p2) => {
   const a = p2[0] - p1[0];
@@ -143,28 +134,36 @@ var ColorPoint = class {
   }
 };
 var Poline = class {
-  constructor(anchorColors = randomHSLPair(), numPoints = 6) {
+  constructor(anchorColors = randomHSLPair(), numPoints = 5, positionFunction = sinusoidalPosition) {
     this.anchorPoints = anchorColors.map(
       (point) => new ColorPoint({ x: null, y: null, z: null, color: point })
     );
     this.numPoints = numPoints;
-    this.points = vectorsOnLine(
-      this.anchorPoints[0].position,
-      this.anchorPoints[1].position,
-      numPoints,
-      exponentialPosition
-    ).map((p) => new ColorPoint(
-      { x: p[0], y: p[1], z: p[2], color: null }
-    ));
+    this.updatePointPairs();
   }
-  createPointPairs() {
+  updatePointPairs() {
     const pairs = [];
-    for (let i = 0; i < this.points.length - 1; i++) {
+    for (let i = 0; i < this.anchorPoints.length - 1; i++) {
       pairs.push(
-        [this.points[i], this.points[i + 1]]
+        [this.anchorPoints[i], this.anchorPoints[i + 1]]
       );
     }
-    return pairs;
+    this.points = pairs.map((pair, i) => {
+      return vectorsOnLine(
+        pair[0].position,
+        pair[1].position,
+        this.numPoints,
+        this.positionFunction,
+        i % 2
+      ).map((p) => new ColorPoint(
+        { x: p[0], y: p[1], z: p[2], color: null }
+      ));
+    });
+  }
+  addAnchorPoint({ x, y, z, color }) {
+    const newAnchor = new ColorPoint({ x, y, z, color });
+    this.anchorPoints.push(newAnchor);
+    this.updatePointPairs();
   }
   getClosestAnchorPoint(point, maxDistance) {
     const distances = this.anchorPoints.map((anchor) => {
@@ -183,12 +182,18 @@ var Poline = class {
       index = this.anchorPoints.indexOf(pointReference);
     }
     this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
+    this.updatePointPairs();
+  }
+  get flattenedPoints() {
+    return this.points.flat().filter(
+      (p, i) => i != 0 ? i % this.numPoints : true
+    );
   }
   get colors() {
-    return this.points.map((p) => p.color);
+    return this.flattenedPoints.map((p) => p.color);
   }
   get colorsCSS() {
-    return this.points.map((c) => c.hslCSS);
+    return this.flattenedPoints.map((c) => c.hslCSS);
   }
 };
 export {

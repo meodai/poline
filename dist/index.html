@@ -48,6 +48,14 @@
       background: linear-gradient(90deg, var(--prev));
     }
 
+    body::before {
+      position: absolute;
+      content: "";
+      width: 60vmin;
+      height: 60vmin;
+      background: conic-gradient(var(--prev));
+    }
+
     .picker {
       position: relative;
       width: 75vmin;
@@ -144,7 +152,14 @@
 
 
     console.log(poline);
+
+    const hue = Math.random() * 360;
+    poline.addAnchorPoint({color: [hue, Math.random(), Math.random()]});
     
+    poline.addAnchorPoint({ color: [hue + 120, Math.random(), Math.random()] });
+
+    poline.addAnchorPoint({color: poline.flattenedPoints[0].color })
+
     document.documentElement.style.setProperty(
       '--prev',
       colorArrToSteppedGradient(poline.colorsCSS)
