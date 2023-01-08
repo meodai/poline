@@ -159,10 +159,10 @@ const distance = (p1, p2) => {
   return Math.sqrt(a * a + b * b + c * c);
 };
 class ColorPoint {
-  x = 0;
-  y = 0;
-  z = 0;
-  color: Vector3 = [0, 0, 0];
+  public x = 0;
+  public y = 0;
+  public z = 0;
+  public color: Vector3 = [0, 0, 0];
 
   constructor({ x = null, y = null, z = null, color = null } = {}) {
     this.positionAndColor = { x, y, z, color };
