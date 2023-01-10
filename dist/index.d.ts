@@ -1,10 +1,35 @@
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, number, number];
-export declare const pointToHSL: (x: number, y: number, z: number) => Vector3;
+/**
+ * Converts the given (x, y, z) coordinate to an HSL color
+ * The (x, y) values are used to calculate the hue, while the z value is used as the saturation
+ * The lightness value is calculated based on the distance of (x, y) from the center (0.5, 0.5)
+ * Returns an array [hue, saturation, lightness]
+ * @param xyz:Vector3 [x, y, z] coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
+ * @returns [hue, saturation, lightness]: Vector3 color array in HSL format (0-360, 0-1, 0-1)
+ * @example
+ * pointToHSL(0.5, 0.5, 1) // [0, 1, 0.5]
+ * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
+ * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
+ **/
+export declare const pointToHSL: (xyz: Vector3) => Vector3;
+/**
+ * Converts the given HSL color to an (x, y, z) coordinate
+ * The hue value is used to calculate the (x, y) position, while the saturation value is used as the z coordinate
+ * The lightness value is used to calculate the distance from the center (0.5, 0.5)
+ * Returns an array [x, y, z]
+ * @param hsl:Vector3 [hue, saturation, lightness] color array in HSL format (0-360, 0-1, 0-1)
+ * @returns [x, y, z]:Vector3 coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
+ * @example
+ * hslToPoint([0, 1, 0.5]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 1, 0]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 1, 1]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 0, 0.5]) // [0.5, 0.5, 0]
+ **/
 export declare const hslToPoint: (hsl: Vector3) => Vector3;
 export declare const randomHSLPair: (minHDiff?: number, minSDiff?: number, minLDiff?: number, previousColor?: Vector3 | null) => [Vector3, Vector3];
-export declare const vectorsOnLine: (p1: Vector3, p2: Vector3, numPoints?: number, f?: (t: any, invert: boolean) => any, invert?: boolean) => Vector3[];
+export declare const vectorsOnLine: (p1: Vector3, p2: Vector3, numPoints?: number, f?: (t: number, invert: boolean) => number, invert?: boolean) => Vector3[];
 export declare const positionFunctions: {
     linearPosition: (t: number) => number;
     exponentialPosition: (t: number, reverse?: boolean) => number;
@@ -29,6 +54,10 @@ declare class ColorPoint {
     get position(): Vector3;
     get hslCSS(): string;
 }
+export type AnchorPointReference = {
+    pointReference?: ColorPoint;
+    pointIndex?: number;
+} & ColorPointCollection;
 export declare class Poline {
     anchorPoints: ColorPoint[];
     private numPoints;
@@ -36,21 +65,9 @@ export declare class Poline {
     private positionFunction;
     constructor(anchorColors?: [Vector3, Vector3], numPoints?: number, positionFunction?: (t: number, reverse?: boolean) => number);
     updatePointPairs(): void;
-    addAnchorPoint({ x, y, z, color }: {
-        x: any;
-        y: any;
-        z: any;
-        color: any;
-    }): void;
+    addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint;
     getClosestAnchorPoint(point: Vector3, maxDistance: 1): ColorPoint | null | undefined;
-    set anchorPoint({ pointReference, pointIndex, x, y, z, color }: {
-        pointReference: any;
-        pointIndex: any;
-        x: any;
-        y: any;
-        z: any;
-        color: any;
-    });
+    set anchorPoint({ pointReference, pointIndex, x, y, z, color, }: AnchorPointReference);
     get flattenedPoints(): ColorPoint[];
     get colors(): Vector3[];
     get colorsCSS(): string[];

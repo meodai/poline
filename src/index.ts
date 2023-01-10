@@ -2,11 +2,21 @@ export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, number, number];
 
-export const pointToHSL = (x: number, y: number, z: number): Vector3 => {
-  // Converts the given (x, y, z) coordinate to an HSL color
-  // The (x, y) values are used to calculate the hue, while the z value is used as the saturation
-  // The lightness value is calculated based on the distance of (x, y) from the center (0.5, 0.5)
-  // Returns an array [hue, saturation, lightness]
+/**
+ * Converts the given (x, y, z) coordinate to an HSL color
+ * The (x, y) values are used to calculate the hue, while the z value is used as the saturation
+ * The lightness value is calculated based on the distance of (x, y) from the center (0.5, 0.5)
+ * Returns an array [hue, saturation, lightness]
+ * @param xyz:Vector3 [x, y, z] coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
+ * @returns [hue, saturation, lightness]: Vector3 color array in HSL format (0-360, 0-1, 0-1)
+ * @example
+ * pointToHSL(0.5, 0.5, 1) // [0, 1, 0.5]
+ * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
+ * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
+ **/
+
+export const pointToHSL = (xyz: Vector3): Vector3 => {
+  const [x, y, z] = xyz;
 
   // cy and cx are the center (y and x) values
   const cx = 0.5;
@@ -30,12 +40,20 @@ export const pointToHSL = (x: number, y: number, z: number): Vector3 => {
   return [deg, s, l];
 };
 
+/**
+ * Converts the given HSL color to an (x, y, z) coordinate
+ * The hue value is used to calculate the (x, y) position, while the saturation value is used as the z coordinate
+ * The lightness value is used to calculate the distance from the center (0.5, 0.5)
+ * Returns an array [x, y, z]
+ * @param hsl:Vector3 [hue, saturation, lightness] color array in HSL format (0-360, 0-1, 0-1)
+ * @returns [x, y, z]:Vector3 coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
+ * @example
+ * hslToPoint([0, 1, 0.5]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 1, 0]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 1, 1]) // [0.5, 0.5, 1]
+ * hslToPoint([0, 0, 0.5]) // [0.5, 0.5, 0]
+ **/
 export const hslToPoint = (hsl: Vector3): Vector3 => {
-  // Converts the given HSL color to an (x, y, z) coordinate
-  // The hue value is used to calculate the (x, y) position, while the saturation value is used as the z coordinate
-  // The lightness value is used to calculate the distance from the center (0.5, 0.5)
-  // Returns an array [x, y, z]
-
   // Destructure the input array into separate hue, saturation, and lightness values
   const [h, s, l] = hsl;
   // cx and cy are the center (x and y) values
@@ -85,7 +103,7 @@ export const vectorsOnLine = (
   p1: Vector3,
   p2: Vector3,
   numPoints = 4,
-  f = (t, invert: boolean) => t,
+  f = (t: number, invert: boolean): number => (invert ? 1 - t : t),
   invert = false
 ): Vector3[] => {
   const points: Vector3[] = [];
@@ -151,6 +169,17 @@ export const positionFunctions = {
   arcPosition,
 };
 
+/**
+ * Calculates the distance between two points
+ * @param p1 The first point
+ * @param p2 The second point
+ * @returns The distance between the two points
+ * @example
+ * const p1 = [0, 0, 0];
+ * const p2 = [1, 1, 1];
+ * const dist = distance(p1, p2);
+ * console.log(dist); // 1.7320508075688772
+ **/
 const distance = (p1, p2) => {
   const a = p2[0] - p1[0];
   const b = p2[1] - p1[1];
@@ -183,7 +212,7 @@ class ColorPoint {
       this.x = x;
       this.y = y;
       this.z = z;
-      this.color = pointToHSL(this.x, this.y, this.z);
+      this.color = pointToHSL([this.x, this.y, this.z]);
     } else if (color) {
       this.color = color;
       [this.x, this.y, this.z] = hslToPoint(color);
@@ -201,6 +230,10 @@ class ColorPoint {
   }
 }
 
+export type AnchorPointReference = {
+  pointReference?: ColorPoint;
+  pointIndex?: number;
+} & ColorPointCollection;
 export class Poline {
   public anchorPoints: ColorPoint[];
 
@@ -231,7 +264,7 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  updatePointPairs() {
+  updatePointPairs(): void {
     const pairs = [] as ColorPoint[][];
 
     for (let i = 0; i < this.anchorPoints.length - 1; i++) {
@@ -257,10 +290,11 @@ export class Poline {
     });
   }
 
-  addAnchorPoint({ x, y, z, color }) {
+  addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint {
     const newAnchor = new ColorPoint({ x, y, z, color });
     this.anchorPoints.push(newAnchor);
     this.updatePointPairs();
+    return newAnchor;
   }
 
   getClosestAnchorPoint(point: Vector3, maxDistance: 1) {
@@ -278,16 +312,26 @@ export class Poline {
     return this.anchorPoints[closestAnchorIndex];
   }
 
-  public set anchorPoint({ pointReference, pointIndex, x, y, z, color }) {
+  public set anchorPoint({
+    pointReference,
+    pointIndex,
+    x,
+    y,
+    z,
+    color,
+  }: AnchorPointReference) {
     let index = pointIndex;
 
     if (pointReference) {
       index = this.anchorPoints.indexOf(pointReference);
     }
 
-    this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-
-    this.updatePointPairs();
+    if (index == -1) {
+      throw new Error("Anchor point not found");
+    } else if (index == 0 || index == this.anchorPoints.length - 1) {
+      this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
+      this.updatePointPairs();
+    }
   }
 
   get flattenedPoints() {

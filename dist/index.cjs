@@ -29,7 +29,8 @@ __export(src_exports, {
   vectorsOnLine: () => vectorsOnLine
 });
 module.exports = __toCommonJS(src_exports);
-var pointToHSL = (x, y, z) => {
+var pointToHSL = (xyz) => {
+  const [x, y, z] = xyz;
   const cx = 0.5;
   const cy = 0.5;
   const radians = Math.atan2(y - cy, x - cx);
@@ -68,7 +69,7 @@ var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.25, previousColor
     [h2, s2, l2]
   ];
 };
-var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, invert2) => t, invert = false) => {
+var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, invert2) => invert2 ? 1 - t : t, invert = false) => {
   const points = [];
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
@@ -142,7 +143,7 @@ var ColorPoint = class {
       this.x = x;
       this.y = y;
       this.z = z;
-      this.color = pointToHSL(this.x, this.y, this.z);
+      this.color = pointToHSL([this.x, this.y, this.z]);
     } else if (color) {
       this.color = color;
       [this.x, this.y, this.z] = hslToPoint(color);
@@ -196,6 +197,7 @@ var Poline = class {
     const newAnchor = new ColorPoint({ x, y, z, color });
     this.anchorPoints.push(newAnchor);
     this.updatePointPairs();
+    return newAnchor;
   }
   getClosestAnchorPoint(point, maxDistance) {
     const distances = this.anchorPoints.map((anchor) => {
@@ -208,13 +210,24 @@ var Poline = class {
     const closestAnchorIndex = distances.indexOf(minDistance);
     return this.anchorPoints[closestAnchorIndex];
   }
-  set anchorPoint({ pointReference, pointIndex, x, y, z, color }) {
+  set anchorPoint({
+    pointReference,
+    pointIndex,
+    x,
+    y,
+    z,
+    color
+  }) {
     let index = pointIndex;
     if (pointReference) {
       index = this.anchorPoints.indexOf(pointReference);
     }
-    this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-    this.updatePointPairs();
+    if (index == -1) {
+      throw new Error("Anchor point not found");
+    } else if (index == 0 || index == this.anchorPoints.length - 1) {
+      this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
+      this.updatePointPairs();
+    }
   }
   get flattenedPoints() {
     return this.points.flat().filter((p, i) => i != 0 ? i % this.numPoints : true);
