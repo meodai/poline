@@ -158,17 +158,25 @@ const distance = (p1, p2) => {
 
   return Math.sqrt(a * a + b * b + c * c);
 };
+
+type ColorPointCollection = {
+  x?: number;
+  y?: number;
+  z?: number;
+  color?: Vector3;
+};
+
 class ColorPoint {
   public x = 0;
   public y = 0;
   public z = 0;
   public color: Vector3 = [0, 0, 0];
 
-  constructor({ x = null, y = null, z = null, color = null } = {}) {
+  constructor({ x, y, z, color }: ColorPointCollection = {}) {
     this.positionAndColor = { x, y, z, color };
   }
 
-  public set positionAndColor({ x = null, y = null, z = null, color = null }) {
+  public set positionAndColor({ x, y, z, color }: ColorPointCollection) {
     if (x && y && y && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (x && y && z) {
@@ -214,7 +222,7 @@ export class Poline {
     }
 
     this.anchorPoints = anchorColors.map(
-      (point) => new ColorPoint({ x: null, y: null, z: null, color: point })
+      (point) => new ColorPoint({ color: point })
     );
 
     this.numPoints = numPoints + 2; // add two for the anchor points
@@ -224,18 +232,28 @@ export class Poline {
   }
 
   updatePointPairs() {
-    const pairs = [];
+    const pairs = [] as ColorPoint[][];
+
     for (let i = 0; i < this.anchorPoints.length - 1; i++) {
-      pairs.push([this.anchorPoints[i], this.anchorPoints[i + 1]]);
+      const pair = [
+        this.anchorPoints[i],
+        this.anchorPoints[i + 1],
+      ] as ColorPoint[];
+
+      pairs.push(pair);
     }
+
     this.points = pairs.map((pair, i) => {
+      const p1position = pair[0] ? pair[0].position : ([0, 0, 0] as Vector3);
+      const p2position = pair[1] ? pair[1].position : ([0, 0, 0] as Vector3);
+
       return vectorsOnLine(
-        pair[0].position,
-        pair[1].position,
+        p1position,
+        p2position,
         this.numPoints,
         this.positionFunction,
         i % 2 ? true : false
-      ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2], color: null }));
+      ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
     });
   }
 

@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (x, y, z) => {
   const cx = 0.5;
@@ -57,15 +55,15 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -75,13 +73,13 @@ var sinusoidalPosition = (t, reverse = false) => {
 };
 var circularPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
+    return 1 - Math.sqrt(1 - (1 - t) ** 2);
   }
-  return 1 - Math.sqrt(1 - __pow(t, 2));
+  return 1 - Math.sqrt(1 - t ** 2);
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - __pow(1 - t, 2));
+    return Math.sqrt(1 - (1 - t) ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -100,14 +98,14 @@ var distance = (p1, p2) => {
   return Math.sqrt(a * a + b * b + c * c);
 };
 var ColorPoint = class {
-  constructor({ x = null, y = null, z = null, color = null } = {}) {
+  constructor({ x, y, z, color } = {}) {
     this.x = 0;
     this.y = 0;
     this.z = 0;
     this.color = [0, 0, 0];
     this.positionAndColor = { x, y, z, color };
   }
-  set positionAndColor({ x = null, y = null, z = null, color = null }) {
+  set positionAndColor({ x, y, z, color }) {
     if (x && y && y && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (x && y && z) {
@@ -137,7 +135,7 @@ var Poline = class {
       throw new Error("Must have at least one point");
     }
     this.anchorPoints = anchorColors.map(
-      (point) => new ColorPoint({ x: null, y: null, z: null, color: point })
+      (point) => new ColorPoint({ color: point })
     );
     this.numPoints = numPoints + 2;
     this.positionFunction = positionFunction;
@@ -146,16 +144,22 @@ var Poline = class {
   updatePointPairs() {
     const pairs = [];
     for (let i = 0; i < this.anchorPoints.length - 1; i++) {
-      pairs.push([this.anchorPoints[i], this.anchorPoints[i + 1]]);
+      const pair = [
+        this.anchorPoints[i],
+        this.anchorPoints[i + 1]
+      ];
+      pairs.push(pair);
     }
     this.points = pairs.map((pair, i) => {
+      const p1position = pair[0] ? pair[0].position : [0, 0, 0];
+      const p2position = pair[1] ? pair[1].position : [0, 0, 0];
       return vectorsOnLine(
-        pair[0].position,
-        pair[1].position,
+        p1position,
+        p2position,
         this.numPoints,
         this.positionFunction,
         i % 2 ? true : false
-      ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2], color: null }));
+      ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
     });
   }
   addAnchorPoint({ x, y, z, color }) {
@@ -200,4 +204,3 @@ export {
   randomHSLPair,
   vectorsOnLine
 };
-//# sourceMappingURL=index.mjs.map

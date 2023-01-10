@@ -6,26 +6,26 @@
   <meta charset="utf-8" />
   <!-- Primary Meta Tags -->
   <title>Poline</title>
-  <meta name="title" content="FettePalette — Color ramp generator using curves within the HSV color model">
+  <meta name="title" content="poline — Color ramp generator using curves within the HSV color model">
   <meta name="description"
-    content="FettePalette is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
+    content="poline is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
   <meta name="keywords" content="color, colour, generative, generative-art, generative-design, palette, colorpalette">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://meodai.github.io/fettepalette/">
-  <meta property="og:title" content="FettePalette — Color ramp generator using curves within the HSV color model">
+  <meta property="og:url" content="https://meodai.github.io/poline/">
+  <meta property="og:title" content="poline — Color ramp generator using curves within the HSV color model">
   <meta property="og:description"
-    content="FettePalette is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
-  <meta property="og:image" content="https://meodai.github.io/fettepalette/socialfb.png">
+    content="poline is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
+  <meta property="og:image" content="https://meodai.github.io/poline/socialfb.png">
 
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://meodai.github.io/fettepalette/">
-  <meta property="twitter:title" content="FettePalette — Color ramp generator using curves within the HSV color model">
+  <meta property="twitter:url" content="https://meodai.github.io/poline/">
+  <meta property="twitter:title" content="poline — Color ramp generator using curves within the HSV color model">
   <meta property="twitter:description"
-    content="FettePalette is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.FettePalette is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
-  <meta property="twitter:image" content="https://meodai.github.io/fettepalette/socialfb.png">
+    content="poline is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.poline is lightweight, dependency free and fast JavaScript function written in TypeScript. It generates color ramps based on a curve within the HSV color model. This page serves as preview for the variety of options the function takes.">
+  <meta property="twitter:image" content="https://meodai.github.io/poline/socialfb.png">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
@@ -34,8 +34,8 @@
   <style>
     :root {
       font-family: "Inter", sans-serif;
-      background: #202124;
-      color: #fff;
+      background: #fff;
+      color: #202124;
     }
 
     body::after {
@@ -51,8 +51,8 @@
     body::before {
       position: absolute;
       content: "";
-      width: 60vmin;
-      height: 60vmin;
+      width: 20vmin;
+      height: 20vmin;
       background: conic-gradient(var(--prev));
       border-radius: 50%;
     }
@@ -73,8 +73,8 @@
       overflow: visible !important;
     }
 
-    svg line {
-      stroke: #000;
+    svg line.wheel__line {
+      stroke: #202124;
       stroke-width: 0.25;
       stroke-dasharray: 0.5 0.5;
     }
@@ -82,6 +82,18 @@
     svg circle {
       stroke: #000;
       stroke-width: 0.25;
+    }
+
+    svg line.wheel__satline {
+      stroke-dasharray: 0 0;
+      stroke-width: 1;
+      stroke-linecap: round;
+    }
+
+    svg line.wheel__satline--bg {
+      stroke: #fff;
+      stroke-width: 1.5;
+      stroke-dasharray: 0 0;
     }
 
     .wheel__huelabel {
@@ -142,6 +154,22 @@
       Poline,
     } from "./index.mjs";
 
+    const scale = 100;
+    const namespaceURI = 'http://www.w3.org/2000/svg';
+
+    const createCSSRainbowGradient = (steps = 360 / 10) => new Array(steps)
+        .fill('')
+        .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%))`)
+        .join(',');
+
+    const createSVG = (scale = 100) => {
+      const $svg = document.createElementNS(
+        namespaceURI, 'svg'
+      );
+      $svg.setAttribute('viewBox', `0 0 ${scale} ${scale}`);
+      return $svg;
+    }
+
     const colorArrToSteppedGradient = (colorsArr) => colorsArr.map(
       (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
     ).join();
@@ -150,21 +178,77 @@
 
     const $picker = document.querySelector('[data-picker]');
     const hueSteps = 360 / 10;
+    
+    const $svg = createSVG(scale);
+    $picker.appendChild($svg);
 
-
-    console.log(poline);
+    $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
+    
 
     const hue = Math.random() * 360;
+
     poline.addAnchorPoint({color: [hue, Math.random(), Math.random()]});
-    
-    poline.addAnchorPoint({ color: [hue + 120, Math.random(), Math.random()] });
-
     poline.addAnchorPoint({color: poline.flattenedPoints[0].color })
+    
+    console.log(poline);
 
+    poline.anchorPoints.forEach(anchor => {
+      const $circle = document.createElementNS(namespaceURI, 'circle');
+      $circle.setAttribute('cx', anchor.x * scale);
+      $circle.setAttribute('cy', anchor.y * scale);
+      $circle.setAttribute('r', 2)
+      //anchor.hslCSS
+      $circle.setAttribute('fill', '#fff');
+      $svg.appendChild($circle);
+    });
+
+    poline.flattenedPoints.forEach((point, i) => {
+      const $line = document.createElementNS(namespaceURI, 'line');
+      $line.classList.add('wheel__line');
+      $line.setAttribute('x1', point.x * scale);
+      $line.setAttribute('y1', point.y * scale);
+      const nextI = (i + 1) % poline.flattenedPoints.length;
+      $line.setAttribute('x2', poline.flattenedPoints[nextI].x * scale);
+      $line.setAttribute('y2', poline.flattenedPoints[nextI].y * scale);
+      $svg.appendChild($line);
+
+      const $circle = document.createElementNS(namespaceURI, 'circle');
+      $circle.setAttribute('cx', point.x * scale);
+      $circle.setAttribute('cy', point.y * scale);
+      $circle.setAttribute('r', 1)
+      $circle.setAttribute('fill', point.hslCSS);
+      $svg.appendChild($circle);
+
+      /*
+      // create a vertical line with a height representing the saturation
+      const $vline = document.createElementNS(namespaceURI, 'line');
+      const $vlineBG = document.createElementNS(namespaceURI, 'line');
+      $vlineBG.setAttribute('x1', point.x * scale);
+      $vline.setAttribute('x1', point.x * scale);
+
+      $vline.setAttribute('y1', point.y * scale);
+      $vlineBG.setAttribute('y1', point.y * scale);
+
+      $vline.setAttribute('x2', point.x * scale);
+      $vlineBG.setAttribute('x2', point.x * scale);
+
+      $vline.setAttribute('y2', point.y * scale - point.color[1] * 7);
+      $vlineBG.setAttribute('y2', point.y * scale - point.color[1] * 7);
+      $vline.setAttribute('stroke', point.hslCSS);
+      $vline.classList.add('wheel__satline');
+      $vlineBG.setAttribute('stroke', '#fff');
+      $vlineBG.classList.add('wheel__satline', 'wheel__satline--bg');
+      $svg.appendChild($vlineBG);
+      $svg.appendChild($vline);
+      */
+    });
+    
     document.documentElement.style.setProperty(
       '--prev',
       colorArrToSteppedGradient(poline.colorsCSS)
     )
+
+
 
   </script>
 </body>
