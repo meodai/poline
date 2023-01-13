@@ -65,7 +65,7 @@ export declare class Poline {
     private positionFunction;
     private positionFunctionY;
     private positionFunctionZ;
-    constructor(anchorColors: [Vector3, Vector3] | undefined, numPoints: number | undefined, positionFunction: ((t: number, reverse?: boolean) => number) | undefined, positionFunctionY: any, positionFunctionZ: any);
+    constructor(anchorColors?: [Vector3, Vector3], numPoints?: number, positionFunction?: (t: number, reverse?: boolean) => number, positionFunctionY?: (t: number, invert?: boolean) => number, positionFunctionZ?: (t: number, invert?: boolean) => number);
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint;
     getClosestAnchorPoint(point: Vector3, maxDistance: 1): ColorPoint | null | undefined;

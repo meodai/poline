@@ -251,8 +251,8 @@ export class Poline {
     anchorColors = randomHSLPair(),
     numPoints = 4,
     positionFunction = sinusoidalPosition,
-    positionFunctionY,
-    positionFunctionZ
+    positionFunctionY?: (t: number, invert?: boolean) => number,
+    positionFunctionZ?: (t: number, invert?: boolean) => number
   ) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");

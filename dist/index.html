@@ -323,7 +323,7 @@
         const $circle = document.createElementNS(namespaceURI, 'circle');
         $circle.setAttribute('cx', point.x * scale);
         $circle.setAttribute('cy', point.y * scale);
-        $circle.setAttribute('r', 1)
+        $circle.setAttribute('r', .5 + point.color[1] * 1)
         $circle.setAttribute('fill', point.hslCSS);
         $svg.appendChild($circle);
 
