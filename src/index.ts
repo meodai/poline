@@ -243,6 +243,7 @@ export class Poline {
 
   private numPoints: number;
   private points: ColorPoint[][];
+
   private positionFunction = sinusoidalPosition;
   private positionFunctionY = sinusoidalPosition;
   private positionFunctionZ = sinusoidalPosition;
@@ -316,6 +317,7 @@ export class Poline {
 
     const minDistance = Math.min(...distances);
 
+    console.log(minDistance);
     if (minDistance > maxDistance) {
       return null;
     }

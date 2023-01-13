@@ -184,6 +184,7 @@ var Poline = class {
       return distance(anchor.position, point);
     });
     const minDistance = Math.min(...distances);
+    console.log(minDistance);
     if (minDistance > maxDistance) {
       return null;
     }
