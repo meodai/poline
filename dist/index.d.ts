@@ -29,7 +29,7 @@ export declare const pointToHSL: (xyz: Vector3) => Vector3;
  **/
 export declare const hslToPoint: (hsl: Vector3) => Vector3;
 export declare const randomHSLPair: (minHDiff?: number, minSDiff?: number, minLDiff?: number, previousColor?: Vector3 | null) => [Vector3, Vector3];
-export declare const vectorsOnLine: (p1: Vector3, p2: Vector3, numPoints?: number, f?: (t: number, invert: boolean) => number, invert?: boolean) => Vector3[];
+export declare const vectorsOnLine: (p1: Vector3, p2: Vector3, numPoints?: number, invert?: boolean, fx?: (t: number, invert: boolean) => number, fy?: (t: number, invert: boolean) => number, fz?: (t: number, invert: boolean) => number) => Vector3[];
 export declare const positionFunctions: {
     linearPosition: (t: number) => number;
     exponentialPosition: (t: number, reverse?: boolean) => number;
@@ -50,7 +50,7 @@ declare class ColorPoint {
     z: number;
     color: Vector3;
     constructor({ x, y, z, color }?: ColorPointCollection);
-    set positionAndColor({ x, y, z, color }: ColorPointCollection);
+    set positionOrColor({ x, y, z, color }: ColorPointCollection);
     get position(): Vector3;
     get hslCSS(): string;
 }
@@ -63,7 +63,9 @@ export declare class Poline {
     private numPoints;
     private points;
     private positionFunction;
-    constructor(anchorColors?: [Vector3, Vector3], numPoints?: number, positionFunction?: (t: number, reverse?: boolean) => number);
+    private positionFunctionY;
+    private positionFunctionZ;
+    constructor(anchorColors: [Vector3, Vector3] | undefined, numPoints: number | undefined, positionFunction: ((t: number, reverse?: boolean) => number) | undefined, positionFunctionY: any, positionFunctionZ: any);
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint;
     getClosestAnchorPoint(point: Vector3, maxDistance: 1): ColorPoint | null | undefined;

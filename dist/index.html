@@ -28,14 +28,30 @@
   <meta property="twitter:image" content="https://meodai.github.io/poline/socialfb.png">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Aboreto&display=swap" rel="stylesheet">
+
   <style>
     :root {
       font-family: "Inter", sans-serif;
       background: #fff;
       color: #202124;
+
+      font-family: 'Aboreto', cursive;
+    }
+
+    h1 {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      font-size: 5rem;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      font-weight: normal;
+      transform: translate(-50%, 0);
     }
 
     body::after {
@@ -51,8 +67,10 @@
     body::before {
       position: absolute;
       content: "";
-      width: 20vmin;
-      height: 20vmin;
+      width: 10vmin;
+      height: 10vmin;
+      right: 1rem;
+      bottom: 7vmin;
       background: conic-gradient(var(--prev));
       border-radius: 50%;
     }
@@ -64,7 +82,7 @@
       background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(var(--grad));
       --s: 1;
       --l: .5;
-      margin: 5rem auto;
+      margin: 12rem auto 0;
     }
 
     svg {
@@ -112,7 +130,6 @@
       font-size: 2vmin;
       padding: 0.2em 1em 0.2em 94%;
       z-index: 1;
-      font-family: monospace;
       text-align: right;
       pointer-events: none;
     }
@@ -152,10 +169,18 @@
 
     import {
       Poline,
+      positionFunctions,
+      randomHSLPair,
     } from "./index.mjs";
 
     const scale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
+
+    const stepsToLabels = (steps = 360 / 10) => new Array(steps)
+        .fill('')
+        .map((_, i) => `
+          <strong class="wheel__huelabel" style="--i: ${i / steps}">${i * 10}</strong>`)
+        .join('')
 
     const createCSSRainbowGradient = (steps = 360 / 10) => new Array(steps)
         .fill('')
@@ -174,81 +199,130 @@
       (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
     ).join();
 
-    let poline = new Poline();
+    let poline = new Poline(
+      randomHSLPair(),
+      3,
+      positionFunctions.sinusoidalPosition,
+      positionFunctions.quadraticPosition,
+      positionFunctions.linearPosition,
+    );
 
     const $picker = document.querySelector('[data-picker]');
     const hueSteps = 360 / 10;
     
     const $svg = createSVG(scale);
+    $picker.innerHTML = stepsToLabels(hueSteps);
     $picker.appendChild($svg);
+    
 
     $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
     
 
     const hue = Math.random() * 360;
 
-    poline.addAnchorPoint({color: [hue, Math.random(), Math.random()]});
-    poline.addAnchorPoint({color: poline.flattenedPoints[0].color })
-    
+    poline.addAnchorPoint({color: [hue, Math.random(), .6 + Math.random() * .3]});    
+    poline.addAnchorPoint({color: poline.anchorPoints[0].color});
     console.log(poline);
 
-    poline.anchorPoints.forEach(anchor => {
-      const $circle = document.createElementNS(namespaceURI, 'circle');
-      $circle.setAttribute('cx', anchor.x * scale);
-      $circle.setAttribute('cy', anchor.y * scale);
-      $circle.setAttribute('r', 2)
-      //anchor.hslCSS
-      $circle.setAttribute('fill', '#fff');
-      $svg.appendChild($circle);
+    function updateSVG () {
+      $svg.innerHTML = '';
+
+      poline.anchorPoints.forEach(anchor => {
+        const $circle = document.createElementNS(namespaceURI, 'circle');
+        $circle.setAttribute('cx', anchor.x * scale);
+        $circle.setAttribute('cy', anchor.y * scale);
+        $circle.setAttribute('r', 2)
+        //anchor.hslCSS
+        $circle.setAttribute('fill', '#fff');
+        $svg.appendChild($circle);
+      });
+
+      poline.flattenedPoints.forEach((point, i) => {
+        const $line = document.createElementNS(namespaceURI, 'line');
+        $line.classList.add('wheel__line');
+        $line.setAttribute('x1', point.x * scale);
+        $line.setAttribute('y1', point.y * scale);
+        const nextI = (i + 1) % poline.flattenedPoints.length;
+        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * scale);
+        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * scale);
+        if (i !== poline.flattenedPoints.length - 1) {
+          $svg.appendChild($line);
+        }
+
+        const $circle = document.createElementNS(namespaceURI, 'circle');
+        $circle.setAttribute('cx', point.x * scale);
+        $circle.setAttribute('cy', point.y * scale);
+        $circle.setAttribute('r', 1)
+        $circle.setAttribute('fill', point.hslCSS);
+        $svg.appendChild($circle);
+
+        /*
+        // create a vertical line with a height representing the saturation
+        const $vline = document.createElementNS(namespaceURI, 'line');
+        const $vlineBG = document.createElementNS(namespaceURI, 'line');
+        $vlineBG.setAttribute('x1', point.x * scale);
+        $vline.setAttribute('x1', point.x * scale);
+
+        $vline.setAttribute('y1', point.y * scale);
+        $vlineBG.setAttribute('y1', point.y * scale);
+
+        $vline.setAttribute('x2', point.x * scale);
+        $vlineBG.setAttribute('x2', point.x * scale);
+
+        $vline.setAttribute('y2', point.y * scale - point.color[1] * 7);
+        $vlineBG.setAttribute('y2', point.y * scale - point.color[1] * 7);
+        $vline.setAttribute('stroke', point.hslCSS);
+        $vline.classList.add('wheel__satline');
+        $vlineBG.setAttribute('stroke', '#fff');
+        $vlineBG.classList.add('wheel__satline', 'wheel__satline--bg');
+        $svg.appendChild($vlineBG);
+        $svg.appendChild($vline);
+        */
+      });
+      
+      let cssColors = [...poline.colorsCSS];
+      cssColors.pop();
+      document.documentElement.style.setProperty(
+        '--prev',
+        colorArrToSteppedGradient(cssColors)
+      )
+
+    }
+
+    updateSVG();
+
+    let currentPoint = null;
+
+    $picker.addEventListener('pointerdown', (e) => {
+      const x = e.offsetX / $picker.offsetWidth;
+      const y = e.offsetY / $picker.offsetHeight;
+
+      currentPoint = poline.getClosestAnchorPoint([x, null, y], .1);
     });
 
-    poline.flattenedPoints.forEach((point, i) => {
-      const $line = document.createElementNS(namespaceURI, 'line');
-      $line.classList.add('wheel__line');
-      $line.setAttribute('x1', point.x * scale);
-      $line.setAttribute('y1', point.y * scale);
-      const nextI = (i + 1) % poline.flattenedPoints.length;
-      $line.setAttribute('x2', poline.flattenedPoints[nextI].x * scale);
-      $line.setAttribute('y2', poline.flattenedPoints[nextI].y * scale);
-      $svg.appendChild($line);
+    $picker.addEventListener('pointermove', (e) => {
+      const x = e.offsetX / $picker.offsetWidth;
+      const y = e.offsetY / $picker.offsetHeight;
 
-      const $circle = document.createElementNS(namespaceURI, 'circle');
-      $circle.setAttribute('cx', point.x * scale);
-      $circle.setAttribute('cy', point.y * scale);
-      $circle.setAttribute('r', 1)
-      $circle.setAttribute('fill', point.hslCSS);
-      $svg.appendChild($circle);
+      if (currentPoint) {
+        currentPoint.x = x;
+        currentPoint.y = y;
+        currentPoint.positionOrColor = {
+          x,
+          y,
+          z: currentPoint.z,
+        };
 
-      /*
-      // create a vertical line with a height representing the saturation
-      const $vline = document.createElementNS(namespaceURI, 'line');
-      const $vlineBG = document.createElementNS(namespaceURI, 'line');
-      $vlineBG.setAttribute('x1', point.x * scale);
-      $vline.setAttribute('x1', point.x * scale);
-
-      $vline.setAttribute('y1', point.y * scale);
-      $vlineBG.setAttribute('y1', point.y * scale);
-
-      $vline.setAttribute('x2', point.x * scale);
-      $vlineBG.setAttribute('x2', point.x * scale);
-
-      $vline.setAttribute('y2', point.y * scale - point.color[1] * 7);
-      $vlineBG.setAttribute('y2', point.y * scale - point.color[1] * 7);
-      $vline.setAttribute('stroke', point.hslCSS);
-      $vline.classList.add('wheel__satline');
-      $vlineBG.setAttribute('stroke', '#fff');
-      $vlineBG.classList.add('wheel__satline', 'wheel__satline--bg');
-      $svg.appendChild($vlineBG);
-      $svg.appendChild($vline);
-      */
+        poline.updatePointPairs();
+        updateSVG();
+      }
     });
-    
-    document.documentElement.style.setProperty(
-      '--prev',
-      colorArrToSteppedGradient(poline.colorsCSS)
-    )
 
 
+
+  $picker.addEventListener('pointerup', (e) => {
+    currentPoint = null;
+  });
 
   </script>
 </body>

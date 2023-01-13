@@ -5,7 +5,7 @@ var pointToHSL = (xyz) => {
   const cy = 0.5;
   const radians = Math.atan2(y - cy, x - cx);
   let deg = radians * (180 / Math.PI);
-  deg = (deg + 90) % 360;
+  deg = (360 + (deg + 90)) % 360;
   const s = z;
   const dist = Math.sqrt(Math.pow(y - cy, 2) + Math.pow(x - cx, 2));
   const l = dist / cx;
@@ -39,14 +39,16 @@ var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.25, previousColor
     [h2, s2, l2]
   ];
 };
-var vectorsOnLine = (p1, p2, numPoints = 4, f = (t, invert2) => invert2 ? 1 - t : t, invert = false) => {
+var vectorsOnLine = (p1, p2, numPoints = 4, invert = false, fx = (t, invert2) => invert2 ? 1 - t : t, fy = (t, invert2) => invert2 ? 1 - t : t, fz = (t, invert2) => invert2 ? 1 - t : t) => {
   const points = [];
   for (let i = 0; i < numPoints; i++) {
     const t = i / (numPoints - 1);
-    const tModified = f(t, invert);
-    const x = (1 - tModified) * p1[0] + tModified * p2[0];
-    const y = (1 - tModified) * p1[1] + tModified * p2[1];
-    const z = (1 - tModified) * p1[2] + tModified * p2[2];
+    const tModifiedX = fx(t, invert);
+    const tModifiedY = fy(t, invert);
+    const tModifiedZ = fz(t, invert);
+    const x = (1 - tModifiedX) * p1[0] + tModifiedX * p2[0];
+    const y = (1 - tModifiedY) * p1[1] + tModifiedY * p2[1];
+    const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
     points.push([x, y, z]);
   }
   return points;
@@ -93,9 +95,9 @@ var positionFunctions = {
   arcPosition
 };
 var distance = (p1, p2) => {
-  const a = p2[0] - p1[0];
-  const b = p2[1] - p1[1];
-  const c = p2[2] - p1[2];
+  const a = p1[0] === null || p2[0] === null ? 0 : p2[0] - p1[0];
+  const b = p1[1] === null || p2[1] === null ? 0 : p2[1] - p1[1];
+  const c = p1[1] === null || p2[1] === null ? 0 : p2[2] - p1[2];
   return Math.sqrt(a * a + b * b + c * c);
 };
 var ColorPoint = class {
@@ -104,9 +106,9 @@ var ColorPoint = class {
     this.y = 0;
     this.z = 0;
     this.color = [0, 0, 0];
-    this.positionAndColor = { x, y, z, color };
+    this.positionOrColor = { x, y, z, color };
   }
-  set positionAndColor({ x, y, z, color }) {
+  set positionOrColor({ x, y, z, color }) {
     if (x && y && y && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (x && y && z) {
@@ -127,8 +129,10 @@ var ColorPoint = class {
   }
 };
 var Poline = class {
-  constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition) {
+  constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ) {
     this.positionFunction = sinusoidalPosition;
+    this.positionFunctionY = sinusoidalPosition;
+    this.positionFunctionZ = sinusoidalPosition;
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
     }
@@ -140,6 +144,8 @@ var Poline = class {
     );
     this.numPoints = numPoints + 2;
     this.positionFunction = positionFunction;
+    this.positionFunctionY = positionFunctionY || positionFunction;
+    this.positionFunctionZ = positionFunctionZ || positionFunction;
     this.updatePointPairs();
   }
   updatePointPairs() {
@@ -158,8 +164,10 @@ var Poline = class {
         p1position,
         p2position,
         this.numPoints,
+        i % 2 ? true : false,
         this.positionFunction,
-        i % 2 ? true : false
+        this.positionFunctionY,
+        this.positionFunctionZ
       ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
     });
   }
