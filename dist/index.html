@@ -157,6 +157,31 @@
       border: 1px solid #fff;
       transform: translate(-50%, 50%);
     }
+
+    label {
+      display: block;
+      margin: 1rem 0;
+    }
+    label span {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    select {
+      display: block;
+      width: 100%;
+      font-size: 1rem;
+      padding: 0;
+      border: none;
+      font: inherit;
+      font-family: monospace;
+      text-decoration: underline;
+    }
+    .controls {
+      position: absolute;
+      bottom: 5vmin;
+      left: 0;
+      padding: 1rem;
+    }
   </style>
 </head>
 
@@ -165,6 +190,25 @@
 
   <div data-picker class="picker"></div>
 
+  <div class="controls">
+    <label>
+      <span>Steps</span>
+      <input type="range" min="3" max="15" value="3" data-steps>
+    </label>
+    <label>
+      <span>Position fn X</span>
+      <select data-select="x">
+      </select>
+    </label><label>
+      <span>Position fn Y</span>
+      <select data-select="y">
+      </select>
+    </label><label>
+      <span>Position fn Z</span>
+      <select data-select="z">
+      </select>
+    </label>
+  </div>
   <script type="module">
     console.clear();
 
@@ -173,6 +217,7 @@
       positionFunctions,
       randomHSLPair,
     } from "./index.mjs";
+
 
     const scale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
@@ -200,12 +245,37 @@
       (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
     ).join();
 
+    
+    const $steps = document.querySelector('[data-steps]');
+    const $selects = document.querySelectorAll('[data-select]');
+    const $xSelect = document.querySelector('[data-select="x"]');
+    const $ySelect = document.querySelector('[data-select="y"]');
+    const $zSelect = document.querySelector('[data-select="z"]');
+
+    let fnx = 'sinusoidalPosition';
+    let fny = 'quadraticPosition';
+    let fnz = 'linearPosition';
+
+    $selects.forEach($select => {
+      Object.keys(positionFunctions).forEach(fn => {
+        const $option = document.createElement('option');
+        if ($select === $xSelect && fn === fnx) $option.selected = true;
+        if ($select === $ySelect && fn === fny) $option.selected = true;
+        if ($select === $zSelect && fn === fnz) $option.selected = true;
+        $option.value = fn;
+        $option.textContent = fn;
+        $select.appendChild($option);
+      });
+    });
+
+    let steps = parseInt($steps.value);
+
     let poline = new Poline(
       randomHSLPair(),
-      3,
-      positionFunctions.sinusoidalPosition,
-      positionFunctions.quadraticPosition,
-      positionFunctions.linearPosition,
+      steps,
+      positionFunctions[fnx],
+      positionFunctions[fny],
+      positionFunctions[fnz],
     );
 
     const $picker = document.querySelector('[data-picker]');
@@ -293,6 +363,36 @@
     updateSVG();
 
     let currentPoint = null;
+
+    $steps.addEventListener('input', () => {
+      console.log(steps);
+      steps = parseInt($steps.value);
+      poline.numPoints = steps;
+      poline.updatePointPairs();
+
+      updateSVG();
+    });
+
+    $xSelect.addEventListener('input', () => {
+      fnx = $xSelect.value;
+      poline.positionFunction = positionFunctions[fnx];
+      poline.updatePointPairs();
+      updateSVG();
+    });
+
+    $ySelect.addEventListener('input', () => {
+      fny = $ySelect.value;
+      poline.positionFunctionY = positionFunctions[fny];
+      poline.updatePointPairs();
+      updateSVG();
+    });
+
+    $zSelect.addEventListener('input', () => {
+      fnz = $zSelect.value;
+      poline.positionFunctionZ = positionFunctions[fnz];
+      poline.updatePointPairs();
+      updateSVG();
+    });
 
     $picker.addEventListener('pointerdown', (e) => {
       const x = e.offsetX / $picker.offsetWidth;
