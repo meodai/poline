@@ -80,7 +80,7 @@
       position: relative;
       width: 60vmin;
       aspect-ratio: 1;
-      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(var(--grad));
+      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(from 90deg, var(--grad));
       --s: 1;
       --l: .5;
       margin: 12rem auto 0;
@@ -127,7 +127,7 @@
       top: 50%;
       left: 50%;
       width: calc(100% + 18vmin);
-      transform: translate(-50%, -50%) rotate(calc(-90deg + var(--i, 0) * 360deg));
+      transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg));
       font-size: 2vmin;
       padding: 0.2em 1em 0.2em 94%;
       z-index: 1;

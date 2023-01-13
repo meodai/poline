@@ -27,7 +27,7 @@ export const pointToHSL = (xyz: Vector3): Vector3 => {
 
   // Convert the angle to degrees and shift it so that it goes from 0 to 360
   let deg = radians * (180 / Math.PI);
-  deg = (360 + (deg + 90)) % 360;
+  deg = (360 + deg) % 360;
 
   // The saturation value is taken from the z coordinate
   const s = z;
@@ -60,7 +60,7 @@ export const hslToPoint = (hsl: Vector3): Vector3 => {
   const cx = 0.5;
   const cy = 0.5;
   // Calculate the angle in radians based on the hue value
-  const radians = h / (180 / Math.PI) - 90;
+  const radians = h / (180 / Math.PI);
   // Calculate the distance from the center based on the lightness value
   const dist = l * cx;
   // Calculate the x and y coordinates based on the distance and angle

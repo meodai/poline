@@ -34,7 +34,7 @@ var fettepalette = (() => {
     const cy = 0.5;
     const radians = Math.atan2(y - cy, x - cx);
     let deg = radians * (180 / Math.PI);
-    deg = (360 + (deg + 90)) % 360;
+    deg = (360 + deg) % 360;
     const s = z;
     const dist = Math.sqrt(Math.pow(y - cy, 2) + Math.pow(x - cx, 2));
     const l = dist / cx;
@@ -44,7 +44,7 @@ var fettepalette = (() => {
     const [h, s, l] = hsl;
     const cx = 0.5;
     const cy = 0.5;
-    const radians = h / (180 / Math.PI) - 90;
+    const radians = h / (180 / Math.PI);
     const dist = l * cx;
     const x = cx + dist * Math.cos(radians);
     const y = cy + dist * Math.sin(radians);
