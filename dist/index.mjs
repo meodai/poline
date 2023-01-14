@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (xyz) => {
   const [x, y, z] = xyz;
@@ -60,27 +58,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 4);
+    return 1 - (1 - t) ** 4;
   }
-  return __pow(t, 4);
+  return t ** 4;
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 5);
+    return 1 - (1 - t) ** 5;
   }
-  return __pow(t, 5);
+  return t ** 5;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -102,13 +100,13 @@ var buggyCosinePosition = (t, reverse = false) => {
 };
 var circularPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
+    return 1 - Math.sqrt(1 - (1 - t) ** 2);
   }
-  return 1 - Math.sqrt(1 - __pow(t, 2));
+  return 1 - Math.sqrt(1 - t ** 2);
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - __pow(1 - t, 2));
+    return Math.sqrt(1 - (1 - t) ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -204,10 +202,16 @@ var Poline = class {
       ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
     });
   }
-  addAnchorPoint({ x, y, z, color, insertAtIndex }) {
+  addAnchorPoint({
+    x,
+    y,
+    z,
+    color,
+    insertAtIndex
+  }) {
     const newAnchor = new ColorPoint({ x, y, z, color });
-    if (insertAtINdex) {
-      this.anchorPoints.splice(insertAtINdex, 0, newAnchor);
+    if (insertAtIndex) {
+      this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
     } else {
       this.anchorPoints.push(newAnchor);
     }
@@ -281,4 +285,3 @@ export {
   randomHSLPair,
   vectorsOnLine
 };
-//# sourceMappingURL=index.mjs.map

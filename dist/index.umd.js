@@ -242,9 +242,19 @@ var fettepalette = (() => {
         ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
       });
     }
-    addAnchorPoint({ x, y, z, color }) {
+    addAnchorPoint({
+      x,
+      y,
+      z,
+      color,
+      insertAtIndex
+    }) {
       const newAnchor = new ColorPoint({ x, y, z, color });
-      this.anchorPoints.push(newAnchor);
+      if (insertAtIndex) {
+        this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
+      } else {
+        this.anchorPoints.push(newAnchor);
+      }
       this.updatePointPairs();
       return newAnchor;
     }

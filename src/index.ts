@@ -348,10 +348,16 @@ export class Poline {
     });
   }
 
-  addAnchorPoint({ x, y, z, color, insertAtIndex }: ColorPointCollection): ColorPoint {
+  addAnchorPoint({
+    x,
+    y,
+    z,
+    color,
+    insertAtIndex,
+  }: ColorPointCollection): ColorPoint {
     const newAnchor = new ColorPoint({ x, y, z, color });
-    if (insertAtINdex) {
-      this.anchorPoints.splice(insertAtINdex, 0, newAnchor);
+    if (insertAtIndex) {
+      this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
     } else {
       this.anchorPoints.push(newAnchor);
     }
