@@ -65,6 +65,10 @@
       margin: 15vmin auto 0;
       width: 80%;
       background: linear-gradient(90deg, var(--prev));
+      transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
+    }
+    .poline-picker__preview:hover {
+      transform: scaleY(4);
     }
     .poline-picker__circprev {
       width: 12vmin;
@@ -72,7 +76,7 @@
       background: conic-gradient(var(--prev));
       border-radius: 50%;
       position: absolute;
-      top: calc(100% - .7vmin);
+      top: calc(100% - 11vmin);
       left: 50%;
       z-index: 3;
       transform: translate(-50%, -100%) scale(0.4);
