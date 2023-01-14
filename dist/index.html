@@ -80,27 +80,40 @@
       position: relative;
       width: 60vmin;
       aspect-ratio: 1;
-      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(from 90deg, var(--grad));
       --s: 1;
       --l: .5;
       margin: 12rem auto 0;
+      border-radius: 50%;
+      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(from 90deg, var(--grad));
     }
 
     svg {
       position: relative;
       z-index: 2;
       overflow: visible !important;
+      width: 100%;
+    
     }
 
     svg line.wheel__line {
       stroke: #202124;
       stroke-width: 0.25;
       stroke-dasharray: 0.5 0.5;
+      pointer-events: none;
     }
 
     svg circle {
       stroke: #000;
       stroke-width: 0.25;
+    }
+
+    svg .wheel__point {
+      pointer-events: none;
+    }
+
+    svg .wheel__anchor {
+      pointer-events: all;
+      cursor: grab;
     }
 
     svg line.wheel__satline {
@@ -205,6 +218,11 @@
       letter-spacing: -0.05em;
       display: none;
     }
+    .t-intro {
+      margin: 10vmin auto;
+      max-width: 30vmin;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -213,6 +231,12 @@
   <h2>極地線</h2>
 
   <div data-picker class="picker"></div>
+
+  <p class="t-intro">
+    "Poline" is an esoteric color palette generator that is not based 
+    on color science, but rather designed to be visually pleasing. 
+    It draws lines between anchors over polar coordinates.
+  </p>
 
   <div class="controls">
 
@@ -386,6 +410,7 @@
         $circle.setAttribute('cy', anchor.y * scale);
         $circle.setAttribute('r', 2)
         //anchor.hslCSS
+        $circle.classList.add('wheel__anchor');
         $circle.setAttribute('fill', '#fff');
         $svg.appendChild($circle);
       });
@@ -406,6 +431,7 @@
         $circle.setAttribute('cx', point.x * scale);
         $circle.setAttribute('cy', point.y * scale);
         $circle.setAttribute('r', .5 + point.color[1] * 1)
+        $circle.classList.add('wheel__point');
         $circle.setAttribute('fill', point.hslCSS);
         $svg.appendChild($circle);
 
@@ -436,6 +462,7 @@
       let cssColors = [...poline.colorsCSS];
       cssColors.pop();
       let colors = [...poline.colors].map(c => formatHex({ mode: currentHueModel, ...currentModelFn(c) }));
+      //colors = [...poline.colors].map(c => formatCss({ mode: 'p3', ...currentModelFn(c) }));
       document.documentElement.style.setProperty(
         '--prev',
         colorArrToSteppedGradient(colors)
