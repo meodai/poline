@@ -232,6 +232,7 @@ type ColorPointCollection = {
   y?: number;
   z?: number;
   color?: Vector3;
+  insertAtIndex?: number;
 };
 
 class ColorPoint {
@@ -347,9 +348,13 @@ export class Poline {
     });
   }
 
-  addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint {
+  addAnchorPoint({ x, y, z, color, insertAtIndex }: ColorPointCollection): ColorPoint {
     const newAnchor = new ColorPoint({ x, y, z, color });
-    this.anchorPoints.push(newAnchor);
+    if (insertAtINdex) {
+      this.anchorPoints.splice(insertAtINdex, 0, newAnchor);
+    } else {
+      this.anchorPoints.push(newAnchor);
+    }
     this.updatePointPairs();
     return newAnchor;
   }
