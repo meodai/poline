@@ -291,7 +291,7 @@ export class Poline {
     positionFunction = sinusoidalPosition,
     positionFunctionY?: (t: number, invert?: boolean) => number,
     positionFunctionZ?: (t: number, invert?: boolean) => number,
-    cycleColors = false
+    closedLoop = false
   ) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
@@ -310,7 +310,7 @@ export class Poline {
     this.positionFunctionY = positionFunctionY || positionFunction;
     this.positionFunctionZ = positionFunctionZ || positionFunction;
 
-    this.connectLastAndFirstAnchor = cycleColors;
+    this.connectLastAndFirstAnchor = closedLoop;
 
     this.updatePointPairs();
   }
@@ -378,7 +378,7 @@ export class Poline {
     return this.anchorPoints[closestAnchorIndex];
   }
 
-  public set loop(newStatus: boolean) {
+  public set closedLoop(newStatus: boolean) {
     this.connectLastAndFirstAnchor = newStatus;
     this.updatePointPairs();
   }

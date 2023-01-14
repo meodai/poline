@@ -1,3 +1,5 @@
+var __pow = Math.pow;
+
 // src/index.ts
 var pointToHSL = (xyz) => {
   const [x, y, z] = xyz;
@@ -58,27 +60,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 2;
+    return 1 - __pow(1 - t, 2);
   }
-  return t ** 2;
+  return __pow(t, 2);
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 3;
+    return 1 - __pow(1 - t, 3);
   }
-  return t ** 3;
+  return __pow(t, 3);
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 4;
+    return 1 - __pow(1 - t, 4);
   }
-  return t ** 4;
+  return __pow(t, 4);
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 5;
+    return 1 - __pow(1 - t, 5);
   }
-  return t ** 5;
+  return __pow(t, 5);
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -100,13 +102,13 @@ var buggyCosinePosition = (t, reverse = false) => {
 };
 var circularPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - (1 - t) ** 2);
+    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
   }
-  return 1 - Math.sqrt(1 - t ** 2);
+  return 1 - Math.sqrt(1 - __pow(t, 2));
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - (1 - t) ** 2);
+    return Math.sqrt(1 - __pow(1 - t, 2));
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -157,7 +159,7 @@ var ColorPoint = class {
   }
 };
 var Poline = class {
-  constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, cycleColors = false) {
+  constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, closedLoop = false) {
     this.positionFunction = sinusoidalPosition;
     this.positionFunctionY = sinusoidalPosition;
     this.positionFunctionZ = sinusoidalPosition;
@@ -175,7 +177,7 @@ var Poline = class {
     this.positionFunction = positionFunction;
     this.positionFunctionY = positionFunctionY || positionFunction;
     this.positionFunctionZ = positionFunctionZ || positionFunction;
-    this.connectLastAndFirstAnchor = cycleColors;
+    this.connectLastAndFirstAnchor = closedLoop;
     this.updatePointPairs();
   }
   updatePointPairs() {
@@ -226,7 +228,7 @@ var Poline = class {
     const closestAnchorIndex = distances.indexOf(minDistance);
     return this.anchorPoints[closestAnchorIndex];
   }
-  set loop(newStatus) {
+  set closedLoop(newStatus) {
     this.connectLastAndFirstAnchor = newStatus;
     this.updatePointPairs();
   }
@@ -267,3 +269,4 @@ export {
   randomHSLPair,
   vectorsOnLine
 };
+//# sourceMappingURL=index.mjs.map

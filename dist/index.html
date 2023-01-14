@@ -493,7 +493,7 @@
     updateSVG();
 
     $loop.addEventListener('input', () => {
-      poline.loop = $loop.checked;
+      poline.closedLoop = $loop.checked;
       updateSVG();
     });
     $steps.addEventListener('input', () => {
@@ -588,7 +588,7 @@
       updateSVG();
     }
 
-    if (e.key === ' ') {
+    if (e.key === 'p') {
       lastSelectedPoint = poline.addAnchorPoint({x: lastX, y: lastY, z: lastY});
       updateSVG();
     }

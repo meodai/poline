@@ -197,7 +197,7 @@ var fettepalette = (() => {
     }
   };
   var Poline = class {
-    constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, cycleColors = false) {
+    constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, closedLoop = false) {
       this.positionFunction = sinusoidalPosition;
       this.positionFunctionY = sinusoidalPosition;
       this.positionFunctionZ = sinusoidalPosition;
@@ -215,7 +215,7 @@ var fettepalette = (() => {
       this.positionFunction = positionFunction;
       this.positionFunctionY = positionFunctionY || positionFunction;
       this.positionFunctionZ = positionFunctionZ || positionFunction;
-      this.connectLastAndFirstAnchor = cycleColors;
+      this.connectLastAndFirstAnchor = closedLoop;
       this.updatePointPairs();
     }
     updatePointPairs() {
@@ -266,7 +266,7 @@ var fettepalette = (() => {
       const closestAnchorIndex = distances.indexOf(minDistance);
       return this.anchorPoints[closestAnchorIndex];
     }
-    set loop(newStatus) {
+    set closedLoop(newStatus) {
       this.connectLastAndFirstAnchor = newStatus;
       this.updatePointPairs();
     }
