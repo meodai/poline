@@ -143,12 +143,43 @@ const quadraticPosition = (t: number, reverse = false) => {
   return t ** 3;
 };
 
+const cubicPosition = (t: number, reverse = false) => {
+  if (reverse) {
+    return 1 - (1 - t) ** 4;
+  }
+  return t ** 4;
+};
+
+const quarticPosition = (t: number, reverse = false) => {
+  if (reverse) {
+    return 1 - (1 - t) ** 5;
+  }
+  return t ** 5;
+};
+
 const sinusoidalPosition = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - Math.sin(((1 - t) * Math.PI) / 2);
   }
   return Math.sin((t * Math.PI) / 2);
 };
+
+const asinusoidalPosition = (t: number, reverse = false) => {
+  if (reverse) {
+    return 1 - Math.asin(1 - t) / (Math.PI / 2);
+  }
+  return Math.asin(t) / (Math.PI / 2);
+};
+
+const buggyCosinePosition = (t: number, reverse = false) => {
+  if (reverse) {
+    return 1 - Math.cos(((1 - t) * Math.PI) / 2);
+  }
+  return Math.cos((t * Math.PI) / 2);
+};
+
+// Math.sqrt(1 - (1 - t) ** 2)
+// Math,atan2(Math.sqrt(1 - t ** 2), t)
 
 const circularPosition = (t: number, reverse = false) => {
   if (reverse) {
@@ -168,7 +199,11 @@ export const positionFunctions = {
   linearPosition,
   exponentialPosition,
   quadraticPosition,
+  cubicPosition,
+  quarticPosition,
   sinusoidalPosition,
+  asinusoidalPosition,
+  buggyCosinePosition,
   circularPosition,
   arcPosition,
 };
@@ -308,6 +343,14 @@ export class Poline {
     this.anchorPoints.push(newAnchor);
     this.updatePointPairs();
     return newAnchor;
+  }
+
+  removeAnchorPoint(point: ColorPoint): void {
+    const index = this.anchorPoints.indexOf(point);
+    if (index > -1) {
+      this.anchorPoints.splice(index, 1);
+    }
+    this.updatePointPairs();
   }
 
   getClosestAnchorPoint(point: Vector3, maxDistance: 1) {

@@ -34,7 +34,11 @@ export declare const positionFunctions: {
     linearPosition: (t: number) => number;
     exponentialPosition: (t: number, reverse?: boolean) => number;
     quadraticPosition: (t: number, reverse?: boolean) => number;
+    cubicPosition: (t: number, reverse?: boolean) => number;
+    quarticPosition: (t: number, reverse?: boolean) => number;
     sinusoidalPosition: (t: number, reverse?: boolean) => number;
+    asinusoidalPosition: (t: number, reverse?: boolean) => number;
+    buggyCosinePosition: (t: number, reverse?: boolean) => number;
     circularPosition: (t: number, reverse?: boolean) => number;
     arcPosition: (t: number, reverse?: boolean) => number;
 };
@@ -68,6 +72,7 @@ export declare class Poline {
     constructor(anchorColors?: [Vector3, Vector3], numPoints?: number, positionFunction?: (t: number, reverse?: boolean) => number, positionFunctionY?: (t: number, invert?: boolean) => number, positionFunctionZ?: (t: number, invert?: boolean) => number);
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color }: ColorPointCollection): ColorPoint;
+    removeAnchorPoint(point: ColorPoint): void;
     getClosestAnchorPoint(point: Vector3, maxDistance: 1): ColorPoint | null | undefined;
     set anchorPoint({ pointReference, pointIndex, x, y, z, color, }: AnchorPointReference);
     get flattenedPoints(): ColorPoint[];

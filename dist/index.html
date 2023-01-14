@@ -192,15 +192,35 @@
       left: 0;
       padding: 1rem;
     }
+    h2 {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 2rem;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      font-weight: normal;
+      transform: translate(0, 0);
+      letter-spacing: -0.05em;
+      display: none;
+    }
   </style>
 </head>
 
 <body>
   <h1>Poline</h1>
+  <h2>極地線</h2>
 
   <div data-picker class="picker"></div>
 
   <div class="controls">
+
+    <label>
+      <span>Color Model</span>
+      <select data-models>
+      </select>
+    </label>
     <label>
       <span>Steps</span>
       <input type="range" min="3" max="15" value="3" data-steps>
@@ -221,7 +241,8 @@
   </div>
   <script type="module">
     console.clear();
-
+    import { formatHex } from 'https://cdn.skypack.dev/culori';
+    
     import {
       Poline,
       positionFunctions,
@@ -231,6 +252,33 @@
 
     const scale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
+
+    const hueBasedModels = [{
+      key: 'okhsl',
+      label: 'OKHSL',
+      fn: (hsl) => {return {h : hsl[0], s: hsl[1], l: hsl[2]}},
+    },
+    {
+      key: 'hsl',
+      label: 'HSL',
+      fn: (hsl) => { return { h: hsl[0], s: hsl[1], l: hsl[2] } },
+    }
+    , {
+      key: 'jch',
+      label: 'JCH',
+      fn: (hsl) => { return { j: hsl[2] * 0.222, c: hsl[1] * 0.190, h: hsl[0] } },
+    }, {
+      key: 'oklch',
+      label: 'OKLCH',
+      fn: (hsl) => { return { l: hsl[2] * 0.999, c: hsl[1] * 0.322, h: hsl[0] } },
+    }, {
+      key: 'lch',
+      label: 'LCH',
+      fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
+    }];
+
+    let currentHueModel = 'hsl';
+    let currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
 
     const stepsToLabels = (steps = 360 / 10) => new Array(steps)
         .fill('')
@@ -261,6 +309,16 @@
     const $xSelect = document.querySelector('[data-select="x"]');
     const $ySelect = document.querySelector('[data-select="y"]');
     const $zSelect = document.querySelector('[data-select="z"]');
+    const $models = document.querySelector('[data-models]');
+    $models.innerHTML = hueBasedModels
+      .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
+      .join('');
+    
+    $models.addEventListener('change', (e) => {
+      currentHueModel = e.target.value;
+      currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
+      updateSVG();
+    });
 
     let fnx = 'sinusoidalPosition';
     let fny = 'quadraticPosition';
@@ -296,9 +354,7 @@
     const $huelabels = document.querySelectorAll('[data-huelabel]');
     $picker.appendChild($svg);
     
-
     $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
-    
 
     const hue = Math.random() * 360;
 
@@ -375,19 +431,18 @@
       
       let cssColors = [...poline.colorsCSS];
       cssColors.pop();
+      let colors = [...poline.colors].map(c => formatHex({ mode: currentHueModel, ...currentModelFn(c) }));
       document.documentElement.style.setProperty(
         '--prev',
-        colorArrToSteppedGradient(cssColors)
+        colorArrToSteppedGradient(colors)
       )
 
     }
 
     updateSVG();
 
-    let currentPoint = null;
 
     $steps.addEventListener('input', () => {
-      console.log(steps);
       steps = parseInt($steps.value);
       poline.numPoints = steps;
       poline.updatePointPairs();
@@ -416,20 +471,26 @@
       updateSVG();
     });
 
+    let currentPoint = null;
+    let lastSelectedPoint = null;
+    let lastX = 0;
+    let lastY = 0;
+
+
     $picker.addEventListener('pointerdown', (e) => {
-      const x = e.offsetX / $picker.offsetWidth;
-      const y = e.offsetY / $picker.offsetHeight;
+      const x = lastX = e.offsetX / $picker.offsetWidth;
+      const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (!currentPoint) {
         currentPoint = poline.getClosestAnchorPoint([x, null, y], .1);
+        lastSelectedPoint = currentPoint;
       }
-        
-      console.log(currentPoint);
+
     });
 
     $picker.addEventListener('pointermove', (e) => {
-      const x = e.offsetX / $picker.offsetWidth;
-      const y = e.offsetY / $picker.offsetHeight;
+      const x = lastX = e.offsetX / $picker.offsetWidth;
+      const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (currentPoint) {
         currentPoint.x = x;
@@ -463,6 +524,20 @@
 
   $picker.addEventListener('pointerup', (e) => {
     currentPoint = null;
+  });
+
+  // listen for keypresses
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Delete' || e.key === 'Backspace') {
+      if (!lastSelectedPoint) return;
+      poline.removeAnchorPoint(lastSelectedPoint);
+      updateSVG();
+    }
+
+    if (e.key === ' ') {
+      lastSelectedPoint = poline.addAnchorPoint({x: lastX, y: lastY, z: lastY});
+      updateSVG();
+    }
   });
 
   </script>

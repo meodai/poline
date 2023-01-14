@@ -108,11 +108,35 @@ var fettepalette = (() => {
     }
     return __pow(t, 3);
   };
+  var cubicPosition = (t, reverse = false) => {
+    if (reverse) {
+      return 1 - __pow(1 - t, 4);
+    }
+    return __pow(t, 4);
+  };
+  var quarticPosition = (t, reverse = false) => {
+    if (reverse) {
+      return 1 - __pow(1 - t, 5);
+    }
+    return __pow(t, 5);
+  };
   var sinusoidalPosition = (t, reverse = false) => {
     if (reverse) {
       return 1 - Math.sin((1 - t) * Math.PI / 2);
     }
     return Math.sin(t * Math.PI / 2);
+  };
+  var asinusoidalPosition = (t, reverse = false) => {
+    if (reverse) {
+      return 1 - Math.asin(1 - t) / (Math.PI / 2);
+    }
+    return Math.asin(t) / (Math.PI / 2);
+  };
+  var buggyCosinePosition = (t, reverse = false) => {
+    if (reverse) {
+      return 1 - Math.cos((1 - t) * Math.PI / 2);
+    }
+    return Math.cos(t * Math.PI / 2);
   };
   var circularPosition = (t, reverse = false) => {
     if (reverse) {
@@ -130,7 +154,11 @@ var fettepalette = (() => {
     linearPosition,
     exponentialPosition,
     quadraticPosition,
+    cubicPosition,
+    quarticPosition,
     sinusoidalPosition,
+    asinusoidalPosition,
+    buggyCosinePosition,
     circularPosition,
     arcPosition
   };
@@ -217,11 +245,19 @@ var fettepalette = (() => {
       this.updatePointPairs();
       return newAnchor;
     }
+    removeAnchorPoint(point) {
+      const index = this.anchorPoints.indexOf(point);
+      if (index > -1) {
+        this.anchorPoints.splice(index, 1);
+      }
+      this.updatePointPairs();
+    }
     getClosestAnchorPoint(point, maxDistance) {
       const distances = this.anchorPoints.map((anchor) => {
         return distance(anchor.position, point);
       });
       const minDistance = Math.min(...distances);
+      console.log(minDistance);
       if (minDistance > maxDistance) {
         return null;
       }
