@@ -275,7 +275,11 @@
       key: 'lch',
       label: 'LCH',
       fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
-    }];
+    }, {
+        key: 'dlch',
+        label: 'DLCH',
+        fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
+      }];
 
     let currentHueModel = 'hsl';
     let currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
