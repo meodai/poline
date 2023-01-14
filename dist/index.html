@@ -55,34 +55,39 @@
       letter-spacing: -0.05em;
     }
 
-    body::after {
-      position: absolute;
-      content: "";
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 5vmin;
-      background: linear-gradient(90deg, var(--prev));
-    }
-
-    body::before {
-      position: absolute;
-      content: "";
-      width: 10vmin;
-      height: 10vmin;
-      right: 1rem;
-      bottom: 7vmin;
-      background: conic-gradient(var(--prev));
-      border-radius: 50%;
-    }
-
-    .picker {
+    .poline-picker {
       position: relative;
       width: 60vmin;
-      aspect-ratio: 1;
-      --s: 1;
-      --l: .5;
       margin: 12rem auto 0;
+    }
+    .poline-picker__preview {
+      height: 2vmin;
+      margin: 15vmin auto 0;
+      width: 80%;
+      background: linear-gradient(90deg, var(--prev));
+    }
+    .poline-picker__circprev {
+      width: 12vmin;
+      height: 12vmin;
+      background: conic-gradient(var(--prev));
+      border-radius: 50%;
+      position: absolute;
+      top: calc(100% - .7vmin);
+      left: 50%;
+      z-index: 3;
+      transform: translate(-50%, -100%) scale(0.4);
+      transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
+      box-shadow: 0 0 0 0.5vmin #fff;
+    }
+    .poline-picker__circprev:hover {
+      transform: translate(-50%, -100%) scale(1);
+    }
+    .picker {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      --s: .4;
+      --l: .5;
       border-radius: 50%;
       background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(from 90deg, var(--grad));
     }
@@ -220,7 +225,7 @@
     }
     .t-intro {
       margin: 10vmin auto;
-      max-width: 30vmin;
+      max-width: 40vmin;
       text-align: center;
     }
   </style>
@@ -230,7 +235,11 @@
   <h1>Poline</h1>
   <h2>極地線</h2>
 
-  <div data-picker class="picker"></div>
+  <div class="poline-picker">
+    <div data-picker class="picker"></div>
+    <div class="poline-picker__preview"></div>
+    <div class="poline-picker__circprev"></div>
+  </div>
 
   <p class="t-intro">
     "Poline" is an esoteric color palette generator that is not based 
@@ -316,7 +325,7 @@
 
     const createCSSRainbowGradient = (steps = 360 / 10) => new Array(steps)
         .fill('')
-        .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 40%), calc(var(--l,0) * 100%))`)
+        .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%))`)
         .join(',');
 
     const createSVG = (scale = 100) => {
