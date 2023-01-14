@@ -197,10 +197,11 @@ var fettepalette = (() => {
     }
   };
   var Poline = class {
-    constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ) {
+    constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, cycleColors = false) {
       this.positionFunction = sinusoidalPosition;
       this.positionFunctionY = sinusoidalPosition;
       this.positionFunctionZ = sinusoidalPosition;
+      this.connectLastAndFirstAnchor = false;
       if (!anchorColors || anchorColors.length < 2) {
         throw new Error("Must have at least two anchor colors");
       }
@@ -214,14 +215,16 @@ var fettepalette = (() => {
       this.positionFunction = positionFunction;
       this.positionFunctionY = positionFunctionY || positionFunction;
       this.positionFunctionZ = positionFunctionZ || positionFunction;
+      this.connectLastAndFirstAnchor = cycleColors;
       this.updatePointPairs();
     }
     updatePointPairs() {
       const pairs = [];
-      for (let i = 0; i < this.anchorPoints.length - 1; i++) {
+      const anchorPointsLength = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
+      for (let i = 0; i < anchorPointsLength; i++) {
         const pair = [
           this.anchorPoints[i],
-          this.anchorPoints[i + 1]
+          this.anchorPoints[(i + 1) % this.anchorPoints.length]
         ];
         pairs.push(pair);
       }
@@ -257,12 +260,15 @@ var fettepalette = (() => {
         return distance(anchor.position, point);
       });
       const minDistance = Math.min(...distances);
-      console.log(minDistance);
       if (minDistance > maxDistance) {
         return null;
       }
       const closestAnchorIndex = distances.indexOf(minDistance);
       return this.anchorPoints[closestAnchorIndex];
+    }
+    set loop(newStatus) {
+      this.connectLastAndFirstAnchor = newStatus;
+      this.updatePointPairs();
     }
     set anchorPoint({
       pointReference,

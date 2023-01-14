@@ -82,6 +82,7 @@
       transform: translate(-50%, -100%) scale(0.4);
       transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
       box-shadow: 0 0 0 0.5vmin #fff;
+      pointer-events: none;
     }
     .poline-picker__circprev:hover {
       transform: translate(-50%, -100%) scale(1);
@@ -263,15 +264,18 @@
       <input type="range" min="3" max="15" value="3" data-steps>
     </label>
     <label>
-      <span>Position fn X</span>
+      <span>Loop Colors</span>
+      <input type="checkbox" checked="checked" data-loop>
+    <label>
+      <span>Position fn X (Hue / Light)</span>
       <select data-select="x">
       </select>
     </label><label>
-      <span>Position fn Y</span>
+      <span>Position fn Y (Hue / Light)</span>
       <select data-select="y">
       </select>
     </label><label>
-      <span>Position fn Z</span>
+      <span>Position fn Z (Saturation)</span>
       <select data-select="z">
       </select>
     </label>
@@ -351,6 +355,8 @@
     const $ySelect = document.querySelector('[data-select="y"]');
     const $zSelect = document.querySelector('[data-select="z"]');
     const $models = document.querySelector('[data-models]');
+    const $loop = document.querySelector('[data-loop]');
+
     $models.innerHTML = hueBasedModels
       .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
       .join('');
@@ -385,6 +391,7 @@
       positionFunctions[fnx],
       positionFunctions[fny],
       positionFunctions[fnz],
+      true
     );
 
     const $picker = document.querySelector('[data-picker]');
@@ -400,7 +407,7 @@
     const hue = Math.random() * 360;
 
     poline.addAnchorPoint({color: [hue, Math.random(), .6 + Math.random() * .3]});    
-    poline.addAnchorPoint({color: poline.anchorPoints[0].color});
+    //poline.addAnchorPoint({color: poline.anchorPoints[0].color});
     //console.log(poline);
 
     function updateSVG () {
@@ -485,7 +492,10 @@
 
     updateSVG();
 
-
+    $loop.addEventListener('input', () => {
+      poline.loop = $loop.checked;
+      updateSVG();
+    });
     $steps.addEventListener('input', () => {
       steps = parseInt($steps.value);
       poline.numPoints = steps;

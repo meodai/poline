@@ -283,12 +283,15 @@ export class Poline {
   private positionFunctionY = sinusoidalPosition;
   private positionFunctionZ = sinusoidalPosition;
 
+  private connectLastAndFirstAnchor = false;
+
   constructor(
     anchorColors = randomHSLPair(),
     numPoints = 4,
     positionFunction = sinusoidalPosition,
     positionFunctionY?: (t: number, invert?: boolean) => number,
-    positionFunctionZ?: (t: number, invert?: boolean) => number
+    positionFunctionZ?: (t: number, invert?: boolean) => number,
+    cycleColors = false
   ) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
@@ -307,16 +310,22 @@ export class Poline {
     this.positionFunctionY = positionFunctionY || positionFunction;
     this.positionFunctionZ = positionFunctionZ || positionFunction;
 
+    this.connectLastAndFirstAnchor = cycleColors;
+
     this.updatePointPairs();
   }
 
   updatePointPairs(): void {
     const pairs = [] as ColorPoint[][];
 
-    for (let i = 0; i < this.anchorPoints.length - 1; i++) {
+    const anchorPointsLength = this.connectLastAndFirstAnchor
+      ? this.anchorPoints.length
+      : this.anchorPoints.length - 1;
+
+    for (let i = 0; i < anchorPointsLength; i++) {
       const pair = [
         this.anchorPoints[i],
-        this.anchorPoints[i + 1],
+        this.anchorPoints[(i + 1) % this.anchorPoints.length],
       ] as ColorPoint[];
 
       pairs.push(pair);
@@ -360,7 +369,6 @@ export class Poline {
 
     const minDistance = Math.min(...distances);
 
-    console.log(minDistance);
     if (minDistance > maxDistance) {
       return null;
     }
@@ -368,6 +376,11 @@ export class Poline {
     const closestAnchorIndex = distances.indexOf(minDistance);
 
     return this.anchorPoints[closestAnchorIndex];
+  }
+
+  public set loop(newStatus: boolean) {
+    this.connectLastAndFirstAnchor = newStatus;
+    this.updatePointPairs();
   }
 
   public set anchorPoint({
