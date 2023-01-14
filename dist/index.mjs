@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (xyz) => {
   const [x, y, z] = xyz;
@@ -60,27 +58,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 4);
+    return 1 - (1 - t) ** 4;
   }
-  return __pow(t, 4);
+  return t ** 4;
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 5);
+    return 1 - (1 - t) ** 5;
   }
-  return __pow(t, 5);
+  return t ** 5;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -102,13 +100,13 @@ var buggyCosinePosition = (t, reverse = false) => {
 };
 var circularPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
+    return 1 - Math.sqrt(1 - (1 - t) ** 2);
   }
-  return 1 - Math.sqrt(1 - __pow(t, 2));
+  return 1 - Math.sqrt(1 - t ** 2);
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - __pow(1 - t, 2));
+    return Math.sqrt(1 - (1 - t) ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -255,10 +253,18 @@ var Poline = class {
     return this.points.flat().filter((p, i) => i != 0 ? i % this.numPoints : true);
   }
   get colors() {
-    return this.flattenedPoints.map((p) => p.color);
+    const colors = this.flattenedPoints.map((p) => p.color);
+    if (this.connectLastAndFirstAnchor) {
+      colors.pop();
+    }
+    return colors;
   }
   get colorsCSS() {
-    return this.flattenedPoints.map((c) => c.hslCSS);
+    const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
+    if (this.connectLastAndFirstAnchor) {
+      cssColors.pop();
+    }
+    return cssColors;
   }
 };
 export {
@@ -269,4 +275,3 @@ export {
   randomHSLPair,
   vectorsOnLine
 };
-//# sourceMappingURL=index.mjs.map

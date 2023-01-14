@@ -282,10 +282,18 @@ var fettepalette = (() => {
       return this.points.flat().filter((p, i) => i != 0 ? i % this.numPoints : true);
     }
     get colors() {
-      return this.flattenedPoints.map((p) => p.color);
+      const colors = this.flattenedPoints.map((p) => p.color);
+      if (this.connectLastAndFirstAnchor) {
+        colors.pop();
+      }
+      return colors;
     }
     get colorsCSS() {
-      return this.flattenedPoints.map((c) => c.hslCSS);
+      const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
+      if (this.connectLastAndFirstAnchor) {
+        cssColors.pop();
+      }
+      return cssColors;
     }
   };
   return __toCommonJS(src_exports);
