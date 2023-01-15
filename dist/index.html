@@ -440,8 +440,6 @@
         poline.anchorPoints.forEach(anchor => {
           const currentHue = anchor.color[0];
           currentHue - hueSteps / 2 < i * 10 && currentHue + hueSteps / 2 > i * 10 && $huelabel.classList.add('wheel__huelabel--active');
-          
-          
         });
       });
 
@@ -475,7 +473,7 @@
         $circle.setAttribute('cy', point.y * scale);
         $circle.setAttribute('r', .5 + point.color[1] * 1)
         $circle.classList.add('wheel__point');
-        $circle.setAttribute('fill', point.hslCSS);
+        $circle.setAttribute('fill', formatHex({ mode: currentHueModel, ...currentModelFn(point.color) }) );
         $svg.appendChild($circle);
 
         /*
