@@ -244,7 +244,7 @@
     }
     .t-intro {
       margin: 10vmin auto;
-      max-width: 40vmin;
+      max-width: 50vmin;
       text-align: center;
     }
 
@@ -267,9 +267,10 @@
   </div>
 
   <p class="t-intro">
-    "Poline" is an esoteric color palette generator that is not based 
-    on color science, but rather designed to be visually pleasing. 
-    It draws lines between anchors over polar coordinates.
+    "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
+    methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
+    magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
+    palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
   </p>
 
   <section class="poline-colors">
@@ -306,6 +307,10 @@
       <span><span class="t">Position fn Z</span> (Saturation)</span>
       <select data-select="z">
       </select>
+    </label>
+    <label>
+      <span class="t">Hue Shift</span>
+      <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
     </label>
     <button data-randomize>Randomize</button>
   </div>
@@ -384,6 +389,7 @@
     const $zSelect = document.querySelector('[data-select="z"]');
     const $models = document.querySelector('[data-models]');
     const $loop = document.querySelector('[data-loop]');
+    const $hueshift = document.querySelector('[data-hueshift]');
     const $randomize = document.querySelector('[data-randomize]');
 
     $models.innerHTML = hueBasedModels
@@ -395,6 +401,7 @@
       currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
       updateSVG();
     });
+
 
     let fnx = 'sinusoidalPosition';
     let fny = 'quadraticPosition';
@@ -439,7 +446,7 @@
     
     $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
 
-    const hue = Math.random() * 360;
+    //const hue = Math.random() * 360;
 
     //poline.addAnchorPoint({color: [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });    
     //poline.addAnchorPoint({color: poline.anchorPoints[0].color});
@@ -660,6 +667,13 @@
       lastSelectedPoint = poline.addAnchorPoint({x: lastX, y: lastY, z: lastY});
       updateSVG();
     }
+  });
+
+
+  $hueshift.addEventListener('input', (e) => {
+    poline.shiftHue(parseFloat(e.target.value));
+
+    updateSVG();
   });
 
   </script>

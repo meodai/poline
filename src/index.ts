@@ -277,6 +277,12 @@ class ColorPoint {
     }
   }
 
+  shiftHue(angle: number): void {
+    this.color[0] = (360 + (this.color[0] + angle)) % 360;
+
+    [this.x, this.y, this.z] = hslToPoint(this.color);
+  }
+
   get position(): Vector3 {
     return [this.x, this.y, this.z];
   }
@@ -471,5 +477,10 @@ export class Poline {
       cssColors.pop();
     }
     return cssColors;
+  }
+
+  shiftHue(hShift: number): void {
+    this.anchorPoints.forEach((p) => p.shiftHue(hShift));
+    this.updatePointPairs();
   }
 }
