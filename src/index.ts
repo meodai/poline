@@ -99,6 +99,24 @@ export const randomHSLPair = (
   ];
 };
 
+export const randomHSLTriple = (
+  startHue: number = Math.random() * 360,
+  saturations: [number, number, number] = [
+    Math.random(),
+    Math.random(),
+    Math.random(),
+  ],
+  lightnesses: [number, number, number] = [
+    0.75 + Math.random() * 2,
+    Math.random() * 0.2,
+    0.75 + Math.random() * 2,
+  ]
+): [Vector3, Vector3, Vector3] => [
+  [startHue, saturations[0], lightnesses[0]],
+  [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
+  [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]],
+];
+
 export const vectorsOnLine = (
   p1: Vector3,
   p2: Vector3,

@@ -289,16 +289,19 @@
       <input type="range" min="3" max="15" value="3" data-steps>
     </label>
     <label>
-      <span class="t">Loop Colors <input type="checkbox" data-loop></span>
+      <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+    </label>
     <label>
       <span><span class="t">Position fn X</span>(Hue / Light)</span>
       <select data-select="x">
       </select>
-    </label><label>
+    </label>
+    <label>
       <span><span class="t">Position fn Y</span>(Hue / Light)</span>
       <select data-select="y">
       </select>
-    </label><label>
+    </label>
+    <label>
       <span><span class="t">Position fn Z</span> (Saturation)</span>
       <select data-select="z">
       </select>
@@ -315,8 +318,7 @@
       randomHSLPair,
     } from "./index.mjs";
 
-
-    const scale = 100;
+    const svgscale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
 
     const hueBasedModels = [{
@@ -361,11 +363,11 @@
         .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%))`)
         .join(',');
 
-    const createSVG = (scale = 100) => {
+    const createSVG = (svgscale = 100) => {
       const $svg = document.createElementNS(
         namespaceURI, 'svg'
       );
-      $svg.setAttribute('viewBox', `0 0 ${scale} ${scale}`);
+      $svg.setAttribute('viewBox', `0 0 ${svgscale} ${svgscale}`);
       return $svg;
     }
 
@@ -429,7 +431,7 @@
     const $picker = document.querySelector('[data-picker]');
     const hueSteps = 360 / 10;
     
-    const $svg = createSVG(scale);
+    const $svg = createSVG(svgscale);
     $picker.innerHTML = stepsToLabels(hueSteps);
     const $huelabels = document.querySelectorAll('[data-huelabel]');
     $picker.appendChild($svg);
@@ -456,8 +458,8 @@
 
       poline.anchorPoints.forEach(anchor => {
         const $circle = document.createElementNS(namespaceURI, 'circle');
-        $circle.setAttribute('cx', anchor.x * scale);
-        $circle.setAttribute('cy', anchor.y * scale);
+        $circle.setAttribute('cx', anchor.x * svgscale);
+        $circle.setAttribute('cy', anchor.y * svgscale);
         $circle.setAttribute('r', 2)
         //anchor.hslCSS
         $circle.classList.add('wheel__anchor');
@@ -468,18 +470,18 @@
       poline.flattenedPoints.forEach((point, i) => {
         const $line = document.createElementNS(namespaceURI, 'line');
         $line.classList.add('wheel__line');
-        $line.setAttribute('x1', point.x * scale);
-        $line.setAttribute('y1', point.y * scale);
+        $line.setAttribute('x1', point.x * svgscale);
+        $line.setAttribute('y1', point.y * svgscale);
         const nextI = (i + 1) % poline.flattenedPoints.length;
-        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * scale);
-        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * scale);
+        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * svgscale);
+        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * svgscale);
         if (i !== poline.flattenedPoints.length - 1) {
           $svg.appendChild($line);
         }
 
         const $circle = document.createElementNS(namespaceURI, 'circle');
-        $circle.setAttribute('cx', point.x * scale);
-        $circle.setAttribute('cy', point.y * scale);
+        $circle.setAttribute('cx', point.x * svgscale);
+        $circle.setAttribute('cy', point.y * svgscale);
         $circle.setAttribute('r', .5 + point.color[1] * 1)
         $circle.classList.add('wheel__point');
         $circle.setAttribute('fill', formatHex({ mode: currentHueModel, ...currentModelFn(point.color) }) );
@@ -489,17 +491,17 @@
         // create a vertical line with a height representing the saturation
         const $vline = document.createElementNS(namespaceURI, 'line');
         const $vlineBG = document.createElementNS(namespaceURI, 'line');
-        $vlineBG.setAttribute('x1', point.x * scale);
-        $vline.setAttribute('x1', point.x * scale);
+        $vlineBG.setAttribute('x1', point.x * svgscale);
+        $vline.setAttribute('x1', point.x * svgscale);
 
-        $vline.setAttribute('y1', point.y * scale);
-        $vlineBG.setAttribute('y1', point.y * scale);
+        $vline.setAttribute('y1', point.y * svgscale);
+        $vlineBG.setAttribute('y1', point.y * svgscale);
 
-        $vline.setAttribute('x2', point.x * scale);
-        $vlineBG.setAttribute('x2', point.x * scale);
+        $vline.setAttribute('x2', point.x * svgscale);
+        $vlineBG.setAttribute('x2', point.x * svgscale);
 
-        $vline.setAttribute('y2', point.y * scale - point.color[1] * 7);
-        $vlineBG.setAttribute('y2', point.y * scale - point.color[1] * 7);
+        $vline.setAttribute('y2', point.y * svgscale - point.color[1] * 7);
+        $vlineBG.setAttribute('y2', point.y * svgscale - point.color[1] * 7);
         $vline.setAttribute('stroke', point.hslCSS);
         $vline.classList.add('wheel__satline');
         $vlineBG.setAttribute('stroke', '#fff');
@@ -617,6 +619,28 @@
       }*/
     });
 
+  /*
+  setInterval(() => {
+    poline.anchorPoints[0].positionOrColor = {
+      color: [
+        (poline.anchorPoints[0].color[0] + 1) % 360,
+        poline.anchorPoints[0].color[1],
+        poline.anchorPoints[0].color[2]
+      ]
+    };
+
+    poline.anchorPoints[2].positionOrColor = {
+      color: [
+        (poline.anchorPoints[2].color[0] - 1) % 360,
+        poline.anchorPoints[2].color[1],
+        poline.anchorPoints[2].color[2]
+      ]
+    };
+
+    poline.updatePointPairs();
+    updateSVG();
+  }, 16.66);
+  */
 
 
   $picker.addEventListener('pointerup', (e) => {

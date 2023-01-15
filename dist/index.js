@@ -26,6 +26,7 @@ var fettepalette = (() => {
     pointToHSL: () => pointToHSL,
     positionFunctions: () => positionFunctions,
     randomHSLPair: () => randomHSLPair,
+    randomHSLTriple: () => randomHSLTriple,
     vectorsOnLine: () => vectorsOnLine
   });
   var pointToHSL = (xyz) => {
@@ -68,6 +69,19 @@ var fettepalette = (() => {
       [h2, s2, l2]
     ];
   };
+  var randomHSLTriple = (startHue = Math.random() * 360, saturations = [
+    Math.random(),
+    Math.random(),
+    Math.random()
+  ], lightnesses = [
+    0.75 + Math.random() * 2,
+    Math.random() * 0.2,
+    0.75 + Math.random() * 2
+  ]) => [
+    [startHue, saturations[0], lightnesses[0]],
+    [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
+    [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]]
+  ];
   var vectorsOnLine = (p1, p2, numPoints = 4, invert = false, fx = (t, invert2) => invert2 ? 1 - t : t, fy = (t, invert2) => invert2 ? 1 - t : t, fz = (t, invert2) => invert2 ? 1 - t : t) => {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
