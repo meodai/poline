@@ -31,7 +31,7 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Aboreto&family=Work+Sans:wght@200;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Aboreto&family=Work+Sans:wght@300;400&display=swap" rel="stylesheet">
   
   <style>
     :root {
@@ -39,7 +39,8 @@
       color: #202124;
 
       font-family: 'Work Sans', sans-serif;
-      font-weight: 200;
+      font-weight: 300;
+      font-size: 0.9rem;
     }
 
     h1, h2, h3, .t, .wheel__huelabel {
@@ -47,17 +48,18 @@
     }
 
     h1 {
-      position: absolute;
-      top: 0;
-      left: 50%;
       font-size: 5rem;
-      text-align: center;
       margin: 0;
       padding: 0;
       font-weight: normal;
-      transform: translate(-50%, 0);
       letter-spacing: -0.05em;
     }
+
+
+    .t-intro {
+      margin: 1em 0 1em;
+    }
+
 
     p {
       line-height: 1.5;
@@ -65,36 +67,25 @@
 
     .poline-picker {
       position: relative;
-      width: 60vmin;
-      margin: 12rem auto 0;
-    }
-    .poline-picker__preview {
-      height: 2vmin;
+      width: min(60vmin, 60%);
       margin: 15vmin auto 0;
-      width: 80%;
-      background: linear-gradient(90deg, var(--prev));
-      transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
     }
-    .poline-picker__preview:hover {
-      transform: scaleY(4);
-    }
+
     .poline-picker__circprev {
       width: 12vmin;
       height: 12vmin;
       background: conic-gradient(var(--prev));
       border-radius: 50%;
       position: absolute;
-      top: calc(100% - 11vmin);
+      top: 100%;
       left: 50%;
       z-index: 3;
-      transform: translate(-50%, -100%) scale(0.4);
       transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
-      box-shadow: 0 0 0 0.5vmin #fff;
+      box-shadow: 0 0 0 0.7vmin #fff;
       pointer-events: none;
+      transform: translate(-50%, -50%) scale(0.4);
     }
-    .poline-picker__circprev:hover {
-      transform: translate(-50%, -100%) scale(1);
-    }
+
     .picker {
       position: relative;
       width: 100%;
@@ -223,10 +214,6 @@
       text-decoration: underline;
     }
     .controls {
-      position: absolute;
-      bottom: 5vmin;
-      left: 0;
-      padding: 1rem;
     }
     h2 {
       position: absolute;
@@ -241,78 +228,128 @@
       letter-spacing: -0.05em;
       display: none;
     }
-    .t-intro {
-      margin: 10vmin auto;
-      max-width: 50vmin;
-      text-align: center;
-    }
 
     button {
       font-family: 'Aboreto', cursive;
       background-color: #202125;
       color: #fff;
     }
+
+    .l-wrap {
+      display: flex;
+    }
+
+    .l-menu {
+      flex: 0 0 30%;
+      box-sizing: border-box;
+      padding: 30vmin 0rem 3.5rem 5rem;
+    }
+
+
+    .l-demo {
+      position: relative;
+      flex: 0 0 70%;
+    }
+
+    .drawer {
+
+      --preview-width: 2rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 30%;
+      background: #202125;
+      transform: translateX(calc(-100% + var(--preview-width)));
+    }
+
+    .drawer__preview {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      top: 0;
+      width: var(--preview-width);
+
+      background: linear-gradient(0deg, var(--prev));
+    }
+    .drawer__preview::before {
+      z-index: -1;
+      content: '';
+      position: absolute;
+      left: 0;
+      top: -5rem;
+      bottom: -5rem;
+      width: 100%;
+      background: linear-gradient(0deg, var(--prev-smooth));
+      transform: translateX(1rem);
+      filter: blur(15px);
+      opacity: 0.5;
+    }
   </style>
 </head>
 
 <body>
-  <h1>Poline</h1>
-  <h2>極地線</h2>
+  <main class="l-wrap">
+    <section class="l-menu">
 
-  <div class="poline-picker">
-    <div data-picker class="picker"></div>
-    <div class="poline-picker__preview"></div>
-    <div class="poline-picker__circprev"></div>
-  </div>
-
-  <p class="t-intro">
-    "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
-    methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
-    magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
-    palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
-  </p>
-
-  <section class="poline-colors">
-    <h2>Poline Colors</h2>
-    <div data-colorlist>
+      <h1>Poline</h1>
+      <p class="t-intro">
+        "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
+        methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
+        magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
+        palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
+      </p>
+      <div class="controls">
+        <label>
+          <span class="t">Color Model</span>
+          <select data-models>
+          </select>
+        </label>
+        <label>
+          <span class="t">Steps</span>
+          <input type="range" min="3" max="15" value="3" data-steps>
+        </label>
+        <label>
+          <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+        </label>
+        <label>
+          <span><span class="t">Position fn X</span>(Hue / Light)</span>
+          <select data-select="x">
+          </select>
+        </label>
+        <label>
+          <span><span class="t">Position fn Y</span>(Hue / Light)</span>
+          <select data-select="y">
+          </select>
+        </label>
+        <label>
+          <span><span class="t">Position fn Z</span> (Saturation)</span>
+          <select data-select="z">
+          </select>
+        </label>
+        <label>
+          <span class="t">Hue Shift</span>
+          <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
+        </label>
+        <button data-randomize>Randomize</button>
+      </div>
+    </section>
+    <div class="l-demo">
+      <div class="poline-picker">
+        <div data-picker class="picker"></div>
+        <div class="poline-picker__circprev"></div>
+      </div>
     </div>
-  </section>
+  </main>
 
-  <div class="controls">
+  <div class="drawer">
+    <h2>Export Colors</h2>
+    <div class="drawer__preview">
 
-    <label>
-      <span class="t">Color Model</span>
-      <select data-models>
-      </select>
-    </label>
-    <label>
-      <span class="t">Steps</span>
-      <input type="range" min="3" max="15" value="3" data-steps>
-    </label>
-    <label>
-      <span class="t">Closed Loop<input type="checkbox" data-loop></span>
-    </label>
-    <label>
-      <span><span class="t">Position fn X</span>(Hue / Light)</span>
-      <select data-select="x">
-      </select>
-    </label>
-    <label>
-      <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-      <select data-select="y">
-      </select>
-    </label>
-    <label>
-      <span><span class="t">Position fn Z</span> (Saturation)</span>
-      <select data-select="z">
-      </select>
-    </label>
-    <label>
-      <span class="t">Hue Shift</span>
-      <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
-    </label>
-    <button data-randomize>Randomize</button>
+    </div>
   </div>
+
+
   <script type="module">
     console.clear();
     import { formatHex } from 'https://cdn.skypack.dev/culori';
@@ -524,6 +561,11 @@
       document.documentElement.style.setProperty(
         '--prev',
         colorArrToSteppedGradient(colors)
+      )
+
+      document.documentElement.style.setProperty(
+        '--prev-smooth',
+        colors.join(',')
       )
 
     }
