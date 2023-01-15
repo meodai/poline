@@ -408,7 +408,8 @@
     let poline = new Poline({
       anchorColors: [
         [startHue, Math.random(), 0.8],
-        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2]
+        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
+        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8]
       ],
       numPoints: steps,
       positionFunction: positionFunctions[fnx],
@@ -429,7 +430,7 @@
 
     const hue = Math.random() * 360;
 
-    poline.addAnchorPoint({color: [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });    
+    //poline.addAnchorPoint({color: [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });    
     //poline.addAnchorPoint({color: poline.anchorPoints[0].color});
     //console.log(poline);
 
