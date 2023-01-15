@@ -246,6 +246,12 @@
       max-width: 40vmin;
       text-align: center;
     }
+
+    button {
+      font-family: 'Aboreto', cursive;
+      background-color: #202125;
+      color: #fff;
+    }
   </style>
 </head>
 
@@ -297,6 +303,7 @@
       <select data-select="z">
       </select>
     </label>
+    <button data-randomize>Randomize</button>
   </div>
   <script type="module">
     console.clear();
@@ -374,6 +381,7 @@
     const $zSelect = document.querySelector('[data-select="z"]');
     const $models = document.querySelector('[data-models]');
     const $loop = document.querySelector('[data-loop]');
+    const $randomize = document.querySelector('[data-randomize]');
 
     $models.innerHTML = hueBasedModels
       .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
@@ -517,6 +525,7 @@
       poline.closedLoop = $loop.checked;
       updateSVG();
     });
+
     $steps.addEventListener('input', () => {
       steps = parseInt($steps.value);
       poline.numPoints = steps;
@@ -542,6 +551,19 @@
     $zSelect.addEventListener('input', () => {
       fnz = $zSelect.value;
       poline.positionFunctionZ = positionFunctions[fnz];
+      poline.updatePointPairs();
+      updateSVG();
+    });
+
+    $randomize.addEventListener('click', () => {
+
+      poline.anchorPoints.forEach(anchor => {
+        anchor.positionOrColor = {color: [
+          (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
+          Math.random(),
+          anchor.color[2] + (-.05 + Math.random() * .1)
+        ]};
+      });
       poline.updatePointPairs();
       updateSVG();
     });
