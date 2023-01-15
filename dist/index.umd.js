@@ -203,6 +203,10 @@ var fettepalette = (() => {
         [this.x, this.y, this.z] = hslToPoint(color);
       }
     }
+    shiftHue(angle) {
+      this.color[0] = (360 + (this.color[0] + angle)) % 360;
+      [this.x, this.y, this.z] = hslToPoint(this.color);
+    }
     get position() {
       return [this.x, this.y, this.z];
     }
@@ -341,6 +345,10 @@ var fettepalette = (() => {
         cssColors.pop();
       }
       return cssColors;
+    }
+    shiftHue(hShift) {
+      this.anchorPoints.forEach((p) => p.shiftHue(hShift));
+      this.updatePointPairs();
     }
   };
   return __toCommonJS(src_exports);

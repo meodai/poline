@@ -57,6 +57,7 @@ declare class ColorPoint {
     color: Vector3;
     constructor({ x, y, z, color }?: ColorPointCollection);
     set positionOrColor({ x, y, z, color }: ColorPointCollection);
+    shiftHue(angle: number): void;
     get position(): Vector3;
     get hslCSS(): string;
 }
@@ -90,5 +91,6 @@ export declare class Poline {
     get flattenedPoints(): ColorPoint[];
     get colors(): Vector3[];
     get colorsCSS(): string[];
+    shiftHue(hShift: number): void;
 }
 export {};
