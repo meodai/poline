@@ -279,7 +279,7 @@
       <input type="range" min="3" max="15" value="3" data-steps>
     </label>
     <label>
-      <span class="t">Loop Colors <input type="checkbox" checked="checked" data-loop></span>
+      <span class="t">Loop Colors <input type="checkbox" data-loop></span>
     <label>
       <span><span class="t">Position fn X</span>(Hue / Light)</span>
       <select data-select="x">
@@ -405,7 +405,7 @@
       positionFunction: positionFunctions[fnx],
       positionFunctionY: positionFunctions[fny],
       positionFunctionZ: positionFunctions[fnz],
-      closedLoop: true,
+      closedLoop: false,
     });
 
     const $picker = document.querySelector('[data-picker]');
