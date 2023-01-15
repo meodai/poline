@@ -39,6 +39,11 @@
       background: #fff;
       color: #202124;
 
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans',
+        'Helvetica Neue', sans-serif
+    }
+
+    h1, h2, h3, .t {
       font-family: 'Aboreto', cursive;
     }
 
@@ -194,19 +199,23 @@
     label {
       display: block;
       margin: 1rem 0;
+      font-size: .8rem;
     }
-    label span {
+    label .t {
       display: block;
-      margin-bottom: 0.5rem;
+      margin: 0;
+      font-size: 1rem;
     }
     select {
+      margin-top: 1em;
       display: block;
       width: 100%;
-      font-size: 1rem;
       padding: 0;
       border: none;
       font: inherit;
-      font-family: monospace;
+      font-family: inherit;
+
+      font-size: .8rem;
       text-decoration: underline;
     }
     .controls {
@@ -261,27 +270,26 @@
   <div class="controls">
 
     <label>
-      <span>Color Model</span>
+      <span class="t">Color Model</span>
       <select data-models>
       </select>
     </label>
     <label>
-      <span>Steps</span>
+      <span class="t">Steps</span>
       <input type="range" min="3" max="15" value="3" data-steps>
     </label>
     <label>
-      <span>Loop Colors</span>
-      <input type="checkbox" checked="checked" data-loop>
+      <span class="t">Loop Colors <input type="checkbox" checked="checked" data-loop></span>
     <label>
-      <span>Position fn X (Hue / Light)</span>
+      <span><span class="t">Position fn X</span>(Hue / Light)</span>
       <select data-select="x">
       </select>
     </label><label>
-      <span>Position fn Y (Hue / Light)</span>
+      <span><span class="t">Position fn Y</span>(Hue / Light)</span>
       <select data-select="y">
       </select>
     </label><label>
-      <span>Position fn Z (Saturation)</span>
+      <span><span class="t">Position fn Z</span> (Saturation)</span>
       <select data-select="z">
       </select>
     </label>
@@ -390,7 +398,6 @@
     });
 
     let steps = parseInt($steps.value);
-
 
     let poline = new Poline({
       anchorColors: randomHSLPair(),
