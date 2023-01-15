@@ -43,7 +43,7 @@
         'Helvetica Neue', sans-serif
     }
 
-    h1, h2, h3, .t {
+    h1, h2, h3, .t, .wheel__huelabel {
       font-family: 'Aboreto', cursive;
     }
 
@@ -148,10 +148,7 @@
     }
 
     .wheel__huelabel {
-      -webkit-user-select: none;
-        -moz-user-select: none;
-          -ms-user-select: none;
-              user-select: none;
+      user-select: none;
       pointer-events: none;
       font-weight: normal;
       box-sizing: border-box;
@@ -160,7 +157,7 @@
       left: 50%;
       width: calc(100% + 16vmin);
       transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg));
-      font-size: 1vmin;
+      font-size: 1.7vmin;
       padding: 0.2em 3em 0.2em 120.5%;
       z-index: 1;
       text-align: right;
@@ -168,7 +165,11 @@
       transition: font-size 0.3s cubic-bezier(.3,.7,0,1);
     }
 
-    .wheel__huelabel--active {
+    .picker:hover .wheel__huelabel {
+      font-size: 1vmin;
+    }
+
+    .picker:hover .wheel__huelabel--active {
       font-size: 1.7vmin;
     }
 
