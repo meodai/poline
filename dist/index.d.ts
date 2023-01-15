@@ -56,9 +56,12 @@ declare class ColorPoint {
     z: number;
     color: Vector3;
     constructor({ x, y, z, color }?: ColorPointCollection);
-    set positionOrColor({ x, y, z, color }: ColorPointCollection);
-    shiftHue(angle: number): void;
+    positionOrColor({ x, y, z, color }: ColorPointCollection): void;
+    set position([x, y, z]: Vector3);
     get position(): Vector3;
+    set hsl([h, s, l]: Vector3);
+    get hsl(): Vector3;
+    shiftHue(angle: number): void;
     get hslCSS(): string;
 }
 export type AnchorPointReference = {
@@ -68,7 +71,8 @@ export type AnchorPointReference = {
 export type PolineOptions = {
     anchorColors: Vector3[];
     numPoints: number;
-    positionFunction: (t: number, invert?: boolean) => number;
+    positionFunction?: (t: number, invert?: boolean) => number;
+    positionFunctionX?: (t: number, invert?: boolean) => number;
     positionFunctionY?: (t: number, invert?: boolean) => number;
     positionFunctionZ?: (t: number, invert?: boolean) => number;
     closedLoop: boolean;
@@ -77,11 +81,11 @@ export declare class Poline {
     anchorPoints: ColorPoint[];
     private numPoints;
     private points;
-    private positionFunction;
+    private positionFunctionX;
     private positionFunctionY;
     private positionFunctionZ;
     private connectLastAndFirstAnchor;
-    constructor({ anchorColors, numPoints, positionFunction, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
+    constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color, insertAtIndex, }: ColorPointCollection): ColorPoint;
     removeAnchorPoint(point: ColorPoint): void;

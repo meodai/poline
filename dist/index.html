@@ -57,7 +57,7 @@
 
 
     .t-intro {
-      margin: 1em 0 1em;
+      margin: 3em 0 1em;
     }
 
 
@@ -250,9 +250,8 @@
       position: relative;
       flex: 0 0 70%;
     }
-
+    
     .drawer {
-
       --preview-width: 2rem;
       position: fixed;
       top: 0;
@@ -272,18 +271,27 @@
 
       background: linear-gradient(0deg, var(--prev));
     }
-    .drawer__preview::before {
-      z-index: -1;
+    .drawer__preview::before,
+    .drawer__preview::after {
       content: '';
       position: absolute;
       left: 0;
-      top: -5rem;
-      bottom: -5rem;
-      width: 100%;
+      top: 0;
+      bottom: 0;
       background: linear-gradient(0deg, var(--prev-smooth));
-      transform: translateX(1rem);
+    }
+    .drawer__preview::after {
+      right: 0;
+      width: 1rem;
+      left: auto;
+      display: none;
+    }
+    .drawer__preview::before {
+      z-index: -1;
+      transform: translateX(1rem) scaleY(1.1);
       filter: blur(15px);
       opacity: 0.5;
+      right: 0;
     }
   </style>
 </head>
@@ -291,15 +299,16 @@
 <body>
   <main class="l-wrap">
     <section class="l-menu">
-
-      <h1>Poline</h1>
-      <p class="t-intro">
-        "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
-        methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
-        magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
-        palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
-      </p>
-      <div class="controls">
+      <div class="l-sec">
+        <h1>Poline</h1>
+        <p class="t-intro">
+          "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
+          methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
+          magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
+          palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
+        </p>
+      </div>
+      <div class="controls l-sec">
         <label>
           <span class="t">Color Model</span>
           <select data-models>
@@ -417,7 +426,6 @@
       (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
     ).join();
 
-    
     const $steps = document.querySelector('[data-steps]');
     const $selects = document.querySelectorAll('[data-select]');
     const $xSelect = document.querySelector('[data-select="x"]');
@@ -437,7 +445,6 @@
       currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
       updateSVG();
     });
-
 
     let fnx = 'sinusoidalPosition';
     let fny = 'quadraticPosition';
@@ -466,7 +473,7 @@
         [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8]
       ],
       numPoints: steps,
-      positionFunction: positionFunctions[fnx],
+      positionFunctionX: positionFunctions[fnx],
       positionFunctionY: positionFunctions[fny],
       positionFunctionZ: positionFunctions[fnz],
       closedLoop: false,
@@ -609,11 +616,11 @@
     $randomize.addEventListener('click', () => {
 
       poline.anchorPoints.forEach(anchor => {
-        anchor.positionOrColor = {color: [
+        anchor.hsl = [
           (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
           Math.random(),
           anchor.color[2] + (-.05 + Math.random() * .1)
-        ]};
+        ];
       });
       poline.updatePointPairs();
       updateSVG();
@@ -632,8 +639,9 @@
       if (!currentPoint) {
         currentPoint = poline.getClosestAnchorPoint([x, null, y], .1);
         lastSelectedPoint = currentPoint;
+      } else {
+        currentPoint = null;
       }
-
     });
 
     $picker.addEventListener('pointermove', (e) => {
@@ -641,55 +649,32 @@
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (currentPoint) {
-        currentPoint.x = x;
-        currentPoint.y = y;
-        currentPoint.positionOrColor = {
-          x,
-          y,
-          z: currentPoint.z,
-        };
-
+        currentPoint.position = [x, y, currentPoint.z];
         poline.updatePointPairs();
         updateSVG();
       } 
-      
-      /*else if (e.buttons === 1) {
-        // move all points relative to the mouse position
-
-        poline.anchorPoints.forEach(point => {
-          point.positionOrColor = {
-            x: (x - point.x),
-            y: (y - point.y),
-            z: point.z,
-          };
-        });
-        poline.updatePointPairs();
-        updateSVG();
-      }*/
     });
 
+  
   /*
   setInterval(() => {
-    poline.anchorPoints[0].positionOrColor = {
-      color: [
-        (poline.anchorPoints[0].color[0] + 1) % 360,
-        poline.anchorPoints[0].color[1],
-        poline.anchorPoints[0].color[2]
-      ]
-    };
+    poline.anchorPoints[0].hsl = [
+      (poline.anchorPoints[0].color[0] + 1) % 360,
+      poline.anchorPoints[0].color[1],
+      poline.anchorPoints[0].color[2]
+    ];
 
-    poline.anchorPoints[2].positionOrColor = {
-      color: [
-        (poline.anchorPoints[2].color[0] - 1) % 360,
-        poline.anchorPoints[2].color[1],
-        poline.anchorPoints[2].color[2]
-      ]
-    };
+    poline.anchorPoints[2].hsl = [
+      (poline.anchorPoints[2].color[0] - 1) % 360,
+      poline.anchorPoints[2].color[1],
+      poline.anchorPoints[2].color[2]
+    ];
 
     poline.updatePointPairs();
     updateSVG();
   }, 16.66);
   */
+  
 
 
   $picker.addEventListener('pointerup', (e) => {

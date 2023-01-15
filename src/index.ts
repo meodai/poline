@@ -260,10 +260,10 @@ class ColorPoint {
   public color: Vector3 = [0, 0, 0];
 
   constructor({ x, y, z, color }: ColorPointCollection = {}) {
-    this.positionOrColor = { x, y, z, color };
+    this.positionOrColor({ x, y, z, color });
   }
 
-  public set positionOrColor({ x, y, z, color }: ColorPointCollection) {
+  positionOrColor({ x, y, z, color }: ColorPointCollection) {
     if (x && y && y && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (x && y && z) {
@@ -277,14 +277,30 @@ class ColorPoint {
     }
   }
 
-  shiftHue(angle: number): void {
-    this.color[0] = (360 + (this.color[0] + angle)) % 360;
-
-    [this.x, this.y, this.z] = hslToPoint(this.color);
+  set position([x, y, z]: Vector3) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.color = pointToHSL([this.x, this.y, this.z]);
   }
 
   get position(): Vector3 {
     return [this.x, this.y, this.z];
+  }
+
+  set hsl([h, s, l]: Vector3) {
+    this.color = [h, s, l];
+    [this.x, this.y, this.z] = hslToPoint(this.color);
+  }
+
+  get hsl(): Vector3 {
+    return this.color;
+  }
+
+  shiftHue(angle: number): void {
+    this.color[0] = (360 + (this.color[0] + angle)) % 360;
+
+    [this.x, this.y, this.z] = hslToPoint(this.color);
   }
 
   get hslCSS(): string {
@@ -302,7 +318,8 @@ export type AnchorPointReference = {
 export type PolineOptions = {
   anchorColors: Vector3[];
   numPoints: number;
-  positionFunction: (t: number, invert?: boolean) => number;
+  positionFunction?: (t: number, invert?: boolean) => number;
+  positionFunctionX?: (t: number, invert?: boolean) => number;
   positionFunctionY?: (t: number, invert?: boolean) => number;
   positionFunctionZ?: (t: number, invert?: boolean) => number;
   closedLoop: boolean;
@@ -314,7 +331,7 @@ export class Poline {
   private numPoints: number;
   private points: ColorPoint[][];
 
-  private positionFunction = sinusoidalPosition;
+  private positionFunctionX = sinusoidalPosition;
   private positionFunctionY = sinusoidalPosition;
   private positionFunctionZ = sinusoidalPosition;
 
@@ -325,6 +342,7 @@ export class Poline {
       anchorColors,
       numPoints,
       positionFunction,
+      positionFunctionX,
       positionFunctionY,
       positionFunctionZ,
       closedLoop,
@@ -348,9 +366,12 @@ export class Poline {
     );
 
     this.numPoints = numPoints + 2; // add two for the anchor points
-    this.positionFunction = positionFunction;
-    this.positionFunctionY = positionFunctionY || positionFunction;
-    this.positionFunctionZ = positionFunctionZ || positionFunction;
+    this.positionFunctionX =
+      positionFunctionX || positionFunction || sinusoidalPosition;
+    this.positionFunctionY =
+      positionFunctionY || positionFunction || sinusoidalPosition;
+    this.positionFunctionZ =
+      positionFunctionZ || positionFunction || sinusoidalPosition;
 
     this.connectLastAndFirstAnchor = closedLoop;
 
@@ -382,7 +403,7 @@ export class Poline {
         p2position,
         this.numPoints,
         i % 2 ? true : false,
-        this.positionFunction,
+        this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
       ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));

@@ -188,9 +188,9 @@ var fettepalette = (() => {
       this.y = 0;
       this.z = 0;
       this.color = [0, 0, 0];
-      this.positionOrColor = { x, y, z, color };
+      this.positionOrColor({ x, y, z, color });
     }
-    set positionOrColor({ x, y, z, color }) {
+    positionOrColor({ x, y, z, color }) {
       if (x && y && y && color) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
       } else if (x && y && z) {
@@ -203,12 +203,25 @@ var fettepalette = (() => {
         [this.x, this.y, this.z] = hslToPoint(color);
       }
     }
-    shiftHue(angle) {
-      this.color[0] = (360 + (this.color[0] + angle)) % 360;
-      [this.x, this.y, this.z] = hslToPoint(this.color);
+    set position([x, y, z]) {
+      this.x = x;
+      this.y = y;
+      this.z = z;
+      this.color = pointToHSL([this.x, this.y, this.z]);
     }
     get position() {
       return [this.x, this.y, this.z];
+    }
+    set hsl([h, s, l]) {
+      this.color = [h, s, l];
+      [this.x, this.y, this.z] = hslToPoint(this.color);
+    }
+    get hsl() {
+      return this.color;
+    }
+    shiftHue(angle) {
+      this.color[0] = (360 + (this.color[0] + angle)) % 360;
+      [this.x, this.y, this.z] = hslToPoint(this.color);
     }
     get hslCSS() {
       return `hsl(${this.color[0]}, ${this.color[1] * 100}%, ${this.color[2] * 100}%)`;
@@ -219,6 +232,7 @@ var fettepalette = (() => {
       anchorColors,
       numPoints,
       positionFunction,
+      positionFunctionX,
       positionFunctionY,
       positionFunctionZ,
       closedLoop
@@ -228,7 +242,7 @@ var fettepalette = (() => {
       positionFunction: sinusoidalPosition,
       closedLoop: false
     }) {
-      this.positionFunction = sinusoidalPosition;
+      this.positionFunctionX = sinusoidalPosition;
       this.positionFunctionY = sinusoidalPosition;
       this.positionFunctionZ = sinusoidalPosition;
       this.connectLastAndFirstAnchor = false;
@@ -242,9 +256,9 @@ var fettepalette = (() => {
         (point) => new ColorPoint({ color: point })
       );
       this.numPoints = numPoints + 2;
-      this.positionFunction = positionFunction;
-      this.positionFunctionY = positionFunctionY || positionFunction;
-      this.positionFunctionZ = positionFunctionZ || positionFunction;
+      this.positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
+      this.positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
+      this.positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
       this.connectLastAndFirstAnchor = closedLoop;
       this.updatePointPairs();
     }
@@ -266,7 +280,7 @@ var fettepalette = (() => {
           p2position,
           this.numPoints,
           i % 2 ? true : false,
-          this.positionFunction,
+          this.positionFunctionX,
           this.positionFunctionY,
           this.positionFunctionZ
         ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
