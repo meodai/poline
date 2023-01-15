@@ -60,6 +60,10 @@
       letter-spacing: -0.05em;
     }
 
+    p {
+      line-height: 1.5;
+    }
+
     .poline-picker {
       position: relative;
       width: 60vmin;
@@ -399,8 +403,13 @@
 
     let steps = parseInt($steps.value);
 
+    let startHue = Math.random() * 360;
+
     let poline = new Poline({
-      anchorColors: randomHSLPair(),
+      anchorColors: [
+        [startHue, Math.random(), 0.8],
+        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2]
+      ],
       numPoints: steps,
       positionFunction: positionFunctions[fnx],
       positionFunctionY: positionFunctions[fny],
@@ -420,7 +429,7 @@
 
     const hue = Math.random() * 360;
 
-    poline.addAnchorPoint({color: [hue, Math.random(), .6 + Math.random() * .3]});    
+    poline.addAnchorPoint({color: [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });    
     //poline.addAnchorPoint({color: poline.anchorPoints[0].color});
     //console.log(poline);
 
