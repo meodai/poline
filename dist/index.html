@@ -252,6 +252,12 @@
     It draws lines between anchors over polar coordinates.
   </p>
 
+  <section class="poline-colors">
+    <h2>Poline Colors</h2>
+    <div data-colorlist>
+    </div>
+  </section>
+
   <div class="controls">
 
     <label>
@@ -385,14 +391,15 @@
 
     let steps = parseInt($steps.value);
 
-    let poline = new Poline(
-      randomHSLPair(),
-      steps,
-      positionFunctions[fnx],
-      positionFunctions[fny],
-      positionFunctions[fnz],
-      true
-    );
+
+    let poline = new Poline({
+      anchorColors: randomHSLPair(),
+      numPoints: steps,
+      positionFunction: positionFunctions[fnx],
+      positionFunctionY: positionFunctions[fny],
+      positionFunctionZ: positionFunctions[fnz],
+      closedLoop: true,
+    });
 
     const $picker = document.querySelector('[data-picker]');
     const hueSteps = 360 / 10;

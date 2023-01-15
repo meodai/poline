@@ -274,6 +274,16 @@ export type AnchorPointReference = {
   pointReference?: ColorPoint;
   pointIndex?: number;
 } & ColorPointCollection;
+
+export type PolineOptions = {
+  anchorColors: Vector3[];
+  numPoints: number;
+  positionFunction: (t: number, invert?: boolean) => number;
+  positionFunctionY?: (t: number, invert?: boolean) => number;
+  positionFunctionZ?: (t: number, invert?: boolean) => number;
+  closedLoop: boolean;
+};
+
 export class Poline {
   public anchorPoints: ColorPoint[];
 
@@ -287,12 +297,19 @@ export class Poline {
   private connectLastAndFirstAnchor = false;
 
   constructor(
-    anchorColors = randomHSLPair(),
-    numPoints = 4,
-    positionFunction = sinusoidalPosition,
-    positionFunctionY?: (t: number, invert?: boolean) => number,
-    positionFunctionZ?: (t: number, invert?: boolean) => number,
-    closedLoop = false
+    {
+      anchorColors,
+      numPoints,
+      positionFunction,
+      positionFunctionY,
+      positionFunctionZ,
+      closedLoop,
+    }: PolineOptions = {
+      anchorColors: randomHSLPair(),
+      numPoints: 4,
+      positionFunction: sinusoidalPosition,
+      closedLoop: false,
+    }
   ) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");

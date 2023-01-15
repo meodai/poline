@@ -186,7 +186,19 @@ var fettepalette = (() => {
     }
   };
   var Poline = class {
-    constructor(anchorColors = randomHSLPair(), numPoints = 4, positionFunction = sinusoidalPosition, positionFunctionY, positionFunctionZ, closedLoop = false) {
+    constructor({
+      anchorColors,
+      numPoints,
+      positionFunction,
+      positionFunctionY,
+      positionFunctionZ,
+      closedLoop
+    } = {
+      anchorColors: randomHSLPair(),
+      numPoints: 4,
+      positionFunction: sinusoidalPosition,
+      closedLoop: false
+    }) {
       this.positionFunction = sinusoidalPosition;
       this.positionFunctionY = sinusoidalPosition;
       this.positionFunctionZ = sinusoidalPosition;
