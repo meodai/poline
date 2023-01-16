@@ -295,14 +295,24 @@
     }
     .l-sec {
       min-height: 20vh;
+      opacity: .2;
+      transition: 400ms opacity linear;
+    }
+    .l-sec + .l-sec {
+      margin-top: 10vh;
     }
     .l-sec--intro {
-      min-height: 100vh;
+      padding-top: 32vh;
       display: flex;
       align-items: center;
     }
+    .l-sec--intro + .l-sec {
+    }
     .l-sec__inner {
       width: 100%;
+    }
+    .l-sec--active {
+      opacity: 1;
     }
     code {
       display: block;
@@ -320,7 +330,7 @@
   <main class="l-wrap">
     <section class="l-menu">
       <div class="l-sec l-sec--intro">
-        <div class="l-sec__inner">
+        <div class="l-sec__inner" data-section="intro">
           <h1>Poline</h1>
           <p class="t-intro">
             "<strong class="t">poline</strong>" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
@@ -331,19 +341,76 @@
         </div>
       </div>
       <article class="l-sec">
-        <h2>Summoning</h2>
-        <p>
-          When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
-          It will generate a palette with two random <strong>anchors</strong>. However, you can also
-          provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
-          represented as a list of <strong>hsl</strong> values.
-          <pre><code>poline({
-  anchorColors: [[0, 1, 0.2], [120, 0.6, 0.8]]
-})</code></pre>
-        </p>
+        <div class="l-sec__inner" data-section="summoning">
+          <h2>Summoning</h2>
+          <p>
+            When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
+            It will generate a palette with two random <strong>anchors</strong>. However, you can also
+            provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
+            represented as a list of <strong>hsl</strong> values.
+            <pre><code data-code></code></pre>
+          </p>
+        </div>
       </article>
       <article class="l-sec">
-        <h2></h2>
+        <div class="l-sec__inner" data-section="points">
+          <h2>Points</h2>
+          <p>
+            As demonstrated on the illustration, "<strong class="t">Poline</strong>"
+            works by drawing lines between the <strong>anchors</strong>. The number of <strong>points</strong>
+            determines the number of colors generated between each pair of anchors. 
+            The more <strong>points</strong> you have, the more colors you will get.
+          </p>
+          <pre><code data-code></code></pre>
+          <p>
+            So the total amount of colors generated is <strong>points</strong> * <strong>pair of anchors</strong>.
+          </p>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="anchors">
+          <h2>Anchors</h2>
+          <p>
+            The <strong>anchors</strong> are the points that the lines are drawn between. The <strong>anchors</strong> are
+            represented as a list of <strong>hsl</strong> values. The <strong>hsl</strong> values are
+            represented as a list of <strong>hue</strong>, <strong>saturation</strong> and <strong>lightness</strong>.
+            The <strong>hue</strong>[0…360], the <strong>saturation</strong>[0…1] and the
+            <strong>lightness</strong>[0…1].
+          </p>
+          <p>
+            Either provide a list of <strong>anchors</strong> on initialization as in the examples above
+            or let "<strong class="t">poline</strong>" generate a random palette for you. (by omitting the anchorColors argument)
+          </p>
+          <p>
+            You can add anchors after initialization by calling the <strong>addAnchor</strong> method. 
+            Either provide a list of <strong>hsl</strong> values or <strong>X,Y,Z</strong> coordinates.
+          </p>
+          <pre><code data-code></code></pre>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="positionFunctions">
+          <h2>Position Functions</h2>
+          <p>
+            The <strong>position functions</strong> are used to determine the position of the 
+            <strong>points</strong> between the <strong>anchors</strong>. The <strong>position functions</strong> 
+            can be the same for XYZ (positionFunction) or different for each axis (positionFunctionX, positionFunctionY, positionFunctionZ).
+          </p>
+          <p>
+            They function a lot like an easing function and can be imported 'import {Poline, positionFunctions} from "poline";'
+          </p>
+          <pre><code data-code></code></pre>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="closedLoop">
+          <h2>Looping Palette</h2>
+          <p>
+            By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
+            If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
+          </p>
+          <pre><code data-code></code></pre>
+        </div>
       </article>
       <div class="controls l-sec">
         <div class="l-sec__inner">
@@ -734,13 +801,161 @@
     }
   });
 
-
   $hueshift.addEventListener('input', (e) => {
     poline.shiftHue(parseFloat(e.target.value));
 
     updateSVG();
   });
 
+
+  let exStartHue = Math.random() * 360;
+
+  // scripts per section
+  const stroyScripts = [{
+    section: 'intro',
+    fn: () => {
+      console.log('intro');
+      poline = new Poline({
+        numPoints: steps,
+      });
+      updateSVG();
+    },
+  },
+  {
+    section: 'summoning',
+    fn: (section) => {
+      console.log('summoning');
+      exStartHue = Math.random() * 360;
+      poline = new Poline({
+        anchorColors: [
+          [exStartHue, Math.random(), 0.8],
+          [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
+          /*[(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8]*/
+        ],
+      });
+      updateSVG();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `new Poline({
+  anchorColors: [
+    [${
+      Math.round(poline.anchorPoints[0].color[0])
+    }, ${
+      poline.anchorPoints[0].color[1].toFixed(2)
+    }, ${
+      poline.anchorPoints[0].color[2].toFixed(2)
+    }],
+    [${
+      Math.round(poline.anchorPoints[1].color[0])
+    }, ${
+      poline.anchorPoints[1].color[1].toFixed(2)
+    }, ${
+      poline.anchorPoints[1].color[2].toFixed(2)
+    }],
+  ],
+});`;
+    },
+  },
+  {
+    section: 'points',
+    fn: (section) => {
+      console.log('points');
+      poline.numPoints = 10;
+      poline.updatePointPairs();
+      updateSVG();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `new Poline({
+  numPoints: 10,
+});`;
+    },
+  },
+  {
+    section: 'anchors',
+    fn: (section) => {
+      console.log('anchors');
+      if (poline.anchorPoints.length > 3) {
+        poline.anchorPoints.forEach((anchor, i) => {
+          if (i > 1) poline.removeAnchorPoint(anchor);
+        });
+      }
+      poline.addAnchorPoint({color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `poline.addAnchorPoint({color: [${
+        Math.round(poline.anchorPoints[poline.anchorPoints.length - 1].color[0])
+      }, ${
+        poline.anchorPoints[poline.anchorPoints.length - 1].color[1].toFixed(2)
+      }, ${
+        poline.anchorPoints[poline.anchorPoints.length - 1].color[2].toFixed(2)
+      }]});`;
+      updateSVG();
+    }
+  },
+  {
+    section: 'positionFunctions',
+    fn: (section) => {
+      console.log('Position Functions');
+      if (poline.anchorPoints.length > 3) {
+        poline.anchorPoints.forEach((anchor, i) => {
+          if (i > 1) poline.removeAnchorPoint(anchor);
+        });
+      }
+      poline.closedLoop = false;
+      poline.positionFunctionX = positionFunctions[fnx];
+      poline.positionFunctionY = positionFunctions[fny];
+      poline.positionFunctionZ = positionFunctions[fnz];
+      poline.updatePointPairs();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `new Poline({
+  positionFunctionX: positionFunctions.${poline.positionFunctionX.name},
+  positionFunctionY: positionFunctions.${poline.positionFunctionY.name},
+  positionFunctionZ: positionFunctions.${poline.positionFunctionZ.name},
+});`;
+      updateSVG();
+    },
+  },
+  {
+    section: 'closedLoop',
+    fn: (section) => {
+      console.log('closedLoop');
+      poline.closedLoop = true;
+      poline.updatePointPairs();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `new Poline({
+  closedLoop: true,
+});`;
+  updateSVG()
+    },
+  },
+];
+  
+  // create an intersection onserver for all the `data-section`s
+  const sections = [...document.querySelectorAll('[data-section]')];
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // find the script for this section in stroyScripts
+        const script = stroyScripts.find(s => s.section === entry.target.dataset.section);
+        if (script) {
+          script.fn(entry);
+        }
+        // add .l-sec--active to the section when it's in view
+        // and remove it on all other sections
+        sections.forEach(section => {
+          if (section === entry.target) {
+            section.parentElement.classList.add('l-sec--active');
+          } else {
+            section.parentElement.classList.remove('l-sec--active');
+          }
+        });
+        
+      }
+    });
+  }, {
+    rootMargin: '0px 0px -50% 0px'
+  });
+
+  sections.forEach(section => {
+    observer.observe(section);
+  });
   </script>
 </body>
 
