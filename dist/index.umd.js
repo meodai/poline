@@ -63,31 +63,14 @@ var fettepalette = (() => {
     const z = s;
     return [x, y, z];
   };
-  var randomHSLPair = (minHDiff = 90, minSDiff = 0, minLDiff = 0.25, previousColor = null) => {
-    let h1, s1, l1;
-    if (previousColor) {
-      [h1, s1, l1] = previousColor;
-    } else {
-      h1 = Math.random() * 360;
-      s1 = Math.random();
-      l1 = Math.random();
-    }
-    const h2 = (360 + (h1 + minHDiff + Math.random() * (360 - minHDiff * 2))) % 360;
-    const s2 = minSDiff + Math.random() * (1 - minSDiff);
-    const l2 = minSDiff + Math.random() * (1 - minLDiff);
-    return [
-      [h1, s1, l1],
-      [h2, s2, l2]
-    ];
-  };
-  var randomHSLTriple = (startHue = Math.random() * 360, saturations = [
-    Math.random(),
-    Math.random(),
-    Math.random()
-  ], lightnesses = [
-    0.75 + Math.random() * 2,
+  var randomHSLPair = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random()], lightnesses = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]) => [
+    [startHue, saturations[0], lightnesses[0]],
+    [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]]
+  ];
+  var randomHSLTriple = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random(), Math.random()], lightnesses = [
+    0.75 + Math.random() * 0.2,
     Math.random() * 0.2,
-    0.75 + Math.random() * 2
+    0.75 + Math.random() * 0.2
   ]) => [
     [startHue, saturations[0], lightnesses[0]],
     [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
@@ -229,9 +212,9 @@ var fettepalette = (() => {
   };
   var Poline = class {
     constructor({
-      anchorColors,
-      numPoints,
-      positionFunction,
+      anchorColors = randomHSLPair(),
+      numPoints = 4,
+      positionFunction = sinusoidalPosition,
       positionFunctionX,
       positionFunctionY,
       positionFunctionZ,

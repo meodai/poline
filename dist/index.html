@@ -53,8 +53,17 @@
       padding: 0;
       font-weight: normal;
       letter-spacing: -0.05em;
+      margin-left: -0.06em;
     }
 
+    h2 {
+      font-size: 2.5rem;
+      margin: 0;
+      padding: 0;
+      font-weight: normal;
+      letter-spacing: -0.05em;
+      margin-left: -0.06em;
+    }
 
     .t-intro {
       margin: 3em 0 1em;
@@ -66,9 +75,11 @@
     }
 
     .poline-picker {
-      position: relative;
+      position: absolute;
       width: min(60vmin, 60%);
-      margin: 15vmin auto 0;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
     }
 
     .poline-picker__circprev {
@@ -215,19 +226,6 @@
     }
     .controls {
     }
-    h2 {
-      position: absolute;
-      top: 0;
-      left: 0;
-      font-size: 2rem;
-      text-align: center;
-      margin: 0;
-      padding: 0;
-      font-weight: normal;
-      transform: translate(0, 0);
-      letter-spacing: -0.05em;
-      display: none;
-    }
 
     button {
       font-family: 'Aboreto', cursive;
@@ -241,14 +239,16 @@
 
     .l-menu {
       flex: 0 0 30%;
+      width: 30%;
       box-sizing: border-box;
-      padding: 30vmin 0rem 3.5rem 5rem;
+      padding: 0 0 0 5rem;
     }
 
-
     .l-demo {
-      position: relative;
-      flex: 0 0 70%;
+      position: fixed;
+      width: 70%;
+      height: 100%;
+      right: 0;
     }
     
     .drawer {
@@ -293,54 +293,93 @@
       opacity: 0.5;
       right: 0;
     }
+    .l-sec {
+      min-height: 20vh;
+    }
+    .l-sec--intro {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+    .l-sec__inner {
+      width: 100%;
+    }
+    code {
+      display: block;
+      font-family: 'Work Sans', sans-serif;
+      font-size: .9rem;
+      color: #fff;
+      background: #202125;
+      padding: 1.5em 1.2em;
+      border-radius: 0.2em;
+    }
   </style>
 </head>
 
 <body>
   <main class="l-wrap">
     <section class="l-menu">
-      <div class="l-sec">
-        <h1>Poline</h1>
-        <p class="t-intro">
-          "Poline" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
-          methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
-          magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
-          palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
-        </p>
+      <div class="l-sec l-sec--intro">
+        <div class="l-sec__inner">
+          <h1>Poline</h1>
+          <p class="t-intro">
+            "<strong class="t">poline</strong>" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its
+            methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This
+            magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly
+            palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
+          </p>
+        </div>
       </div>
+      <article class="l-sec">
+        <h2>Summoning</h2>
+        <p>
+          When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
+          It will generate a palette with two random <strong>anchors</strong>. However, you can also
+          provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
+          represented as a list of <strong>hsl</strong> values.
+          <pre><code>poline({
+  anchorColors: [[0, 1, 0.2], [120, 0.6, 0.8]]
+})</code></pre>
+        </p>
+      </article>
+      <article class="l-sec">
+        <h2></h2>
+      </article>
       <div class="controls l-sec">
-        <label>
-          <span class="t">Color Model</span>
-          <select data-models>
-          </select>
-        </label>
-        <label>
-          <span class="t">Steps</span>
-          <input type="range" min="3" max="15" value="3" data-steps>
-        </label>
-        <label>
-          <span class="t">Closed Loop<input type="checkbox" data-loop></span>
-        </label>
-        <label>
-          <span><span class="t">Position fn X</span>(Hue / Light)</span>
-          <select data-select="x">
-          </select>
-        </label>
-        <label>
-          <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-          <select data-select="y">
-          </select>
-        </label>
-        <label>
-          <span><span class="t">Position fn Z</span> (Saturation)</span>
-          <select data-select="z">
-          </select>
-        </label>
-        <label>
-          <span class="t">Hue Shift</span>
-          <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
-        </label>
-        <button data-randomize>Randomize</button>
+        <div class="l-sec__inner">
+          <label>
+            <span class="t">Steps</span>
+            <input type="range" min="3" max="15" value="3" data-steps>
+          </label>
+          <label>
+            <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+          </label>
+          <label>
+            <span><span class="t">Position fn X</span>(Hue / Light)</span>
+            <select data-select="x">
+            </select>
+          </label>
+          <label>
+            <span><span class="t">Position fn Y</span>(Hue / Light)</span>
+            <select data-select="y">
+            </select>
+          </label>
+          <label>
+            <span><span class="t">Position fn Z</span> (Saturation)</span>
+            <select data-select="z">
+            </select>
+          </label>
+          <label>
+            <span class="t">Hue Shift</span>
+            <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
+          </label>
+          <label>
+            <span class="t">Color Model</span>
+            <select data-models>
+            </select>
+          </label>
+          <button data-randomize>Randomize</button>
+        </div>
       </div>
     </section>
     <div class="l-demo">
@@ -467,11 +506,11 @@
     let startHue = Math.random() * 360;
 
     let poline = new Poline({
-      anchorColors: [
+      /*anchorColors: [
         [startHue, Math.random(), 0.8],
         [(startHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
         [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8]
-      ],
+      ],*/
       numPoints: steps,
       positionFunctionX: positionFunctions[fnx],
       positionFunctionY: positionFunctions[fny],

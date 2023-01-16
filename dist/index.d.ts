@@ -1,6 +1,6 @@
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
-export type Vector3 = [number, number, number];
+export type Vector3 = [number, ...Vector2];
 /**
  * Converts the given (x, y, z) coordinate to an HSL color
  * The (x, y) values are used to calculate the hue, while the z value is used as the saturation
@@ -13,7 +13,7 @@ export type Vector3 = [number, number, number];
  * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
  * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
  **/
-export declare const pointToHSL: (xyz: Vector3) => Vector3;
+export declare const pointToHSL: (xyz: [number, number, number]) => [number, number, number];
 /**
  * Converts the given HSL color to an (x, y, z) coordinate
  * The hue value is used to calculate the (x, y) position, while the saturation value is used as the z coordinate
@@ -27,10 +27,10 @@ export declare const pointToHSL: (xyz: Vector3) => Vector3;
  * hslToPoint([0, 1, 1]) // [0.5, 0.5, 1]
  * hslToPoint([0, 0, 0.5]) // [0.5, 0.5, 0]
  **/
-export declare const hslToPoint: (hsl: Vector3) => Vector3;
-export declare const randomHSLPair: (minHDiff?: number, minSDiff?: number, minLDiff?: number, previousColor?: Vector3 | null) => [Vector3, Vector3];
+export declare const hslToPoint: (hsl: [number, number, number]) => [number, number, number];
+export declare const randomHSLPair: (startHue?: number, saturations?: Vector2, lightnesses?: Vector2) => [Vector3, Vector3];
 export declare const randomHSLTriple: (startHue?: number, saturations?: [number, number, number], lightnesses?: [number, number, number]) => [Vector3, Vector3, Vector3];
-export declare const vectorsOnLine: (p1: Vector3, p2: Vector3, numPoints?: number, invert?: boolean, fx?: (t: number, invert: boolean) => number, fy?: (t: number, invert: boolean) => number, fz?: (t: number, invert: boolean) => number) => Vector3[];
+export declare const vectorsOnLine: (p1: [number, number, number], p2: [number, number, number], numPoints?: number, invert?: boolean, fx?: (t: number, invert: boolean) => number, fy?: (t: number, invert: boolean) => number, fz?: (t: number, invert: boolean) => number) => Vector3[];
 export declare const positionFunctions: {
     linearPosition: (t: number) => number;
     exponentialPosition: (t: number, reverse?: boolean) => number;
@@ -93,7 +93,7 @@ export declare class Poline {
     set closedLoop(newStatus: boolean);
     set anchorPoint({ pointReference, pointIndex, x, y, z, color, }: AnchorPointReference);
     get flattenedPoints(): ColorPoint[];
-    get colors(): Vector3[];
+    get colors(): [number, number, number][];
     get colorsCSS(): string[];
     shiftHue(hShift: number): void;
 }

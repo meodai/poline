@@ -1,6 +1,6 @@
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
-export type Vector3 = [number, number, number];
+export type Vector3 = [number, ...Vector2];
 
 /**
  * Converts the given (x, y, z) coordinate to an HSL color
@@ -73,43 +73,21 @@ export const hslToPoint = (hsl: Vector3): Vector3 => {
 };
 
 export const randomHSLPair = (
-  minHDiff = 90,
-  minSDiff = 0,
-  minLDiff = 0.25,
-  previousColor: Vector3 | null = null
-): [Vector3, Vector3] => {
-  let h1, s1, l1;
-
-  if (previousColor) {
-    [h1, s1, l1] = previousColor;
-  } else {
-    h1 = Math.random() * 360;
-    s1 = Math.random();
-    l1 = Math.random();
-  }
-
-  const h2 =
-    (360 + (h1 + minHDiff + Math.random() * (360 - minHDiff * 2))) % 360;
-  const s2 = minSDiff + Math.random() * (1 - minSDiff);
-  const l2 = minSDiff + Math.random() * (1 - minLDiff);
-
-  return [
-    [h1, s1, l1],
-    [h2, s2, l2],
-  ];
-};
+  startHue: number = Math.random() * 360,
+  saturations: Vector2 = [Math.random(), Math.random()],
+  lightnesses: Vector2 = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]
+): [Vector3, Vector3] => [
+  [startHue, saturations[0], lightnesses[0]],
+  [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
+];
 
 export const randomHSLTriple = (
   startHue: number = Math.random() * 360,
-  saturations: [number, number, number] = [
-    Math.random(),
-    Math.random(),
-    Math.random(),
-  ],
-  lightnesses: [number, number, number] = [
-    0.75 + Math.random() * 2,
+  saturations: Vector3 = [Math.random(), Math.random(), Math.random()],
+  lightnesses: Vector3 = [
+    0.75 + Math.random() * 0.2,
     Math.random() * 0.2,
-    0.75 + Math.random() * 2,
+    0.75 + Math.random() * 0.2,
   ]
 ): [Vector3, Vector3, Vector3] => [
   [startHue, saturations[0], lightnesses[0]],
@@ -339,9 +317,9 @@ export class Poline {
 
   constructor(
     {
-      anchorColors,
-      numPoints,
-      positionFunction,
+      anchorColors = randomHSLPair(),
+      numPoints = 4,
+      positionFunction = sinusoidalPosition,
       positionFunctionX,
       positionFunctionY,
       positionFunctionZ,
