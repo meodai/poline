@@ -238,17 +238,18 @@
     }
 
     .l-menu {
-      flex: 0 0 30%;
-      width: 30%;
+      flex: 0 0 40%;
+      width: 40%;
       box-sizing: border-box;
-      padding: 0 0 0 5rem;
+      padding: 0 8rem 0;
     }
 
     .l-demo {
       position: fixed;
-      width: 70%;
+      width: 60%;
       height: 100%;
       right: 0;
+      border-left: 1px solid #e0e0e0;
     }
     
     .drawer {
@@ -295,7 +296,7 @@
     }
     .l-sec {
       min-height: 20vh;
-      opacity: .2;
+      opacity: 1;
       transition: 400ms opacity linear;
     }
     .l-sec + .l-sec {
@@ -313,15 +314,36 @@
     }
     .l-sec--active {
       opacity: 1;
+      
+    }
+    .l-sec--active code {
+    }
+    .l-sec--active code::before {
+      opacity: 1;
+      transform: translateX(-1rem);
+      transition: transform 400ms cubic-bezier(0.23, 1, 0.320, 1);
     }
     code {
+      position: relative;
       display: block;
       font-family: 'Work Sans', sans-serif;
       font-size: .9rem;
-      color: #fff;
-      background: #202125;
+      color: #000;
+      background: #fff;
       padding: 1.5em 1.2em;
       border-radius: 0.2em;
+      border: 1px solid #e0e0e0;
+      background-color: #fff;
+    }
+    code::before {
+      opacity: 1;
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(45deg, var(--prev-smooth));
+      z-index: -1;
+      opacity: 0;
+      transform: translateX(0);
     }
   </style>
 </head>
@@ -700,7 +722,7 @@
 
     $xSelect.addEventListener('input', () => {
       fnx = $xSelect.value;
-      poline.positionFunction = positionFunctions[fnx];
+      poline.positionFunctionX = positionFunctions[fnx];
       poline.updatePointPairs();
       updateSVG();
     });
