@@ -121,53 +121,55 @@ export const vectorsOnLine = (
   return points;
 };
 
-const linearPosition = (t: number) => {
+export type PositionFunction = (t: number, reverse?: boolean) => number;
+
+const linearPosition: PositionFunction = (t: number) => {
   return t;
 };
 
-const exponentialPosition = (t: number, reverse = false) => {
+const exponentialPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - (1 - t) ** 2;
   }
   return t ** 2;
 };
 
-const quadraticPosition = (t: number, reverse = false) => {
+const quadraticPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - (1 - t) ** 3;
   }
   return t ** 3;
 };
 
-const cubicPosition = (t: number, reverse = false) => {
+const cubicPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - (1 - t) ** 4;
   }
   return t ** 4;
 };
 
-const quarticPosition = (t: number, reverse = false) => {
+const quarticPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - (1 - t) ** 5;
   }
   return t ** 5;
 };
 
-const sinusoidalPosition = (t: number, reverse = false) => {
+const sinusoidalPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - Math.sin(((1 - t) * Math.PI) / 2);
   }
   return Math.sin((t * Math.PI) / 2);
 };
 
-const asinusoidalPosition = (t: number, reverse = false) => {
+const asinusoidalPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - Math.asin(1 - t) / (Math.PI / 2);
   }
   return Math.asin(t) / (Math.PI / 2);
 };
 
-const buggyCosinePosition = (t: number, reverse = false) => {
+const buggyCosinePosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - Math.cos(((1 - t) * Math.PI) / 2);
   }
@@ -177,14 +179,14 @@ const buggyCosinePosition = (t: number, reverse = false) => {
 // Math.sqrt(1 - (1 - t) ** 2)
 // Math,atan2(Math.sqrt(1 - t ** 2), t)
 
-const circularPosition = (t: number, reverse = false) => {
+const circularPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return 1 - Math.sqrt(1 - (1 - t) ** 2);
   }
   return 1 - Math.sqrt(1 - t ** 2);
 };
 
-const arcPosition = (t: number, reverse = false) => {
+const arcPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return Math.sqrt(1 - (1 - t) ** 2);
   }
@@ -304,16 +306,19 @@ export type PolineOptions = {
 };
 
 export class Poline {
+  private _needsUpdate = true;
   public anchorPoints: ColorPoint[];
 
-  private numPoints: number;
+  private _numPoints: number;
   private points: ColorPoint[][];
 
-  private positionFunctionX = sinusoidalPosition;
-  private positionFunctionY = sinusoidalPosition;
-  private positionFunctionZ = sinusoidalPosition;
+  private _positionFunctionX = sinusoidalPosition;
+  private _positionFunctionY = sinusoidalPosition;
+  private _positionFunctionZ = sinusoidalPosition;
 
   private connectLastAndFirstAnchor = false;
+
+  private _animationFrame: null | number = null;
 
   constructor(
     {
@@ -335,15 +340,12 @@ export class Poline {
       throw new Error("Must have at least two anchor colors");
     }
 
-    if (numPoints < 1) {
-      throw new Error("Must have at least one point");
-    }
-
     this.anchorPoints = anchorColors.map(
       (point) => new ColorPoint({ color: point })
     );
 
-    this.numPoints = numPoints + 2; // add two for the anchor points
+    this._numPoints = numPoints + 2; // add two for the anchor points
+
     this.positionFunctionX =
       positionFunctionX || positionFunction || sinusoidalPosition;
     this.positionFunctionY =
@@ -354,6 +356,60 @@ export class Poline {
     this.connectLastAndFirstAnchor = closedLoop;
 
     this.updatePointPairs();
+  }
+
+  private update() {
+    if (this._needsUpdate) {
+      this.updatePointPairs();
+      this._needsUpdate = false;
+    }
+  }
+
+  private queueUpdate() {
+    if (this._animationFrame) {
+      cancelAnimationFrame(this._animationFrame);
+    }
+    this._needsUpdate = true;
+    this._animationFrame = requestAnimationFrame(this.update.bind(this));
+  }
+
+  get numPoints(): number {
+    return this._numPoints;
+  }
+
+  set numPoints(numPoints: number) {
+    if (numPoints < 1) {
+      throw new Error("Must have at least one point");
+    }
+    this._numPoints = numPoints + 2; // add two for the anchor points
+    this.queueUpdate();
+  }
+
+  set positionFunctionX(positionFunctionX: PositionFunction) {
+    this._positionFunctionX = positionFunctionX;
+    this.queueUpdate();
+  }
+
+  get positionFunctionX(): PositionFunction {
+    return this._positionFunctionX;
+  }
+
+  set positionFunctionY(positionFunctionY: PositionFunction) {
+    this._positionFunctionY = positionFunctionY;
+    this.queueUpdate();
+  }
+
+  get positionFunctionY(): PositionFunction {
+    return this._positionFunctionY;
+  }
+
+  set positionFunctionZ(positionFunctionZ: PositionFunction) {
+    this._positionFunctionZ = positionFunctionZ;
+    this.queueUpdate();
+  }
+
+  get positionFunctionZ(): PositionFunction {
+    return this._positionFunctionZ;
   }
 
   updatePointPairs(): void {
@@ -401,7 +457,7 @@ export class Poline {
     } else {
       this.anchorPoints.push(newAnchor);
     }
-    this.updatePointPairs();
+    this.queueUpdate();
     return newAnchor;
   }
 
@@ -410,7 +466,7 @@ export class Poline {
     if (index > -1) {
       this.anchorPoints.splice(index, 1);
     }
-    this.updatePointPairs();
+    this.queueUpdate();
   }
 
   getClosestAnchorPoint(point: Vector3, maxDistance: 1) {
@@ -431,7 +487,7 @@ export class Poline {
 
   public set closedLoop(newStatus: boolean) {
     this.connectLastAndFirstAnchor = newStatus;
-    this.updatePointPairs();
+    this.queueUpdate();
   }
 
   public set anchorPoint({
@@ -452,7 +508,7 @@ export class Poline {
       throw new Error("Anchor point not found");
     } else if (index == 0 || index == this.anchorPoints.length - 1) {
       this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-      this.updatePointPairs();
+      this.queueUpdate();
     }
   }
 
@@ -480,6 +536,6 @@ export class Poline {
 
   shiftHue(hShift: number): void {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
-    this.updatePointPairs();
+    this.queueUpdate();
   }
 }

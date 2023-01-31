@@ -214,25 +214,68 @@ var fettepalette = (() => {
       positionFunction: sinusoidalPosition,
       closedLoop: false
     }) {
-      this.positionFunctionX = sinusoidalPosition;
-      this.positionFunctionY = sinusoidalPosition;
-      this.positionFunctionZ = sinusoidalPosition;
+      this._needsUpdate = true;
+      this._positionFunctionX = sinusoidalPosition;
+      this._positionFunctionY = sinusoidalPosition;
+      this._positionFunctionZ = sinusoidalPosition;
       this.connectLastAndFirstAnchor = false;
+      this._animationFrame = null;
       if (!anchorColors || anchorColors.length < 2) {
         throw new Error("Must have at least two anchor colors");
-      }
-      if (numPoints < 1) {
-        throw new Error("Must have at least one point");
       }
       this.anchorPoints = anchorColors.map(
         (point) => new ColorPoint({ color: point })
       );
-      this.numPoints = numPoints + 2;
+      this._numPoints = numPoints + 2;
       this.positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
       this.positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
       this.positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
       this.connectLastAndFirstAnchor = closedLoop;
       this.updatePointPairs();
+    }
+    update() {
+      if (this._needsUpdate) {
+        this.updatePointPairs();
+        this._needsUpdate = false;
+      }
+    }
+    queueUpdate() {
+      if (this._animationFrame) {
+        cancelAnimationFrame(this._animationFrame);
+      }
+      this._needsUpdate = true;
+      this._animationFrame = requestAnimationFrame(this.update.bind(this));
+    }
+    get numPoints() {
+      return this._numPoints;
+    }
+    set numPoints(numPoints) {
+      if (numPoints < 1) {
+        throw new Error("Must have at least one point");
+      }
+      this._numPoints = numPoints + 2;
+      this.queueUpdate();
+    }
+    set positionFunctionX(positionFunctionX) {
+      this._positionFunctionX = positionFunctionX;
+      this.queueUpdate();
+    }
+    get positionFunctionX() {
+      return this._positionFunctionX;
+    }
+    set positionFunctionY(positionFunctionY) {
+      this._positionFunctionY = positionFunctionY;
+      this.queueUpdate();
+    }
+    get positionFunctionY() {
+      return this._positionFunctionY;
+    }
+    set positionFunctionZ(positionFunctionZ) {
+      this._positionFunctionZ = positionFunctionZ;
+      this.queueUpdate();
+    }
+    get positionFunctionZ() {
+      return this._positionFunctionZ;
     }
     updatePointPairs() {
       const pairs = [];
@@ -271,7 +314,7 @@ var fettepalette = (() => {
       } else {
         this.anchorPoints.push(newAnchor);
       }
-      this.updatePointPairs();
+      this.queueUpdate();
       return newAnchor;
     }
     removeAnchorPoint(point) {
@@ -279,7 +322,7 @@ var fettepalette = (() => {
       if (index > -1) {
         this.anchorPoints.splice(index, 1);
       }
-      this.updatePointPairs();
+      this.queueUpdate();
     }
     getClosestAnchorPoint(point, maxDistance) {
       const distances = this.anchorPoints.map((anchor) => {
@@ -294,7 +337,7 @@ var fettepalette = (() => {
     }
     set closedLoop(newStatus) {
       this.connectLastAndFirstAnchor = newStatus;
-      this.updatePointPairs();
+      this.queueUpdate();
     }
     set anchorPoint({
       pointReference,
@@ -312,7 +355,7 @@ var fettepalette = (() => {
         throw new Error("Anchor point not found");
       } else if (index == 0 || index == this.anchorPoints.length - 1) {
         this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-        this.updatePointPairs();
+        this.queueUpdate();
       }
     }
     get flattenedPoints() {
@@ -334,7 +377,7 @@ var fettepalette = (() => {
     }
     shiftHue(hShift) {
       this.anchorPoints.forEach((p) => p.shiftHue(hShift));
-      this.updatePointPairs();
+      this.queueUpdate();
     }
   };
   return __toCommonJS(src_exports);

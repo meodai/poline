@@ -5,8 +5,6 @@
 <head>
   <meta charset="utf-8" />
   <!-- Primary Meta Tags -->
-  <title>Poline</title>
-  <!-- Primary Meta Tags -->
   <title>Poline — esoteric color palette generator</title>
   <meta name="title" content="Poline —  esoteric color palette generator">
   <meta name="description"
@@ -438,7 +436,7 @@
         <div class="l-sec__inner">
           <label>
             <span class="t">Steps</span>
-            <input type="range" min="3" max="15" value="3" data-steps>
+            <input type="range" min="1" max="15" value="3" data-steps>
           </label>
           <label>
             <span class="t">Closed Loop<input type="checkbox" data-loop></span>
@@ -715,7 +713,6 @@
     $steps.addEventListener('input', () => {
       steps = parseInt($steps.value);
       poline.numPoints = steps;
-      poline.updatePointPairs();
 
       updateSVG();
     });
@@ -723,26 +720,22 @@
     $xSelect.addEventListener('input', () => {
       fnx = $xSelect.value;
       poline.positionFunctionX = positionFunctions[fnx];
-      poline.updatePointPairs();
       updateSVG();
     });
 
     $ySelect.addEventListener('input', () => {
       fny = $ySelect.value;
       poline.positionFunctionY = positionFunctions[fny];
-      poline.updatePointPairs();
       updateSVG();
     });
 
     $zSelect.addEventListener('input', () => {
       fnz = $zSelect.value;
       poline.positionFunctionZ = positionFunctions[fnz];
-      poline.updatePointPairs();
       updateSVG();
     });
 
     $randomize.addEventListener('click', () => {
-
       poline.anchorPoints.forEach(anchor => {
         anchor.hsl = [
           (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
@@ -758,7 +751,6 @@
     let lastSelectedPoint = null;
     let lastX = 0;
     let lastY = 0;
-
 
     $picker.addEventListener('pointerdown', (e) => {
       const x = lastX = e.offsetX / $picker.offsetWidth;
@@ -882,7 +874,6 @@
     fn: (section) => {
       console.log('points');
       poline.numPoints = 10;
-      poline.updatePointPairs();
       updateSVG();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
