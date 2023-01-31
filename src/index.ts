@@ -358,21 +358,6 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  private update() {
-    if (this._needsUpdate) {
-      this.updatePointPairs();
-      this._needsUpdate = false;
-    }
-  }
-
-  private queueUpdate() {
-    if (this._animationFrame) {
-      cancelAnimationFrame(this._animationFrame);
-    }
-    this._needsUpdate = true;
-    this._animationFrame = requestAnimationFrame(this.update.bind(this));
-  }
-
   get numPoints(): number {
     return this._numPoints;
   }
@@ -382,12 +367,12 @@ export class Poline {
       throw new Error("Must have at least one point");
     }
     this._numPoints = numPoints + 2; // add two for the anchor points
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   set positionFunctionX(positionFunctionX: PositionFunction) {
     this._positionFunctionX = positionFunctionX;
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   get positionFunctionX(): PositionFunction {
@@ -396,7 +381,7 @@ export class Poline {
 
   set positionFunctionY(positionFunctionY: PositionFunction) {
     this._positionFunctionY = positionFunctionY;
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   get positionFunctionY(): PositionFunction {
@@ -405,7 +390,7 @@ export class Poline {
 
   set positionFunctionZ(positionFunctionZ: PositionFunction) {
     this._positionFunctionZ = positionFunctionZ;
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   get positionFunctionZ(): PositionFunction {
@@ -457,7 +442,7 @@ export class Poline {
     } else {
       this.anchorPoints.push(newAnchor);
     }
-    this.queueUpdate();
+    this.updatePointPairs();
     return newAnchor;
   }
 
@@ -466,7 +451,7 @@ export class Poline {
     if (index > -1) {
       this.anchorPoints.splice(index, 1);
     }
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   getClosestAnchorPoint(point: Vector3, maxDistance: 1) {
@@ -487,7 +472,7 @@ export class Poline {
 
   public set closedLoop(newStatus: boolean) {
     this.connectLastAndFirstAnchor = newStatus;
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 
   public set anchorPoint({
@@ -508,7 +493,7 @@ export class Poline {
       throw new Error("Anchor point not found");
     } else if (index == 0 || index == this.anchorPoints.length - 1) {
       this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-      this.queueUpdate();
+      this.updatePointPairs();
     }
   }
 
@@ -536,6 +521,6 @@ export class Poline {
 
   shiftHue(hShift: number): void {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
-    this.queueUpdate();
+    this.updatePointPairs();
   }
 }

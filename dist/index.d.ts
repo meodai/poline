@@ -89,8 +89,6 @@ export declare class Poline {
     private connectLastAndFirstAnchor;
     private _animationFrame;
     constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
-    private update;
-    private queueUpdate;
     get numPoints(): number;
     set numPoints(numPoints: number);
     set positionFunctionX(positionFunctionX: PositionFunction);
