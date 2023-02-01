@@ -1,6 +1,7 @@
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, ...Vector2];
+export type PartialVector3 = [number | null, number | null, number | null];
 
 /**
  * Converts the given (x, y, z) coordinate to an HSL color
@@ -217,10 +218,10 @@ export const positionFunctions = {
  * const dist = distance(p1, p2);
  * console.log(dist); // 1.7320508075688772
  **/
-const distance = (p1, p2) => {
+const distance = (p1: PartialVector3, p2: PartialVector3): number => {
   const a = p1[0] === null || p2[0] === null ? 0 : p2[0] - p1[0];
   const b = p1[1] === null || p2[1] === null ? 0 : p2[1] - p1[1];
-  const c = p1[1] === null || p2[1] === null ? 0 : p2[2] - p1[2];
+  const c = p1[2] === null || p2[2] === null ? 0 : p2[2] - p1[2];
 
   return Math.sqrt(a * a + b * b + c * c);
 };
@@ -454,10 +455,13 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  getClosestAnchorPoint(point: Vector3, maxDistance: 1) {
-    const distances = this.anchorPoints.map((anchor) => {
-      return distance(anchor.position, point);
-    });
+  getClosestAnchorPoint(
+    point: PartialVector3,
+    maxDistance: 0.5
+  ): ColorPoint | null {
+    const distances = this.anchorPoints.map((anchor) =>
+      distance(anchor.position, point)
+    );
 
     const minDistance = Math.min(...distances);
 
@@ -467,34 +471,12 @@ export class Poline {
 
     const closestAnchorIndex = distances.indexOf(minDistance);
 
-    return this.anchorPoints[closestAnchorIndex];
+    return this.anchorPoints[closestAnchorIndex] || null;
   }
 
   public set closedLoop(newStatus: boolean) {
     this.connectLastAndFirstAnchor = newStatus;
     this.updatePointPairs();
-  }
-
-  public set anchorPoint({
-    pointReference,
-    pointIndex,
-    x,
-    y,
-    z,
-    color,
-  }: AnchorPointReference) {
-    let index = pointIndex;
-
-    if (pointReference) {
-      index = this.anchorPoints.indexOf(pointReference);
-    }
-
-    if (index == -1) {
-      throw new Error("Anchor point not found");
-    } else if (index == 0 || index == this.anchorPoints.length - 1) {
-      this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-      this.updatePointPairs();
-    }
   }
 
   get flattenedPoints() {

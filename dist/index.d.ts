@@ -1,6 +1,7 @@
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, ...Vector2];
+export type PartialVector3 = [number | null, number | null, number | null];
 /**
  * Converts the given (x, y, z) coordinate to an HSL color
  * The (x, y) values are used to calculate the hue, while the z value is used as the saturation
@@ -100,9 +101,8 @@ export declare class Poline {
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color, insertAtIndex, }: ColorPointCollection): ColorPoint;
     removeAnchorPoint(point: ColorPoint): void;
-    getClosestAnchorPoint(point: Vector3, maxDistance: 1): ColorPoint | null | undefined;
+    getClosestAnchorPoint(point: PartialVector3, maxDistance: 0.5): ColorPoint | null;
     set closedLoop(newStatus: boolean);
-    set anchorPoint({ pointReference, pointIndex, x, y, z, color, }: AnchorPointReference);
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
     get colorsCSS(): string[];

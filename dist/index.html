@@ -757,7 +757,7 @@
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (!currentPoint) {
-        currentPoint = poline.getClosestAnchorPoint([x, null, y], .1);
+        currentPoint = poline.getClosestAnchorPoint([x, y, null], .1);
         lastSelectedPoint = currentPoint;
       } else {
         currentPoint = null;

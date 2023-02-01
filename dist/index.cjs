@@ -152,7 +152,7 @@ var positionFunctions = {
 var distance = (p1, p2) => {
   const a = p1[0] === null || p2[0] === null ? 0 : p2[0] - p1[0];
   const b = p1[1] === null || p2[1] === null ? 0 : p2[1] - p1[1];
-  const c = p1[1] === null || p2[1] === null ? 0 : p2[2] - p1[2];
+  const c = p1[2] === null || p2[2] === null ? 0 : p2[2] - p1[2];
   return Math.sqrt(a * a + b * b + c * c);
 };
 var ColorPoint = class {
@@ -313,38 +313,19 @@ var Poline = class {
     this.updatePointPairs();
   }
   getClosestAnchorPoint(point, maxDistance) {
-    const distances = this.anchorPoints.map((anchor) => {
-      return distance(anchor.position, point);
-    });
+    const distances = this.anchorPoints.map(
+      (anchor) => distance(anchor.position, point)
+    );
     const minDistance = Math.min(...distances);
     if (minDistance > maxDistance) {
       return null;
     }
     const closestAnchorIndex = distances.indexOf(minDistance);
-    return this.anchorPoints[closestAnchorIndex];
+    return this.anchorPoints[closestAnchorIndex] || null;
   }
   set closedLoop(newStatus) {
     this.connectLastAndFirstAnchor = newStatus;
     this.updatePointPairs();
-  }
-  set anchorPoint({
-    pointReference,
-    pointIndex,
-    x,
-    y,
-    z,
-    color
-  }) {
-    let index = pointIndex;
-    if (pointReference) {
-      index = this.anchorPoints.indexOf(pointReference);
-    }
-    if (index == -1) {
-      throw new Error("Anchor point not found");
-    } else if (index == 0 || index == this.anchorPoints.length - 1) {
-      this.anchorPoints[index] = new ColorPoint({ x, y, z, color });
-      this.updatePointPairs();
-    }
   }
   get flattenedPoints() {
     return this.points.flat().filter((p, i) => i != 0 ? i % this.numPoints : true);
