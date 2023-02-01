@@ -45,20 +45,17 @@ export declare const positionFunctions: {
     circularPosition: PositionFunction;
     arcPosition: PositionFunction;
 };
-type ColorPointCollection = {
-    x?: number;
-    y?: number;
-    z?: number;
+export type ColorPointCollection = {
+    xyz?: Vector3;
     color?: Vector3;
-    insertAtIndex?: number;
 };
 declare class ColorPoint {
     x: number;
     y: number;
     z: number;
     color: Vector3;
-    constructor({ x, y, z, color }?: ColorPointCollection);
-    positionOrColor({ x, y, z, color }: ColorPointCollection): void;
+    constructor({ xyz, color }?: ColorPointCollection);
+    positionOrColor({ xyz, color }: ColorPointCollection): void;
     set position([x, y, z]: Vector3);
     get position(): Vector3;
     set hsl([h, s, l]: Vector3);
@@ -66,10 +63,6 @@ declare class ColorPoint {
     shiftHue(angle: number): void;
     get hslCSS(): string;
 }
-export type AnchorPointReference = {
-    pointReference?: ColorPoint;
-    pointIndex?: number;
-} & ColorPointCollection;
 export type PolineOptions = {
     anchorColors: Vector3[];
     numPoints: number;
@@ -81,7 +74,7 @@ export type PolineOptions = {
 };
 export declare class Poline {
     private _needsUpdate;
-    anchorPoints: ColorPoint[];
+    _anchorPoints: ColorPoint[];
     private _numPoints;
     private points;
     private _positionFunctionX;
@@ -98,9 +91,17 @@ export declare class Poline {
     get positionFunctionY(): PositionFunction;
     set positionFunctionZ(positionFunctionZ: PositionFunction);
     get positionFunctionZ(): PositionFunction;
+    get anchorPoints(): ColorPoint[];
+    set anchorPoints(anchorPoints: ColorPoint[]);
     updatePointPairs(): void;
-    addAnchorPoint({ x, y, z, color, insertAtIndex, }: ColorPointCollection): ColorPoint;
+    addAnchorPoint({ xyz, color, insertAtIndex, }: ColorPointCollection & {
+        insertAtIndex: number;
+    }): ColorPoint;
     removeAnchorPoint(point: ColorPoint): void;
+    updateAnchorPoint({ point, pointIndex, xyz, color, }: {
+        point?: ColorPoint;
+        pointIndex?: number;
+    } & ColorPointCollection): ColorPoint;
     getClosestAnchorPoint(point: PartialVector3, maxDistance: 1): ColorPoint | null;
     set closedLoop(newStatus: boolean);
     get flattenedPoints(): ColorPoint[];

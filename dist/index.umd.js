@@ -166,20 +166,20 @@ var fettepalette = (() => {
     return Math.sqrt(a * a + b * b + c * c);
   };
   var ColorPoint = class {
-    constructor({ x, y, z, color } = {}) {
+    constructor({ xyz, color } = {}) {
       this.x = 0;
       this.y = 0;
       this.z = 0;
       this.color = [0, 0, 0];
-      this.positionOrColor({ x, y, z, color });
+      this.positionOrColor({ xyz, color });
     }
-    positionOrColor({ x, y, z, color }) {
-      if (x && y && y && color) {
+    positionOrColor({ xyz, color }) {
+      if (xyz && color) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
-      } else if (x && y && z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
+      } else if (xyz) {
+        this.x = xyz[0];
+        this.y = xyz[1];
+        this.z = xyz[2];
         this.color = pointToHSL([this.x, this.y, this.z]);
       } else if (color) {
         this.color = color;
@@ -234,13 +234,13 @@ var fettepalette = (() => {
       if (!anchorColors || anchorColors.length < 2) {
         throw new Error("Must have at least two anchor colors");
       }
-      this.anchorPoints = anchorColors.map(
+      this._anchorPoints = anchorColors.map(
         (point) => new ColorPoint({ color: point })
       );
       this._numPoints = numPoints + 2;
-      this.positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
-      this.positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
-      this.positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
+      this._positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
+      this._positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
+      this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
       this.connectLastAndFirstAnchor = closedLoop;
       this.updatePointPairs();
     }
@@ -275,6 +275,13 @@ var fettepalette = (() => {
     get positionFunctionZ() {
       return this._positionFunctionZ;
     }
+    get anchorPoints() {
+      return this._anchorPoints;
+    }
+    set anchorPoints(anchorPoints) {
+      this._anchorPoints = anchorPoints;
+      this.updatePointPairs();
+    }
     updatePointPairs() {
       const pairs = [];
       const anchorPointsLength = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
@@ -296,17 +303,15 @@ var fettepalette = (() => {
           this.positionFunctionX,
           this.positionFunctionY,
           this.positionFunctionZ
-        ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
+        ).map((p) => new ColorPoint({ xyz: p }));
       });
     }
     addAnchorPoint({
-      x,
-      y,
-      z,
+      xyz,
       color,
       insertAtIndex
     }) {
-      const newAnchor = new ColorPoint({ x, y, z, color });
+      const newAnchor = new ColorPoint({ xyz, color });
       if (insertAtIndex) {
         this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
       } else {
@@ -321,6 +326,28 @@ var fettepalette = (() => {
         this.anchorPoints.splice(index, 1);
       }
       this.updatePointPairs();
+    }
+    updateAnchorPoint({
+      point,
+      pointIndex,
+      xyz,
+      color
+    }) {
+      if (pointIndex) {
+        point = this.anchorPoints[pointIndex];
+      }
+      if (!point) {
+        throw new Error("Must provide a point or pointIndex");
+      }
+      if (!xyz && !color) {
+        throw new Error("Must provide a new xyz position or color");
+      }
+      if (xyz)
+        point.position = xyz;
+      if (color)
+        point.hsl = color;
+      this.updatePointPairs();
+      return point;
     }
     getClosestAnchorPoint(point, maxDistance) {
       const distances = this.anchorPoints.map(

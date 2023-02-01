@@ -226,12 +226,9 @@ const distance = (p1: PartialVector3, p2: PartialVector3): number => {
   return Math.sqrt(a * a + b * b + c * c);
 };
 
-type ColorPointCollection = {
-  x?: number;
-  y?: number;
-  z?: number;
+export type ColorPointCollection = {
+  xyz?: Vector3;
   color?: Vector3;
-  insertAtIndex?: number;
 };
 
 class ColorPoint {
@@ -240,17 +237,17 @@ class ColorPoint {
   public z = 0;
   public color: Vector3 = [0, 0, 0];
 
-  constructor({ x, y, z, color }: ColorPointCollection = {}) {
-    this.positionOrColor({ x, y, z, color });
+  constructor({ xyz, color }: ColorPointCollection = {}) {
+    this.positionOrColor({ xyz, color });
   }
 
-  positionOrColor({ x, y, z, color }: ColorPointCollection) {
-    if (x && y && y && color) {
+  positionOrColor({ xyz, color }: ColorPointCollection) {
+    if (xyz && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
-    } else if (x && y && z) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
+    } else if (xyz) {
+      this.x = xyz[0];
+      this.y = xyz[1];
+      this.z = xyz[2];
       this.color = pointToHSL([this.x, this.y, this.z]);
     } else if (color) {
       this.color = color;
@@ -291,11 +288,6 @@ class ColorPoint {
   }
 }
 
-export type AnchorPointReference = {
-  pointReference?: ColorPoint;
-  pointIndex?: number;
-} & ColorPointCollection;
-
 export type PolineOptions = {
   anchorColors: Vector3[];
   numPoints: number;
@@ -308,7 +300,7 @@ export type PolineOptions = {
 
 export class Poline {
   private _needsUpdate = true;
-  public anchorPoints: ColorPoint[];
+  public _anchorPoints: ColorPoint[];
 
   private _numPoints: number;
   private points: ColorPoint[][];
@@ -341,17 +333,17 @@ export class Poline {
       throw new Error("Must have at least two anchor colors");
     }
 
-    this.anchorPoints = anchorColors.map(
+    this._anchorPoints = anchorColors.map(
       (point) => new ColorPoint({ color: point })
     );
 
     this._numPoints = numPoints + 2; // add two for the anchor points
 
-    this.positionFunctionX =
+    this._positionFunctionX =
       positionFunctionX || positionFunction || sinusoidalPosition;
-    this.positionFunctionY =
+    this._positionFunctionY =
       positionFunctionY || positionFunction || sinusoidalPosition;
-    this.positionFunctionZ =
+    this._positionFunctionZ =
       positionFunctionZ || positionFunction || sinusoidalPosition;
 
     this.connectLastAndFirstAnchor = closedLoop;
@@ -398,6 +390,15 @@ export class Poline {
     return this._positionFunctionZ;
   }
 
+  get anchorPoints(): ColorPoint[] {
+    return this._anchorPoints;
+  }
+
+  set anchorPoints(anchorPoints: ColorPoint[]) {
+    this._anchorPoints = anchorPoints;
+    this.updatePointPairs();
+  }
+
   updatePointPairs(): void {
     const pairs = [] as ColorPoint[][];
 
@@ -426,18 +427,16 @@ export class Poline {
         this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
-      ).map((p) => new ColorPoint({ x: p[0], y: p[1], z: p[2] }));
+      ).map((p) => new ColorPoint({ xyz: p }));
     });
   }
 
   addAnchorPoint({
-    x,
-    y,
-    z,
+    xyz,
     color,
     insertAtIndex,
-  }: ColorPointCollection): ColorPoint {
-    const newAnchor = new ColorPoint({ x, y, z, color });
+  }: ColorPointCollection & { insertAtIndex: number }): ColorPoint {
+    const newAnchor = new ColorPoint({ xyz, color });
     if (insertAtIndex) {
       this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
     } else {
@@ -453,6 +452,35 @@ export class Poline {
       this.anchorPoints.splice(index, 1);
     }
     this.updatePointPairs();
+  }
+
+  updateAnchorPoint({
+    point,
+    pointIndex,
+    xyz,
+    color,
+  }: {
+    point?: ColorPoint;
+    pointIndex?: number;
+  } & ColorPointCollection): ColorPoint {
+    if (pointIndex) {
+      point = this.anchorPoints[pointIndex];
+    }
+
+    if (!point) {
+      throw new Error("Must provide a point or pointIndex");
+    }
+
+    if (!xyz && !color) {
+      throw new Error("Must provide a new xyz position or color");
+    }
+
+    if (xyz) point.position = xyz;
+    if (color) point.hsl = color;
+
+    this.updatePointPairs();
+
+    return point;
   }
 
   getClosestAnchorPoint(

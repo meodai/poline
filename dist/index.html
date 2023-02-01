@@ -432,6 +432,16 @@
           <pre><code data-code></code></pre>
         </div>
       </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="UpdatingAnchors">
+        <h2>Updating Anchors</h2>
+        <p>
+          You can update the <strong>anchors</strong> by calling the <strong>updateAnchorPoint</strong> method.
+          The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation or an <strong>XYZ</strong> position array.
+        </p>
+        <pre><code data-code></code></pre>
+        </div>
+      </article>
       <div class="controls l-sec">
         <div class="l-sec__inner">
           <label>
@@ -700,7 +710,6 @@
         '--prev-smooth',
         colors.join(',')
       )
-
     }
 
     updateSVG();
@@ -769,8 +778,7 @@
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (currentPoint) {
-        currentPoint.position = [x, y, currentPoint.z];
-        poline.updatePointPairs();
+        poline.updateAnchorPoint({point: currentPoint, xyz: [x, y, currentPoint.z]});
         updateSVG();
       } 
     });
@@ -810,7 +818,7 @@
     }
 
     if (e.key === 'p') {
-      lastSelectedPoint = poline.addAnchorPoint({x: lastX, y: lastY, z: lastY});
+      lastSelectedPoint = poline.addAnchorPoint({xyz: [lastX, lastY, lastY]});
       updateSVG();
     }
   });
@@ -937,6 +945,35 @@
 });`;
   updateSVG()
     },
+  },
+  {
+    section: 'UpdatingAnchors',
+    fn: (section) => {
+      console.log('Updating Anchors');
+      poline.anchorPoints.forEach((anchor, i) => {
+        const hsl = anchor.color;
+        poline.updateAnchorPoint({
+          point: anchor,
+          color: [
+            hsl[0] + Math.random() * 60 - 30,
+            hsl[1],
+            hsl[1],
+          ],
+        });
+      });
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `poline.updateAnchorPoint({
+  point: poline.anchorPoints[0],
+  color: [${
+      Math.round(poline.anchorPoints[0].color[0])
+    }, ${
+      poline.anchorPoints[0].color[1].toFixed(2)
+    }, ${
+      poline.anchorPoints[0].color[2].toFixed(2)
+    }]
+});`;
+      updateSVG();
+    }, 
   },
 ];
   
