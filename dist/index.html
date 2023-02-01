@@ -409,6 +409,17 @@
         </div>
       </article>
       <article class="l-sec">
+        <div class="l-sec__inner" data-section="UpdatingAnchors">
+          <h2>Updating Anchors</h2>
+          <p>
+            You can update the <strong>anchors</strong> by calling the <strong>updateAnchorPoint</strong> method.
+            The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation
+            or an <strong>XYZ</strong> position array.
+          </p>
+          <pre><code data-code></code></pre>
+        </div>
+      </article>
+      <article class="l-sec">
         <div class="l-sec__inner" data-section="positionFunctions">
           <h2>Position Functions</h2>
           <p>
@@ -430,16 +441,9 @@
             If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
           </p>
           <pre><code data-code></code></pre>
-        </div>
-      </article>
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="UpdatingAnchors">
-        <h2>Updating Anchors</h2>
-        <p>
-          You can update the <strong>anchors</strong> by calling the <strong>updateAnchorPoint</strong> method.
-          The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation or an <strong>XYZ</strong> position array.
-        </p>
-        <pre><code data-code></code></pre>
+          <p>
+            It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
+          </p>
         </div>
       </article>
       <div class="controls l-sec">
@@ -881,11 +885,11 @@
     section: 'points',
     fn: (section) => {
       console.log('points');
-      poline.numPoints = 10;
+      poline.numPoints = 6;
       updateSVG();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
-  numPoints: 10,
+  numPoints: 6,
 });`;
     },
   },
@@ -893,7 +897,7 @@
     section: 'anchors',
     fn: (section) => {
       console.log('anchors');
-      if (poline.anchorPoints.length > 3) {
+      if (poline.anchorPoints.length > 2) {
         poline.anchorPoints.forEach((anchor, i) => {
           if (i > 1) poline.removeAnchorPoint(anchor);
         });
