@@ -101,7 +101,7 @@ export declare class Poline {
     updatePointPairs(): void;
     addAnchorPoint({ x, y, z, color, insertAtIndex, }: ColorPointCollection): ColorPoint;
     removeAnchorPoint(point: ColorPoint): void;
-    getClosestAnchorPoint(point: PartialVector3, maxDistance: 0.5): ColorPoint | null;
+    getClosestAnchorPoint(point: PartialVector3, maxDistance: 1): ColorPoint | null;
     set closedLoop(newStatus: boolean);
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];

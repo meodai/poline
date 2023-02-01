@@ -457,7 +457,7 @@ export class Poline {
 
   getClosestAnchorPoint(
     point: PartialVector3,
-    maxDistance: 0.5
+    maxDistance: 1
   ): ColorPoint | null {
     const distances = this.anchorPoints.map((anchor) =>
       distance(anchor.position, point)
