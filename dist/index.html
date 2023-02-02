@@ -27,6 +27,7 @@
   <meta property="twitter:image" content="https://meodai.github.io/poline/socialfb.png">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-light.min.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Aboreto&family=Work+Sans:wght@300;400&display=swap" rel="stylesheet">
@@ -311,21 +312,12 @@
       width: 100%;
     }
     .l-sec--active {
-      opacity: 1;
-      
-    }
-    .l-sec--active code {
-    }
-    .l-sec--active code::before {
-      opacity: 1;
-      transform: translateX(-1rem);
-      transition: transform 400ms cubic-bezier(0.23, 1, 0.320, 1);
+      opacity: 1; 
     }
     code {
       position: relative;
       display: block;
-      font-family: 'Work Sans', sans-serif;
-      font-size: .9rem;
+      font-size: .85rem;
       color: #000;
       background: #fff;
       padding: 1.5em 1.2em;
@@ -333,15 +325,25 @@
       border: 1px solid #e0e0e0;
       background-color: #fff;
     }
-    code::before {
+    .code-ex {
+      position: relative;
+    }
+    .code-ex::before {
       opacity: 1;
       content: '';
       position: absolute;
       inset: 0;
       background: linear-gradient(45deg, var(--prev-smooth));
+      background: #202125;
       z-index: -1;
       opacity: 0;
       transform: translateX(0);
+    }
+
+    .l-sec--active .code-ex::before {
+      opacity: 1;
+      transform: translateX(-1em);
+      transition: 200ms transform linear;
     }
   </style>
 </head>
@@ -368,7 +370,7 @@
             It will generate a palette with two random <strong>anchors</strong>. However, you can also
             provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
             represented as a list of <strong>hsl</strong> values.
-            <pre><code data-code></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code></code></pre>
           </p>
         </div>
       </article>
@@ -381,7 +383,7 @@
             determines the number of colors generated between each pair of anchors. 
             The more <strong>points</strong> you have, the more colors you will get.
           </p>
-          <pre><code data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
           <p>
             So the total amount of colors generated is <strong>points</strong> * <strong>pair of anchors</strong>.
           </p>
@@ -405,7 +407,7 @@
             You can add anchors after initialization by calling the <strong>addAnchor</strong> method. 
             Either provide a list of <strong>hsl</strong> values or <strong>X,Y,Z</strong> coordinates.
           </p>
-          <pre><code data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
         </div>
       </article>
       <article class="l-sec">
@@ -416,7 +418,7 @@
             The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation
             or an <strong>XYZ</strong> position array.
           </p>
-          <pre><code data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
         </div>
       </article>
       <article class="l-sec">
@@ -430,7 +432,7 @@
           <p>
             They function a lot like an easing function and can be imported 'import {Poline, positionFunctions} from "poline";'
           </p>
-          <pre><code data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
         </div>
       </article>
       <article class="l-sec">
@@ -440,11 +442,19 @@
             By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
             If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
           </p>
-          <pre><code data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
           <p>
             It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
           </p>
         </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="colorSpace">
+          <h2>Color Model</h2>
+          <p>
+            To keep the library as lightweight as possible, <strong>Poline</strong> only supports the <strong>hsl</strong> color model out of the box.
+            However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
       </article>
       <div class="controls l-sec">
         <div class="l-sec__inner">
@@ -502,6 +512,7 @@
   <script type="module">
     console.clear();
     import { formatHex } from 'https://cdn.skypack.dev/culori';
+    import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
     
     import {
       Poline,
@@ -879,6 +890,8 @@
     }],
   ],
 });`;
+
+    hljs.highlightElement($code);
     },
   },
   {
@@ -891,6 +904,7 @@
       $code.innerHTML = `new Poline({
   numPoints: 6,
 });`;
+      hljs.highlightElement($code);
     },
   },
   {
@@ -904,13 +918,16 @@
       }
       poline.addAnchorPoint({color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
       const $code = section.target.querySelector('[data-code]');
-      $code.innerHTML = `poline.addAnchorPoint({color: [${
+      $code.innerHTML = `poline.addAnchorPoint({
+  color: [${
         Math.round(poline.anchorPoints[poline.anchorPoints.length - 1].color[0])
       }, ${
         poline.anchorPoints[poline.anchorPoints.length - 1].color[1].toFixed(2)
       }, ${
         poline.anchorPoints[poline.anchorPoints.length - 1].color[2].toFixed(2)
-      }]});`;
+      }]
+});`;
+      hljs.highlightElement($code);
       updateSVG();
     }
   },
@@ -930,10 +947,14 @@
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
-  positionFunctionX: positionFunctions.${poline.positionFunctionX.name},
-  positionFunctionY: positionFunctions.${poline.positionFunctionY.name},
-  positionFunctionZ: positionFunctions.${poline.positionFunctionZ.name},
+  positionFunctionX: 
+    positionFunctions.${poline.positionFunctionX.name},
+  positionFunctionY: 
+    positionFunctions.${poline.positionFunctionY.name},
+  positionFunctionZ: 
+    positionFunctions.${poline.positionFunctionZ.name},
 });`;
+      hljs.highlightElement($code);
       updateSVG();
     },
   },
@@ -947,7 +968,8 @@
       $code.innerHTML = `new Poline({
   closedLoop: true,
 });`;
-  updateSVG()
+      hljs.highlightElement($code);
+      updateSVG()
     },
   },
   {
@@ -976,8 +998,41 @@
       poline.anchorPoints[0].color[2].toFixed(2)
     }]
 });`;
+      hljs.highlightElement($code);
       updateSVG();
     }, 
+  },
+  {
+    section: 'colorSpace',
+    fn: (section) => {
+      console.log('colorSpace');
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `import {Poline} from "poline";
+import {formatHex} from "culori";
+const poline = new Poline(/** options */);
+
+const OKHslColors = [...poline.colors].map(
+  c => formatHex({ 
+    mode: 'okhsl', 
+    {
+      h: c.hsl[0], 
+      s: c.hsl[1], 
+      l: c.hsl[2]}
+  })
+);
+const LCHColors = [...poline.colors].map(
+  c => formatHex({ 
+    mode: 'lch', 
+    { 
+      h: hsl[0],
+      c: hsl[1] * 51.484,
+      l: hsl[2] * 100,  
+    }
+  })
+);`
+      hljs.highlightElement($code);
+      updateSVG();
+    },
   },
 ];
   
