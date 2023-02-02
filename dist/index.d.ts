@@ -107,6 +107,6 @@ export declare class Poline {
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
     get colorsCSS(): string[];
-    shiftHue(hShift: number): void;
+    shiftHue(hShift?: number): void;
 }
 export {};

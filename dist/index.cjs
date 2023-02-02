@@ -371,7 +371,7 @@ var Poline = class {
     }
     return cssColors;
   }
-  shiftHue(hShift) {
+  shiftHue(hShift = 20) {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
     this.updatePointPairs();
   }

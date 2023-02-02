@@ -529,7 +529,7 @@ export class Poline {
     return cssColors;
   }
 
-  shiftHue(hShift: number): void {
+  shiftHue(hShift = 20): void {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
     this.updatePointPairs();
   }

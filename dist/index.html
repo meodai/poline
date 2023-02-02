@@ -395,7 +395,7 @@
           <p>
             The <strong>anchors</strong> are the points that the lines are drawn between. The <strong>anchors</strong> are
             represented as a list of <strong>hsl</strong> values. The <strong>hsl</strong> values are
-            represented as a list of <strong>hue</strong>, <strong>saturation</strong> and <strong>lightness</strong>.
+            represented as an array of <strong>hue</strong>, <strong>saturation</strong> and <strong>lightness</strong>.
             The <strong>hue</strong>[0…360], the <strong>saturation</strong>[0…1] and the
             <strong>lightness</strong>[0…1].
           </p>
@@ -449,10 +449,23 @@
         </div>
       </article>
       <article class="l-sec">
+        <div class="l-sec__inner" data-section="hueShift">
+          <h2>Hue Shifting</h2>
+          <p>
+            "<strong class="t">poline</strong>" supports hue shifting. This means that the hue of the colors will be shifted by a certain amount.
+            This can be useful if you want to animate the palette or generate a palette that looks similar to your current palette but using different hues.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code></code></pre>
+          <p>
+            The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
+          </p>
+        </div>
+      </article>
+      <article class="l-sec">
         <div class="l-sec__inner" data-section="colorSpace">
           <h2>Color Model</h2>
           <p>
-            To keep the library as lightweight as possible, <strong>Poline</strong> only supports the <strong>hsl</strong> color model out of the box.
+            To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
             However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
           <pre class="code-ex"><code class="language-js" data-code></code></pre>
       </article>
@@ -846,6 +859,7 @@
 
 
   let exStartHue = Math.random() * 360;
+  let globalInterval = null;
 
   // scripts per section
   const stroyScripts = [{
@@ -1034,6 +1048,18 @@ const LCHColors = [...poline.colors].map(
       updateSVG();
     },
   },
+  {
+    section: 'hueShift',
+    fn: (section) => {
+      console.log('hueShift');
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `poline.shiftHue(1);`;
+      globalInterval = setInterval(() => {
+        poline.shiftHue(1);
+        updateSVG();
+      }, 16.66);
+    }
+  }
 ];
   
   // create an intersection onserver for all the `data-section`s
@@ -1044,6 +1070,7 @@ const LCHColors = [...poline.colors].map(
         // find the script for this section in stroyScripts
         const script = stroyScripts.find(s => s.section === entry.target.dataset.section);
         if (script) {
+          clearInterval(globalInterval);
           script.fn(entry);
         }
         // add .l-sec--active to the section when it's in view
