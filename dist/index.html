@@ -370,6 +370,17 @@
       transform: translateX(-1em);
       transition: 200ms transform linear;
     }
+
+    .toc {
+      font-size: 1.2em;
+      list-style-type: upper-roman;
+      font-family: 'Aboreto', cursive;
+    }
+
+    .toc a {
+      font-size: .8em;
+      font-family: 'Work Sans', sans-serif;
+    }
   </style>
 </head>
 
@@ -387,9 +398,20 @@
           </p>
         </div>
       </div>
+      <aside class="l-sec" aria-label="Table of Contents">
+        <div class="l-sec__inner">
+          <p>
+            This page serves as the documentation for '<strong class="t">Poline</strong>'. 
+            It is divided into the following sections:
+          </p>
+          <ol data-toc class="toc">
+
+          </ol>
+        </div>
+      </aside>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="summoning">
-          <h2>Summoning</h2>
+          <h2 id="summoning">Summoning</h2>
           <p>
             When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
             It will generate a palette with two random <strong>anchors</strong>. However, you can also
@@ -401,7 +423,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="points">
-          <h2>Points</h2>
+          <h2 id="points">Points</h2>
           <p>
             As demonstrated on the illustration, "<strong class="t">Poline</strong>"
             works by drawing lines between the <strong>anchors</strong>. The number of <strong>points</strong>
@@ -421,7 +443,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="anchors">
-          <h2>Anchors</h2>
+          <h2 id="anchors">Anchors</h2>
           <p>
             The <strong>anchors</strong> are the points that the lines are drawn between. The <strong>anchors</strong> are
             represented as a list of <strong>hsl</strong> values. The <strong>hsl</strong> values are
@@ -442,7 +464,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="UpdatingAnchors">
-          <h2>Updating Anchors</h2>
+          <h2 id="UpdatingAnchors">Updating Anchors</h2>
           <p>
             You can update the <strong>anchors</strong> by calling the <strong>updateAnchorPoint</strong> method.
             The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation
@@ -454,7 +476,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="positionFunctions">
-          <h2>Position Functions</h2>
+          <h2 id="positionFunctions">Position Functions</h2>
           <p>
             The <strong>position functions</strong> are used to determine the position of the 
             <strong>points</strong> between the <strong>anchors</strong>. The <strong>position functions</strong> 
@@ -487,7 +509,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="closedLoop">
-          <h2>Looping Palette</h2>
+          <h2 id="closedLoop">Looping Palette</h2>
           <p>
             By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
             If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
@@ -503,7 +525,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="hueShift">
-          <h2>Hue Shifting</h2>
+          <h2 id="hueShift">Hue Shifting</h2>
           <p>
             "<strong class="t">poline</strong>" supports hue shifting. This means that the hue of the colors will be shifted by a certain amount.
             This can be useful if you want to animate the palette or generate a palette that looks similar to your current palette but using different hues.
@@ -515,8 +537,8 @@
         </div>
       </article>
       <article class="l-sec">
-        <div class="l-section__inner" data-section="closestAnchor">
-          <h2>Closest Anchor</h2>
+        <div class="l-sec__inner" data-section="closestAnchor">
+          <h2 id="closestAnchor">Closest Anchor</h2>
           <p>
             In some situations, you might want to know which anchor is closest to a certain position or color.
             This method is used in the visualizer to highlight to select the closest anchor on click.
@@ -535,7 +557,7 @@
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="getColors">
-          <h2>Color List</h2>
+          <h2 id="getColors">Color List</h2>
           <p>
             The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings.
           </p>
@@ -548,7 +570,7 @@ poline.colorsCSS</code></pre>
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="colorSpace">
-          <h2>Color Model</h2>
+          <h2 id="colorSpace">Color Model</h2>
           <p>
             To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
             However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
@@ -560,16 +582,16 @@ poline.colorsCSS</code></pre>
           </label>
         </div>
       </article>
-      <div class="controls l-sec">
+      <!--div class="controls l-sec">
         <div class="l-sec__inner">
-          <!--label>
+          <label>
             <span class="t">Steps</span>
             <input type="range" min="1" max="15" value="3" data-steps>
-          </label-->
-          <!--label>
+          </label>
+          <label>
             <span class="t">Closed Loop<input type="checkbox" data-loop></span>
-          </label-->
-          <!--label>
+          </label>
+          <label>
             <span><span class="t">Position fn X</span>(Hue / Light)</span>
             <select data-select="x">
             </select>
@@ -583,10 +605,10 @@ poline.colorsCSS</code></pre>
             <span><span class="t">Position fn Z</span> (Saturation)</span>
             <select data-select="z">
             </select>
-          </label-->
-          <!--button data-randomize>Randomize</button-->
+          </label>
+          <button data-randomize>Randomize</button>
         </div>
-      </div>
+      </div-->
     </section>
     <div class="l-demo">
       <div class="poline-picker">
@@ -680,7 +702,9 @@ poline.colorsCSS</code></pre>
     const $models = document.querySelector('[data-models]');
     const $loop = document.querySelector('[data-loop]');
     const $randomize = document.querySelector('[data-randomize]');
+    const $toc = document.querySelector('[data-toc]');
 
+  
     $models.innerHTML = hueBasedModels
       .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
       .join('');
@@ -916,7 +940,7 @@ poline.colorsCSS</code></pre>
   let globalInterval = null;
 
   // scripts per section
-  const stroyScripts = [{
+  const storyScripts = [{
     section: 'intro',
     fn: () => {
       console.log('intro');
@@ -1137,13 +1161,32 @@ const LCHColors = [...poline.colors].map(
   }
 ];
   
+  // create a table of contents
+  const $sections = document.querySelectorAll('[data-section]');
+  $sections.forEach($s => {
+    const $h2 = $s.querySelector('h2');
+    if ($h2) {
+      const $li = document.createElement('li');
+      $li.innerHTML = `<a href="#${$h2.id}">${$h2.innerHTML}</a>`;
+      $toc.appendChild($li);
+    }
+  });
+
+  $toc.addEventListener('click', (e) => {
+    e.preventDefault();
+    const $a = e.target;
+    if ($a.tagName !== 'A') return;
+    const $h2 = document.querySelector(`#${$a.getAttribute('href').replace('#', '')}`);
+    $h2.scrollIntoView({behavior: 'smooth'});
+  });
+
   // create an intersection onserver for all the `data-section`s
   const sections = [...document.querySelectorAll('[data-section]')];
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        // find the script for this section in stroyScripts
-        const script = stroyScripts.find(s => s.section === entry.target.dataset.section);
+        // find the script for this section in storyScripts
+        const script = storyScripts.find(s => s.section === entry.target.dataset.section);
         if (script) {
           clearInterval(globalInterval);
           script.fn(entry);
