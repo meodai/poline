@@ -118,18 +118,6 @@ var asinusoidalPosition = (t, reverse = false) => {
   }
   return Math.asin(t) / (Math.PI / 2);
 };
-var buggyCosinePosition = (t, reverse = false) => {
-  if (reverse) {
-    return 1 - Math.cos((1 - t) * Math.PI / 2);
-  }
-  return Math.cos(t * Math.PI / 2);
-};
-var circularPosition = (t, reverse = false) => {
-  if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(1 - t, 2));
-  }
-  return 1 - Math.sqrt(1 - __pow(t, 2));
-};
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
     return Math.sqrt(1 - __pow(1 - t, 2));
@@ -144,8 +132,6 @@ var positionFunctions = {
   quarticPosition,
   sinusoidalPosition,
   asinusoidalPosition,
-  buggyCosinePosition,
-  circularPosition,
   arcPosition
 };
 var distance = (p1, p2, hueMode = false) => {
@@ -398,3 +384,11 @@ var Poline = class {
     this.updatePointPairs();
   }
 };
+if (typeof p5 !== "undefined") {
+  const poline = new Poline();
+  p5.prototype.poline = poline;
+  const polineColors = poline.colorsCSS.map((c) => p5.Color(c));
+  p5.prototype.polineColors = polineColors;
+  globalThis.poline = poline;
+  globalThis.polineColors = polineColors;
+}

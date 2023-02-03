@@ -40,8 +40,6 @@ export declare const positionFunctions: {
     quarticPosition: PositionFunction;
     sinusoidalPosition: PositionFunction;
     asinusoidalPosition: PositionFunction;
-    buggyCosinePosition: PositionFunction;
-    circularPosition: PositionFunction;
     arcPosition: PositionFunction;
 };
 export type ColorPointCollection = {

@@ -171,23 +171,6 @@ const asinusoidalPosition: PositionFunction = (t: number, reverse = false) => {
   return Math.asin(t) / (Math.PI / 2);
 };
 
-const buggyCosinePosition: PositionFunction = (t: number, reverse = false) => {
-  if (reverse) {
-    return 1 - Math.cos(((1 - t) * Math.PI) / 2);
-  }
-  return Math.cos((t * Math.PI) / 2);
-};
-
-// Math.sqrt(1 - (1 - t) ** 2)
-// Math,atan2(Math.sqrt(1 - t ** 2), t)
-
-const circularPosition: PositionFunction = (t: number, reverse = false) => {
-  if (reverse) {
-    return 1 - Math.sqrt(1 - (1 - t) ** 2);
-  }
-  return 1 - Math.sqrt(1 - t ** 2);
-};
-
 const arcPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
     return Math.sqrt(1 - (1 - t) ** 2);
@@ -203,8 +186,6 @@ export const positionFunctions = {
   quarticPosition,
   sinusoidalPosition,
   asinusoidalPosition,
-  buggyCosinePosition,
-  circularPosition,
   arcPosition,
 };
 
