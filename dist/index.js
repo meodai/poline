@@ -234,7 +234,7 @@ var fettepalette = (() => {
       this.updatePointPairs();
     }
     get numPoints() {
-      return this._numPoints;
+      return this._numPoints - 2;
     }
     set numPoints(numPoints) {
       if (numPoints < 1) {
@@ -287,7 +287,7 @@ var fettepalette = (() => {
         return vectorsOnLine(
           p1position,
           p2position,
-          this.numPoints,
+          this._numPoints,
           i % 2 ? true : false,
           this.positionFunctionX,
           this.positionFunctionY,
@@ -354,7 +354,7 @@ var fettepalette = (() => {
       this.updatePointPairs();
     }
     get flattenedPoints() {
-      return this.points.flat().filter((p, i) => i != 0 ? i % this.numPoints : true);
+      return this.points.flat().filter((p, i) => i != 0 ? i % this._numPoints : true);
     }
     get colors() {
       const colors = this.flattenedPoints.map((p) => p.color);

@@ -352,7 +352,7 @@ export class Poline {
   }
 
   get numPoints(): number {
-    return this._numPoints;
+    return this._numPoints - 2;
   }
 
   set numPoints(numPoints: number) {
@@ -422,7 +422,7 @@ export class Poline {
       return vectorsOnLine(
         p1position,
         p2position,
-        this.numPoints,
+        this._numPoints,
         i % 2 ? true : false,
         this.positionFunctionX,
         this.positionFunctionY,
@@ -510,7 +510,7 @@ export class Poline {
   get flattenedPoints() {
     return this.points
       .flat()
-      .filter((p, i) => (i != 0 ? i % this.numPoints : true));
+      .filter((p, i) => (i != 0 ? i % this._numPoints : true));
   }
 
   get colors() {

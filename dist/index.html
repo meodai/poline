@@ -370,7 +370,7 @@
             It will generate a palette with two random <strong>anchors</strong>. However, you can also
             provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
             represented as a list of <strong>hsl</strong> values.
-            <pre class="code-ex"><code class="language-js" data-code></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
           </p>
         </div>
       </article>
@@ -383,10 +383,15 @@
             determines the number of colors generated between each pair of anchors. 
             The more <strong>points</strong> you have, the more colors you will get.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code="points"></code></pre>
           <p>
-            So the total amount of colors generated is <strong>points</strong> * <strong>pair of anchors</strong>.
+            So the total amount of colors generated is <strong>points</strong> * <strong>pair of anchors</strong>. If omitted, the default value is <strong>4</strong>. 
+            It can be changed after initialization by setting the <strong>numPoints</strong> property on your "<strong class="t">Poline</strong>" instance.
           </p>
+          <label>
+            <span class="t">Steps</span>
+            <input type="range" min="1" max="15" value="4" data-steps>
+          </label>
         </div>
       </article>
       <article class="l-sec">
@@ -407,7 +412,7 @@
             You can add anchors after initialization by calling the <strong>addAnchor</strong> method. 
             Either provide a list of <strong>hsl</strong> values or <strong>X,Y,Z</strong> coordinates.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code="anchors"></code></pre>
         </div>
       </article>
       <article class="l-sec">
@@ -418,7 +423,8 @@
             The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation
             or an <strong>XYZ</strong> position array.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
+          <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
+          <button data-randomize>Randomize Positions</button>
         </div>
       </article>
       <article class="l-sec">
@@ -430,54 +436,13 @@
             can be the same for XYZ (positionFunction) or different for each axis (positionFunctionX, positionFunctionY, positionFunctionZ).
           </p>
           <p>
-            They function a lot like an easing function and can be imported 'import {Poline, positionFunctions} from "poline";'
+            They function a lot like an easing function can be imported from the <strong class="t">poline</strong> module.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
-        </div>
-      </article>
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="closedLoop">
-          <h2>Looping Palette</h2>
+          <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
           <p>
-            By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
-            If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
+            Any function that takes a <strong>number between 0 and 1</strong> and returns a number between 0 and 1 can be used as a <strong>position function</strong>.
+            The second argument is called `reverse`. It is a boolean set to true on every second connection between anchors.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
-          <p>
-            It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
-          </p>
-        </div>
-      </article>
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="hueShift">
-          <h2>Hue Shifting</h2>
-          <p>
-            "<strong class="t">poline</strong>" supports hue shifting. This means that the hue of the colors will be shifted by a certain amount.
-            This can be useful if you want to animate the palette or generate a palette that looks similar to your current palette but using different hues.
-          </p>
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
-          <p>
-            The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
-          </p>
-        </div>
-      </article>
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="colorSpace">
-          <h2>Color Model</h2>
-          <p>
-            To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
-            However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
-          <pre class="code-ex"><code class="language-js" data-code></code></pre>
-      </article>
-      <div class="controls l-sec">
-        <div class="l-sec__inner">
-          <label>
-            <span class="t">Steps</span>
-            <input type="range" min="1" max="15" value="3" data-steps>
-          </label>
-          <label>
-            <span class="t">Closed Loop<input type="checkbox" data-loop></span>
-          </label>
           <label>
             <span><span class="t">Position fn X</span>(Hue / Light)</span>
             <select data-select="x">
@@ -493,16 +458,76 @@
             <select data-select="z">
             </select>
           </label>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="closedLoop">
+          <h2>Looping Palette</h2>
+          <p>
+            By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
+            If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="closedLoop"></code></pre>
+          <p>
+            It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
+          </p>
           <label>
-            <span class="t">Hue Shift</span>
-            <input type="range" min="-10" max="10" value="0" step="0.1" data-hueshift>
+            <span class="t">Closed Loop<input type="checkbox" checked="checked" data-loop></span>
           </label>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="hueShift">
+          <h2>Hue Shifting</h2>
+          <p>
+            "<strong class="t">poline</strong>" supports hue shifting. This means that the hue of the colors will be shifted by a certain amount.
+            This can be useful if you want to animate the palette or generate a palette that looks similar to your current palette but using different hues.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="hueShift"></code></pre>
+          <p>
+            The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
+          </p>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="colorSpace">
+          <h2>Color Model</h2>
+          <p>
+            To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
+            However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
+          <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
           <label>
             <span class="t">Color Model</span>
             <select data-models>
             </select>
           </label>
-          <button data-randomize>Randomize</button>
+        </div>
+      </article>
+      <div class="controls l-sec">
+        <div class="l-sec__inner">
+          <!--label>
+            <span class="t">Steps</span>
+            <input type="range" min="1" max="15" value="3" data-steps>
+          </label-->
+          <!--label>
+            <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+          </label-->
+          <!--label>
+            <span><span class="t">Position fn X</span>(Hue / Light)</span>
+            <select data-select="x">
+            </select>
+          </label>
+          <label>
+            <span><span class="t">Position fn Y</span>(Hue / Light)</span>
+            <select data-select="y">
+            </select>
+          </label>
+          <label>
+            <span><span class="t">Position fn Z</span> (Saturation)</span>
+            <select data-select="z">
+            </select>
+          </label-->
+          <!--button data-randomize>Randomize</button-->
         </div>
       </div>
     </section>
@@ -597,7 +622,6 @@
     const $zSelect = document.querySelector('[data-select="z"]');
     const $models = document.querySelector('[data-models]');
     const $loop = document.querySelector('[data-loop]');
-    const $hueshift = document.querySelector('[data-hueshift]');
     const $randomize = document.querySelector('[data-randomize]');
 
     $models.innerHTML = hueBasedModels
@@ -701,29 +725,6 @@
         $circle.classList.add('wheel__point');
         $circle.setAttribute('fill', formatHex({ mode: currentHueModel, ...currentModelFn(point.color) }) );
         $svg.appendChild($circle);
-
-        /*
-        // create a vertical line with a height representing the saturation
-        const $vline = document.createElementNS(namespaceURI, 'line');
-        const $vlineBG = document.createElementNS(namespaceURI, 'line');
-        $vlineBG.setAttribute('x1', point.x * svgscale);
-        $vline.setAttribute('x1', point.x * svgscale);
-
-        $vline.setAttribute('y1', point.y * svgscale);
-        $vlineBG.setAttribute('y1', point.y * svgscale);
-
-        $vline.setAttribute('x2', point.x * svgscale);
-        $vlineBG.setAttribute('x2', point.x * svgscale);
-
-        $vline.setAttribute('y2', point.y * svgscale - point.color[1] * 7);
-        $vlineBG.setAttribute('y2', point.y * svgscale - point.color[1] * 7);
-        $vline.setAttribute('stroke', point.hslCSS);
-        $vline.classList.add('wheel__satline');
-        $vlineBG.setAttribute('stroke', '#fff');
-        $vlineBG.classList.add('wheel__satline', 'wheel__satline--bg');
-        $svg.appendChild($vlineBG);
-        $svg.appendChild($vline);
-        */
       });
       
       let cssColors = [...poline.colorsCSS];
@@ -750,7 +751,6 @@
     $steps.addEventListener('input', () => {
       steps = parseInt($steps.value);
       poline.numPoints = steps;
-
       updateSVG();
     });
 
@@ -850,13 +850,6 @@
       updateSVG();
     }
   });
-
-  $hueshift.addEventListener('input', (e) => {
-    poline.shiftHue(parseFloat(e.target.value));
-
-    updateSVG();
-  });
-
 
   let exStartHue = Math.random() * 360;
   let globalInterval = null;
@@ -960,7 +953,9 @@
       poline.positionFunctionZ = positionFunctions[fnz];
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
-      $code.innerHTML = `new Poline({
+      $code.innerHTML = `import {Poline, positionFunctions} from 'poline';
+
+new Poline({
   positionFunctionX: 
     positionFunctions.${poline.positionFunctionX.name},
   positionFunctionY: 
