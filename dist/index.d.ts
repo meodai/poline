@@ -74,7 +74,7 @@ export type PolineOptions = {
 };
 export declare class Poline {
     private _needsUpdate;
-    _anchorPoints: ColorPoint[];
+    private _anchorPoints;
     private _numPoints;
     private points;
     private _positionFunctionX;
@@ -102,7 +102,11 @@ export declare class Poline {
         point?: ColorPoint;
         pointIndex?: number;
     } & ColorPointCollection): ColorPoint;
-    getClosestAnchorPoint(point: PartialVector3, maxDistance: 1): ColorPoint | null;
+    getClosestAnchorPoint({ xyz, hsl, maxDistance, }: {
+        xyz?: PartialVector3;
+        hsl?: PartialVector3;
+        maxDistance?: number;
+    }): ColorPoint | null;
     set closedLoop(newStatus: boolean);
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];

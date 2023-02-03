@@ -335,7 +335,6 @@
       position: absolute;
       inset: 0;
       background: linear-gradient(45deg, var(--prev-smooth));
-      background: #202125;
       z-index: -1;
       opacity: 0;
       transform: translateX(0);
@@ -487,6 +486,25 @@
           <pre class="code-ex"><code class="language-js" data-code="hueShift"></code></pre>
           <p>
             The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
+          </p>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-section__inner" data-section="closestAnchor">
+          <h2>Closest Anchor</h2>
+          <p>
+            In some situations, you might want to know which anchor is closest to a certain position or color.
+            This method is used in the visualizer to highlight to select the closest anchor on click.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="closestAnchor">poline.getClosestAnchorPoint(
+  {xyz: [x, y, null], maxDistance: .1}
+)</code></pre>
+          <p>
+            The <strong>maxDistance</strong> argument is optional and will return null if the closest anchor is further away
+            than the maxDistance.
+          </p>
+          <p>
+            Any of the <strong>xyz</strong> or <strong>hsl</strong> components can be null. If they are <strong>null</strong>, they will be ignored.
           </p>
         </div>
       </article>
@@ -795,7 +813,11 @@
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (!currentPoint) {
-        currentPoint = poline.getClosestAnchorPoint([x, y, null], .1);
+        
+        currentPoint = poline.getClosestAnchorPoint({ 
+          xyz: [x, y, null], 
+          maxDistance: .1 
+        });
         lastSelectedPoint = currentPoint;
       } else {
         currentPoint = null;
@@ -954,7 +976,9 @@
       poline.positionFunctionZ = positionFunctions[fnz];
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
-      $code.innerHTML = `import {Poline, positionFunctions} from 'poline';
+      $code.innerHTML = `import {
+  Poline, positionFunctions
+} from 'poline';
 
 new Poline({
   positionFunctionX: 
@@ -1011,6 +1035,14 @@ new Poline({
       hljs.highlightElement($code);
       updateSVG();
     }, 
+  },
+  {
+    section: 'closestAnchor',
+    fn: (section) => {
+      console.log('closestAnchor');
+      const $code = section.target.querySelector('[data-code]');
+      hljs.highlightElement($code);
+    },
   },
   {
     section: 'colorSpace',

@@ -159,8 +159,17 @@ var fettepalette = (() => {
     circularPosition,
     arcPosition
   };
-  var distance = (p1, p2) => {
-    const a = p1[0] === null || p2[0] === null ? 0 : p2[0] - p1[0];
+  var distance = (p1, p2, hueMode = false) => {
+    const a1 = p1[0];
+    const a2 = p2[0];
+    let diffA = 0;
+    if (hueMode && a1 !== null && a2 !== null) {
+      diffA = Math.min(Math.abs(a1 - a2), 360 - Math.abs(a1 - a2));
+      diffA = diffA / 360;
+    } else {
+      diffA = a1 === null || a2 === null ? 0 : a1 - a2;
+    }
+    const a = diffA;
     const b = p1[1] === null || p2[1] === null ? 0 : p2[1] - p1[1];
     const c = p1[2] === null || p2[2] === null ? 0 : p2[2] - p1[2];
     return Math.sqrt(a * a + b * b + c * c);
@@ -349,10 +358,24 @@ var fettepalette = (() => {
       this.updatePointPairs();
       return point;
     }
-    getClosestAnchorPoint(point, maxDistance) {
-      const distances = this.anchorPoints.map(
-        (anchor) => distance(anchor.position, point)
-      );
+    getClosestAnchorPoint({
+      xyz,
+      hsl,
+      maxDistance = 1
+    }) {
+      if (!xyz && !hsl) {
+        throw new Error("Must provide a xyz or hsl");
+      }
+      let distances;
+      if (xyz) {
+        distances = this.anchorPoints.map(
+          (anchor) => distance(anchor.position, xyz)
+        );
+      } else if (hsl) {
+        distances = this.anchorPoints.map(
+          (anchor) => distance(anchor.hsl, hsl, true)
+        );
+      }
       const minDistance = Math.min(...distances);
       if (minDistance > maxDistance) {
         return null;

@@ -211,6 +211,7 @@ export const positionFunctions = {
  * Calculates the distance between two points
  * @param p1 The first point
  * @param p2 The second point
+ * @param hueMode Whether to use the hue distance function
  * @returns The distance between the two points
  * @example
  * const p1 = [0, 0, 0];
@@ -218,8 +219,23 @@ export const positionFunctions = {
  * const dist = distance(p1, p2);
  * console.log(dist); // 1.7320508075688772
  **/
-const distance = (p1: PartialVector3, p2: PartialVector3): number => {
-  const a = p1[0] === null || p2[0] === null ? 0 : p2[0] - p1[0];
+const distance = (
+  p1: PartialVector3,
+  p2: PartialVector3,
+  hueMode = false
+): number => {
+  const a1 = p1[0];
+  const a2 = p2[0];
+  let diffA = 0;
+
+  if (hueMode && a1 !== null && a2 !== null) {
+    diffA = Math.min(Math.abs(a1 - a2), 360 - Math.abs(a1 - a2));
+    diffA = diffA / 360;
+  } else {
+    diffA = a1 === null || a2 === null ? 0 : a1 - a2;
+  }
+
+  const a = diffA;
   const b = p1[1] === null || p2[1] === null ? 0 : p2[1] - p1[1];
   const c = p1[2] === null || p2[2] === null ? 0 : p2[2] - p1[2];
 
@@ -297,10 +313,9 @@ export type PolineOptions = {
   positionFunctionZ?: (t: number, invert?: boolean) => number;
   closedLoop: boolean;
 };
-
 export class Poline {
   private _needsUpdate = true;
-  public _anchorPoints: ColorPoint[];
+  private _anchorPoints: ColorPoint[];
 
   private _numPoints: number;
   private points: ColorPoint[][];
@@ -483,13 +498,30 @@ export class Poline {
     return point;
   }
 
-  getClosestAnchorPoint(
-    point: PartialVector3,
-    maxDistance: 1
-  ): ColorPoint | null {
-    const distances = this.anchorPoints.map((anchor) =>
-      distance(anchor.position, point)
-    );
+  getClosestAnchorPoint({
+    xyz,
+    hsl,
+    maxDistance = 1,
+  }: {
+    xyz?: PartialVector3;
+    hsl?: PartialVector3;
+    maxDistance?: number;
+  }): ColorPoint | null {
+    if (!xyz && !hsl) {
+      throw new Error("Must provide a xyz or hsl");
+    }
+
+    let distances;
+
+    if (xyz) {
+      distances = this.anchorPoints.map((anchor) =>
+        distance(anchor.position, xyz)
+      );
+    } else if (hsl) {
+      distances = this.anchorPoints.map((anchor) =>
+        distance(anchor.hsl, hsl, true)
+      );
+    }
 
     const minDistance = Math.min(...distances);
 
