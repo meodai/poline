@@ -429,26 +429,46 @@
         <div class="l-sec__inner" data-section="summoning">
           <h2 id="summoning">Summoning</h2>
           <p>
+            The use of "<strong class="t">Poline</strong>" begins with the invocation of its command, which can be performed with or without arguments.
+            If called without, the tool will generate a mesmerizing palette featuring two randomly selected <strong>anchors.</strong>
+          </p>
+          <p>
+            On the other hand, one can choose to provide their own <strong>anchor</strong> points, 
+            represented as a list of <strong>hsl</strong> values, for a more personal touch. 
+            The power to shape and mold the colors lies in your hands."
+          </p>
+          <!--p>
             When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
             It will generate a palette with two random <strong>anchors</strong>. However, you can also
             provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
-            represented as a list of <strong>hsl</strong> values.
-            <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
-          </p>
+            represented as a list of <strong>hsl</strong> values.</p-->
+
+          <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
+          
         </div>
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="points">
           <h2 id="points">Points</h2>
           <p>
+            The magic of "<strong class="t">Poline</strong>" is revealed through its technique 
+            of drawing lines between anchor points. The richness of the palette is determined 
+            by the number of <strong>points</strong>, with each connection producing a unique color.
+          </p>
+          <p>
+            As shown in the illustration, increasing the number of <strong>points</strong> will yield an even greater array of colors.
+            By default, four points are used, but this can easily be adjusted through the 'numPoints' property on your Poline
+            instance, as demonstrated in the code example.
+          </p>
+          <!--p>
             As demonstrated on the illustration, "<strong class="t">Poline</strong>"
             works by drawing lines between the <strong>anchors</strong>. The number of <strong>points</strong>
             determines the number of colors generated between each pair of anchors. 
             The more <strong>points</strong> you have, the more colors you will get.
-          </p>
+          </p-->
           <pre class="code-ex"><code class="language-js" data-code="points"></code></pre>
           <p>
-            So the total amount of colors generated is <strong>points</strong> * <strong>pair of anchors</strong>. If omitted, the default value is <strong>4</strong>. 
+            The resulting palette is a product of points multiplied by the number of anchor pairs.
             It can be changed after initialization by setting the <strong>numPoints</strong> property on your "<strong class="t">Poline</strong>" instance.
           </p>
           <label>
@@ -461,19 +481,16 @@
         <div class="l-sec__inner" data-section="anchors">
           <h2 id="anchors">Anchors</h2>
           <p>
-            The <strong>anchors</strong> are the points that the lines are drawn between. The <strong>anchors</strong> are
-            represented as a list of <strong>hsl</strong> values. The <strong>hsl</strong> values are
-            represented as an array of <strong>hue</strong>, <strong>saturation</strong> and <strong>lightness</strong>.
-            The <strong>hue</strong>[0…360], the <strong>saturation</strong>[0…1] and the
-            <strong>lightness</strong>[0…1].
+            At the heart of "<strong class="t">Poline</strong>" lies the concept of <strong>anchors</strong>, the fixed points that serve as the foundation for the creation of
+            color palettes. <strong>Anchors</strong> are represented as a <strong>list of hsl</strong> values, which consist of three components: <strong>hue</strong> [0…360],
+            <strong>saturation</strong> [0…1], and <strong>lightness</strong> [0…1]. 
           </p>
           <p>
-            Either provide a list of <strong>anchors</strong> on initialization as in the examples above
-            or let "<strong class="t">poline</strong>" generate a random palette for you. (by omitting the anchorColors argument)
-          </p>
-          <p>
-            You can add anchors after initialization by calling the <strong>addAnchor</strong> method. 
-            Either provide a list of <strong>hsl</strong> values or <strong>X,Y,Z</strong> coordinates.
+            The choice is yours, whether to provide your own anchor points during
+            initialization or to allow "<strong class="t">Poline</strong>" to generate a random selection for you by omitting the 'anchorColors' argument. The
+            versatility of Poline extends "<strong class="t">Poline</strong>" its initial setup, as you can also add anchors to your palette at any time using
+            the '<strong>addAnchor</strong>' method. This method accepts either a <strong>color</strong> as HSL array values or an array of <strong>X, Y, Z</strong> coordinates, 
+            further expanding the possibilities of your color creation.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="anchors"></code></pre>
         </div>
@@ -482,9 +499,15 @@
         <div class="l-sec__inner" data-section="UpdatingAnchors">
           <h2 id="UpdatingAnchors">Updating Anchors</h2>
           <p>
-            You can update the <strong>anchors</strong> by calling the <strong>updateAnchorPoint</strong> method.
-            The method takes the <strong>anchor</strong> reference and either a color as a <strong>HSL</strong> representation
-            or an <strong>XYZ</strong> position array.
+            With this feature, you have the power to fine-tune your palette and make adjustments as your creative vision
+            evolves. So whether you are looking to make subtle changes or bold alterations, "<strong class="t">Poline</strong>" is
+            always ready to help you
+            achieve your desired result.
+          </p>
+          <p>
+            The ability to update existing <string>anchors</string> is made possible through the '<strong>updateAnchorPoint</strong>' method. 
+            This method accepts the <strong>reference to the anchor</strong> you wish to modify and either a color in the form of <strong>HSL</strong> 
+            representation or an <strong>XYZ</strong> position array.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
           <button data-randomize>Randomize Positions</button>
@@ -494,18 +517,32 @@
         <div class="l-sec__inner" data-section="positionFunctions">
           <h2 id="positionFunctions">Position Functions</h2>
           <p>
+            The <strong>position functions</strong> in "<strong class="t">Poline</strong>" play a crucial role in determining the <strong>distribution of colors between the anchors</strong>.
+            They work similar to easing functions and can be imported from the "<strong class="t">Poline</strong>" module.
+          </p>
+          <p>
+            A position function is a mathematical function that maps a value between 0 and 1 to another value between 0 and 1. 
+            By defining the position functions for each axis, you can control the distribution of colors along each axis 
+            (<strong>positionFunctionX</strong>, <strong>positionFunctionY</strong>, <strong>positionFunctionZ</strong>)  and create a diverse range of color palettes, 
+            using the same anchor positions.
+          </p>
+          <p>
+            Alternatively, you can use a single position function for all axes (<strong>positionFunction</strong>) if you prefer a unified approach.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
+
+          <!--p>
             The <strong>position functions</strong> are used to determine the position of the 
             <strong>points</strong> between the <strong>anchors</strong>. The <strong>position functions</strong> 
             can be the same for XYZ (positionFunction) or different for each axis (positionFunctionX, positionFunctionY, positionFunctionZ).
           </p>
           <p>
             They function a lot like an easing function and can be imported from the <strong class="t">poline</strong> module.
-          </p>
-          <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
-          <p>
+          </p-->
+          <!--p>
             Any function that takes a <strong>number between 0 and 1</strong> and returns a number between 0 and 1 can be used as a <strong>position function</strong>.
             The second argument is called `reverse`. It is a boolean set to true on every second connection between anchors.
-          </p>
+          </p-->
           <label>
             <span><span class="t">Position fn X</span>(Hue / Light)</span>
             <select data-select="x">
@@ -1026,15 +1063,41 @@ poline.colorsCSS</code></pre>
       }
       poline.addAnchorPoint({color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
       const $code = section.target.querySelector('[data-code]');
+      const lastPoint = poline.anchorPoints[poline.anchorPoints.length - 1];
       $code.innerHTML = `poline.addAnchorPoint({
   color: [${
-        Math.round(poline.anchorPoints[poline.anchorPoints.length - 1].color[0])
+        Math.round(lastPoint.color[0])
       }, ${
-        poline.anchorPoints[poline.anchorPoints.length - 1].color[1].toFixed(2)
+        lastPoint.color[1].toFixed(2)
       }, ${
-        poline.anchorPoints[poline.anchorPoints.length - 1].color[2].toFixed(2)
+        lastPoint.color[2].toFixed(2)
+      }]
+});
+
+// or
+
+poline.addAnchorPoint({
+  xyz: [${
+        lastPoint.position[0].toFixed(2)
+      }, ${
+        lastPoint.position[1].toFixed(2)
+      }, ${
+        lastPoint.position[2].toFixed(2)
       }]
 });`;
+      hljs.highlightElement($code);
+      updateSVG();
+    },
+  },
+  {
+    section: 'closedLoop',
+    fn: (section) => {
+      console.log('closedLoop');
+      poline.closedLoop = true;
+      updateSVG();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `poline.closedLoop = true;
+`;
       hljs.highlightElement($code);
       updateSVG();
     }
