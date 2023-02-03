@@ -60,8 +60,8 @@ declare class ColorPoint {
     get position(): Vector3;
     set hsl([h, s, l]: Vector3);
     get hsl(): Vector3;
-    shiftHue(angle: number): void;
     get hslCSS(): string;
+    shiftHue(angle: number): void;
 }
 export type PolineOptions = {
     anchorColors: Vector3[];

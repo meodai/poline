@@ -211,12 +211,12 @@ var fettepalette = (() => {
     get hsl() {
       return this.color;
     }
+    get hslCSS() {
+      return `hsl(${this.color[0]}, ${this.color[1] * 100}%, ${this.color[2] * 100}%)`;
+    }
     shiftHue(angle) {
       this.color[0] = (360 + (this.color[0] + angle)) % 360;
       [this.x, this.y, this.z] = hslToPoint(this.color);
-    }
-    get hslCSS() {
-      return `hsl(${this.color[0]}, ${this.color[1] * 100}%, ${this.color[2] * 100}%)`;
     }
   };
   var Poline = class {

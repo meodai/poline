@@ -315,6 +315,31 @@
     .l-sec--active {
       opacity: 1; 
     }
+    .l-sec__preview {
+      position: relative;
+      display: block;
+      height: 1.75rem;
+      background-image: linear-gradient(90deg, var(--prev-smooth)),
+                        linear-gradient(90deg, var(--prev));
+      background-size: 100% 50%;
+      background-position: 0 0, 0 100%;
+      background-repeat: no-repeat;
+      margin: 0;
+    }
+    .l-sec__preview::after {
+      content: '';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: calc(50% - 1px);
+      height: 2px;
+      background: #fff;
+    }
+
+    .l-sec__preview figcaption {
+      display: none;
+    }
+    
     code {
       position: relative;
       display: block;
@@ -506,6 +531,19 @@
           <p>
             Any of the <strong>xyz</strong> or <strong>hsl</strong> components can be null. If they are <strong>null</strong>, they will be ignored.
           </p>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="getColors">
+          <h2>Color List</h2>
+          <p>
+            The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
+poline.colorsCSS</code></pre>
+          <figure class="l-sec__preview">
+            <figcaption>Colors as HSL</figcaption>
+          </figure>
         </div>
       </article>
       <article class="l-sec">
@@ -1087,6 +1125,15 @@ const LCHColors = [...poline.colors].map(
         updateSVG();
       }, 16.66);
     }
+  },
+  {
+    section: 'getColors',
+    fn: (section) => {
+      console.log('getColors');
+      const $code = section.target.querySelector('[data-code]');
+      hljs.highlightElement($code);
+      updateSVG();
+    },
   }
 ];
   
