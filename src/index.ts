@@ -566,3 +566,17 @@ export class Poline {
     this.updatePointPairs();
   }
 }
+
+// @ts-ignore
+if (typeof p5 !== "undefined") {
+  const poline = new Poline();
+  // @ts-ignore
+  p5.prototype.poline = poline;
+  // @ts-ignore
+  const polineColors = poline.colorsCSS.map((c) => p5.Color(c));
+  // @ts-ignore
+  p5.prototype.polineColors = polineColors;
+
+  globalThis.poline = poline;
+  globalThis.polineColors = polineColors;
+}
