@@ -374,6 +374,5 @@ export {
   pointToHSL,
   positionFunctions,
   randomHSLPair,
-  randomHSLTriple,
-  vectorsOnLine
+  randomHSLTriple
 };

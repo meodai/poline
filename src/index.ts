@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, ...Vector2];
@@ -96,7 +97,7 @@ export const randomHSLTriple = (
   [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]],
 ];
 
-export const vectorsOnLine = (
+const vectorsOnLine = (
   p1: Vector3,
   p2: Vector3,
   numPoints = 4,

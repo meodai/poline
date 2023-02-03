@@ -31,7 +31,6 @@ export declare const pointToHSL: (xyz: [number, number, number]) => [number, num
 export declare const hslToPoint: (hsl: [number, number, number]) => [number, number, number];
 export declare const randomHSLPair: (startHue?: number, saturations?: Vector2, lightnesses?: Vector2) => [Vector3, Vector3];
 export declare const randomHSLTriple: (startHue?: number, saturations?: [number, number, number], lightnesses?: [number, number, number]) => [Vector3, Vector3, Vector3];
-export declare const vectorsOnLine: (p1: [number, number, number], p2: [number, number, number], numPoints?: number, invert?: boolean, fx?: (t: number, invert: boolean) => number, fy?: (t: number, invert: boolean) => number, fz?: (t: number, invert: boolean) => number) => Vector3[];
 export type PositionFunction = (t: number, reverse?: boolean) => number;
 export declare const positionFunctions: {
     linearPosition: PositionFunction;

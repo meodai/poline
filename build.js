@@ -47,7 +47,7 @@ build({
   bundle: true,
   format: "iife",
   target: "node14",
-  globalName: "fettepalette",
+  globalName: "poline",
   outfile: "dist/index.js",
 });
 
@@ -59,7 +59,7 @@ build({
   minify: true,
   format: "iife",
   target: "es6",
-  globalName: "fettepalette",
+  globalName: "poline",
   outfile: "dist/index.min.js",
 });
 
@@ -71,7 +71,7 @@ build({
   bundle: true,
   format: "iife",
   target: "es6",
-  globalName: "fettepalette",
+  globalName: "poline",
   banner: {
     js: `(function(root, factory) {
       if (typeof define === 'function' && define.amd) {
@@ -85,7 +85,7 @@ build({
     (typeof self !== 'undefined' ? self : this, function() {`,
   },
   footer: {
-    js: `return fettepalette; }));`,
+    js: `return poline; }));`,
   },
   outfile: "dist/index.umd.js",
 });

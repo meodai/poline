@@ -26,8 +26,7 @@ __export(src_exports, {
   pointToHSL: () => pointToHSL,
   positionFunctions: () => positionFunctions,
   randomHSLPair: () => randomHSLPair,
-  randomHSLTriple: () => randomHSLTriple,
-  vectorsOnLine: () => vectorsOnLine
+  randomHSLTriple: () => randomHSLTriple
 });
 module.exports = __toCommonJS(src_exports);
 var pointToHSL = (xyz) => {

@@ -9,7 +9,7 @@
     }
     (typeof self !== 'undefined' ? self : this, function() {
 "use strict";
-var fettepalette = (() => {
+var poline = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
   var __getOwnPropNames = Object.getOwnPropertyNames;
@@ -37,8 +37,7 @@ var fettepalette = (() => {
     pointToHSL: () => pointToHSL,
     positionFunctions: () => positionFunctions,
     randomHSLPair: () => randomHSLPair,
-    randomHSLTriple: () => randomHSLTriple,
-    vectorsOnLine: () => vectorsOnLine
+    randomHSLTriple: () => randomHSLTriple
   });
   var pointToHSL = (xyz) => {
     const [x, y, z] = xyz;
@@ -411,4 +410,4 @@ var fettepalette = (() => {
   };
   return __toCommonJS(src_exports);
 })();
-return fettepalette; }));
+return poline; }));
