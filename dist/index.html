@@ -981,6 +981,7 @@ poline.colorsCSS</code></pre>
     let lastY = 0;
 
     $picker.addEventListener('pointerdown', (e) => {
+      e.stopPropagation();
       const x = lastX = e.offsetX / $picker.offsetWidth;
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
@@ -1001,6 +1002,7 @@ poline.colorsCSS</code></pre>
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (currentPoint) {
+        e.stopPropagation();
         poline.updateAnchorPoint({point: currentPoint, xyz: [x, y, currentPoint.z]});
         updateSVG();
       } 
