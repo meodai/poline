@@ -347,11 +347,11 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  get numPoints(): number {
+  public get numPoints(): number {
     return this._numPoints - 2;
   }
 
-  set numPoints(numPoints: number) {
+  public set numPoints(numPoints: number) {
     if (numPoints < 1) {
       throw new Error("Must have at least one point");
     }
@@ -359,7 +359,7 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  set positionFunction(
+  public set positionFunction(
     positionFunction: PositionFunction | PositionFunction[]
   ) {
     if (Array.isArray(positionFunction)) {
@@ -385,7 +385,7 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  get positionFunction(): PositionFunction | PositionFunction[] {
+  public get positionFunction(): PositionFunction | PositionFunction[] {
     // not to sure what to do here, because the position function is a combination of the three
     if (
       this._positionFunctionX === this._positionFunctionY &&
@@ -401,43 +401,43 @@ export class Poline {
     ];
   }
 
-  set positionFunctionX(positionFunctionX: PositionFunction) {
+  public set positionFunctionX(positionFunctionX: PositionFunction) {
     this._positionFunctionX = positionFunctionX;
     this.updatePointPairs();
   }
 
-  get positionFunctionX(): PositionFunction {
+  public get positionFunctionX(): PositionFunction {
     return this._positionFunctionX;
   }
 
-  set positionFunctionY(positionFunctionY: PositionFunction) {
+  public set positionFunctionY(positionFunctionY: PositionFunction) {
     this._positionFunctionY = positionFunctionY;
     this.updatePointPairs();
   }
 
-  get positionFunctionY(): PositionFunction {
+  public get positionFunctionY(): PositionFunction {
     return this._positionFunctionY;
   }
 
-  set positionFunctionZ(positionFunctionZ: PositionFunction) {
+  public set positionFunctionZ(positionFunctionZ: PositionFunction) {
     this._positionFunctionZ = positionFunctionZ;
     this.updatePointPairs();
   }
 
-  get positionFunctionZ(): PositionFunction {
+  public get positionFunctionZ(): PositionFunction {
     return this._positionFunctionZ;
   }
 
-  get anchorPoints(): ColorPoint[] {
+  public get anchorPoints(): ColorPoint[] {
     return this._anchorPoints;
   }
 
-  set anchorPoints(anchorPoints: ColorPoint[]) {
+  public set anchorPoints(anchorPoints: ColorPoint[]) {
     this._anchorPoints = anchorPoints;
     this.updatePointPairs();
   }
 
-  updatePointPairs(): void {
+  public updatePointPairs(): void {
     const pairs = [] as ColorPoint[][];
 
     const anchorPointsLength = this.connectLastAndFirstAnchor
@@ -469,7 +469,7 @@ export class Poline {
     });
   }
 
-  addAnchorPoint({
+  public addAnchorPoint({
     xyz,
     color,
     insertAtIndex,
@@ -484,7 +484,7 @@ export class Poline {
     return newAnchor;
   }
 
-  removeAnchorPoint({
+  public removeAnchorPoint({
     point,
     index,
   }: {
@@ -511,7 +511,7 @@ export class Poline {
     }
   }
 
-  updateAnchorPoint({
+  public updateAnchorPoint({
     point,
     pointIndex,
     xyz,
@@ -540,7 +540,7 @@ export class Poline {
     return point;
   }
 
-  getClosestAnchorPoint({
+  public getClosestAnchorPoint({
     xyz,
     hsl,
     maxDistance = 1,
@@ -581,13 +581,17 @@ export class Poline {
     this.updatePointPairs();
   }
 
-  get flattenedPoints() {
+  public get closedLoop(): boolean {
+    return this.connectLastAndFirstAnchor;
+  }
+
+  public get flattenedPoints() {
     return this.points
       .flat()
       .filter((p, i) => (i != 0 ? i % this._numPoints : true));
   }
 
-  get colors() {
+  public get colors() {
     const colors = this.flattenedPoints.map((p) => p.color);
     if (this.connectLastAndFirstAnchor) {
       colors.pop();
@@ -595,7 +599,7 @@ export class Poline {
     return colors;
   }
 
-  get colorsCSS() {
+  public get colorsCSS() {
     const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
     if (this.connectLastAndFirstAnchor) {
       cssColors.pop();
@@ -603,7 +607,7 @@ export class Poline {
     return cssColors;
   }
 
-  shiftHue(hShift = 20): void {
+  public shiftHue(hShift = 20): void {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
     this.updatePointPairs();
   }

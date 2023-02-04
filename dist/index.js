@@ -402,6 +402,9 @@ var poline = (() => {
       this.connectLastAndFirstAnchor = newStatus;
       this.updatePointPairs();
     }
+    get closedLoop() {
+      return this.connectLastAndFirstAnchor;
+    }
     get flattenedPoints() {
       return this.points.flat().filter((p, i) => i != 0 ? i % this._numPoints : true);
     }

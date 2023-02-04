@@ -766,7 +766,7 @@ poline.colorsCSS</code></pre>
           <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
           <div class="l-sec__controls">
             <label>
-              <span class="t">Color Model</span>
+              <span class="t">Current Model</span>
               <select data-models>
               </select>
             </label>
@@ -811,7 +811,7 @@ poline.colorsCSS</code></pre>
         </div>
       </article>
 
-      <!--div class="controls l-sec">
+      <div class="controls l-sec">
         <div class="l-sec__inner">
           <label>
             <span class="t">Steps</span>
@@ -835,9 +835,14 @@ poline.colorsCSS</code></pre>
             <select data-select="z">
             </select>
           </label>
-          <button data-randomize>Randomize</button>
+          <label>
+            <span class="t">Current Model</span>
+            <select data-models>
+            </select>
+          </label>
+          <button data-randomize>Randomize Anchors</button>
         </div>
-      </div-->
+      </div>
     </section>
     <div class="l-demo">
       <div class="poline-picker">
@@ -923,26 +928,28 @@ poline.colorsCSS</code></pre>
       (c, i) => `${c} ${i / colorsArr.length * 100}% ${(i + 1) / colorsArr.length * 100}%`
     ).join();
 
-    const $steps = document.querySelector('[data-steps]');
+    const $steps = document.querySelectorAll('[data-steps]');
     const $selects = document.querySelectorAll('[data-select]');
-    const $xSelect = document.querySelector('[data-select="x"]');
-    const $ySelect = document.querySelector('[data-select="y"]');
-    const $zSelect = document.querySelector('[data-select="z"]');
+    const $xSelect = document.querySelectorAll('[data-select="x"]');
+    const $ySelect = document.querySelectorAll('[data-select="y"]');
+    const $zSelect = document.querySelectorAll('[data-select="z"]');
     const $allSelect = document.querySelector('[data-select="all"]');
-    const $models = document.querySelector('[data-models]');
-    const $loop = document.querySelector('[data-loop]');
+    const $models = document.querySelectorAll('[data-models]');
+    const $loop = document.querySelectorAll('[data-loop]');
     const $randomize = document.querySelector('[data-randomize]');
     const $toc = document.querySelector('[data-toc]');
 
-  
-    $models.innerHTML = hueBasedModels
-      .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
-      .join('');
-    
-    $models.addEventListener('change', (e) => {
-      currentHueModel = e.target.value;
-      currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
-      updateSVG();
+    $models.forEach($model => {
+      $model.innerHTML = hueBasedModels
+        .map(model => `<option ${model.key == currentHueModel ? 'selected="true"' : ""} value="${model.key}">${model.label}</option>`)
+        .join('');
+      
+      $model.addEventListener('change', (e) => {
+        currentHueModel = e.target.value;
+        currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
+        $models.forEach($model => $model.value = currentHueModel);
+        updateSVG();
+      });
     });
 
     let fnx = 'sinusoidalPosition';
@@ -963,7 +970,7 @@ poline.colorsCSS</code></pre>
       });
     });
 
-    let steps = parseInt($steps.value);
+    let steps = parseInt($steps[0].value);
 
     let startHue = Math.random() * 360;
 
@@ -1056,15 +1063,27 @@ poline.colorsCSS</code></pre>
 
     updateSVG();
 
-    $loop.addEventListener('input', () => {
-      poline.closedLoop = $loop.checked;
-      updateSVG();
+    $loop.forEach($l => {
+      $l.checked = poline.closedLoop;
+      $l.addEventListener('change', () => {
+        console.log('loop change')
+        poline.closedLoop = $l.checked;
+        updateSVG();
+        $loop.forEach($l => {
+          $l.checked = poline.closedLoop;
+        });
+      });
     });
 
-    $steps.addEventListener('input', () => {
-      steps = parseInt($steps.value);
-      poline.numPoints = steps;
-      updateSVG();
+    $steps.forEach($step => {
+      $step.addEventListener('input', () => {
+        steps = parseInt($step.value);
+        poline.numPoints = steps;
+        updateSVG();
+        $steps.forEach($step => {
+          $step.value = steps;
+        });
+      });
     });
 
 
@@ -1074,22 +1093,38 @@ poline.colorsCSS</code></pre>
       updateSVG();
     });
 
-    $xSelect.addEventListener('input', () => {
-      fnx = $xSelect.value;
-      poline.positionFunctionX = positionFunctions[fnx];
-      updateSVG();
+    $xSelect.forEach($xSelect => {
+      $xSelect.addEventListener('input', () => {
+        fnx = $xSelect.value;
+        poline.positionFunctionX = positionFunctions[fnx];
+        updateSVG();
+        $xSelect.forEach($el => {
+          $el.value = fnx;
+        });
+      });
     });
 
-    $ySelect.addEventListener('input', () => {
-      fny = $ySelect.value;
-      poline.positionFunctionY = positionFunctions[fny];
-      updateSVG();
+
+    $ySelect.forEach($ySelect => {
+      $ySelect.addEventListener('input', () => {
+        fny = $ySelect.value;
+        poline.positionFunctionY = positionFunctions[fny];
+        updateSVG();
+        $ySelect.forEach($el => {
+          $el.value = fnx;
+        });
+      });
     });
 
-    $zSelect.addEventListener('input', () => {
-      fnz = $zSelect.value;
-      poline.positionFunctionZ = positionFunctions[fnz];
-      updateSVG();
+    $zSelect.forEach($zSelect => {
+      $zSelect.addEventListener('input', () => {
+        fnz = $zSelect.value;
+        poline.positionFunctionZ = positionFunctions[fnz];
+        updateSVG();
+        $zSelect.forEach($el => {
+          $el.value = fnz;
+        });
+      });
     });
 
     $randomize.addEventListener('click', () => {
@@ -1328,6 +1363,15 @@ new Poline({
       poline.positionFunctionX = positionFunctions[fnx];
       poline.positionFunctionY = positionFunctions[fny];
       poline.positionFunctionZ = positionFunctions[fnz];
+      $xSelect.forEach($xs => {
+        $xs.value = fnx;
+      });
+      $ySelect.forEach($ys => {
+        $ys.value = fny;
+      });
+      $zSelect.forEach($zs => {
+        $zs.value = fnz;
+      });
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({

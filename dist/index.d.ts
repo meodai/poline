@@ -110,6 +110,7 @@ export declare class Poline {
         maxDistance?: number;
     }): ColorPoint | null;
     set closedLoop(newStatus: boolean);
+    get closedLoop(): boolean;
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
     get colorsCSS(): string[];
