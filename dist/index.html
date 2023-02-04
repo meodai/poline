@@ -364,6 +364,7 @@
     }
     .l-sec__controls {
       margin-top: 2rem;
+      margin-bottom: 2rem;
     }
     code {
       position: relative;
@@ -818,34 +819,44 @@ poline.colorsCSS</code></pre>
             simple press of the <strong class="key">P</strong> key, you may <strong>add anchor</strong> points to your whims, and with the <strong class="key" aria-label="backspace">⌫</strong> 
             key, you may <strong>remove the last selected anchor</strong> point. So go forth, and let the magic unfold.
           </p>
-          <label>
-            <span class="t">Steps</span>
-            <input type="range" min="1" max="15" value="3" data-steps>
-          </label>
-          <label>
-            <span class="t">Closed Loop<input type="checkbox" data-loop></span>
-          </label>
-          <label>
-            <span><span class="t">Position fn X</span>(Hue / Light)</span>
-            <select data-select="x">
-            </select>
-          </label>
-          <label>
-            <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-            <select data-select="y">
-            </select>
-          </label>
-          <label>
-            <span><span class="t">Position fn Z</span> (Saturation)</span>
-            <select data-select="z">
-            </select>
-          </label>
-          <label>
-            <span class="t">Current Model</span>
-            <select data-models>
-            </select>
-          </label>
+          <p>
+            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key">C</strong>.
+          </p>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Steps</span>
+              <input type="range" min="1" max="15" value="3" data-steps>
+            </label>
+            <label>
+              <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+            </label>
+            <label>
+              <span><span class="t">Position fn X</span>(Hue / Light)</span>
+              <select data-select="x">
+              </select>
+            </label>
+            <label>
+              <span><span class="t">Position fn Y</span>(Hue / Light)</span>
+              <select data-select="y">
+              </select>
+            </label>
+            <label>
+              <span><span class="t">Position fn Z</span> (Saturation)</span>
+              <select data-select="z">
+              </select>
+            </label>
+            <label>
+              <span class="t">Current Model</span>
+              <select data-models>
+              </select>
+            </label>
+          </div>
           <button data-randomize>Randomize Anchors</button>
+          <p>
+            And remember, the full potential of the "<strong class="t">poline</strong>" playground 
+            is best unleashed on a desktop device. So gather your tools, and let the
+            mystical journey commence.
+          </p>
         </div>
       </aside>
 
@@ -885,7 +896,7 @@ poline.colorsCSS</code></pre>
 
   <script type="module">
     console.clear();
-    import { formatHex } from 'https://cdn.skypack.dev/culori';
+    import { formatHex, converter } from 'https://cdn.skypack.dev/culori';
     import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
     
     import {
@@ -893,6 +904,8 @@ poline.colorsCSS</code></pre>
       positionFunctions,
       randomHSLPair,
     } from "./index.mjs";
+
+    const toHSL = converter('hsl');
 
     const svgscale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
@@ -1233,6 +1246,28 @@ poline.colorsCSS</code></pre>
     if (e.key === 'p') {
       lastSelectedPoint = poline.addAnchorPoint({xyz: [lastX, lastY, lastY]});
       updateSVG();
+    }
+
+    if (e.key === 'c') {
+      if (!lastSelectedPoint) return;
+      const $color = document.createElement('input');
+      $color.type = 'color';
+      $color.classList.add('hidden-color-picker');
+      $color.setAttribute('aria-hidden', 'true');
+      $color.style.position = 'absolute';
+      $color.style.top = '-1000px';
+      $color.style.right = '-1000px';
+      $color.value = formatHex(lastSelectedPoint.hslCSS);
+      $color.addEventListener('input', () => {
+        const hslObj = toHSL($color.value);
+        poline.updateAnchorPoint({
+          point: lastSelectedPoint, color: [hslObj.h || 0, hslObj.s, hslObj.l]
+        });
+        
+        updateSVG();
+      });
+      document.body.appendChild($color);
+      $color.click();
     }
   });
 
