@@ -438,6 +438,7 @@
         background: rgba(255,255,255,.2);
         backdrop-filter: blur(5px);
         clip-path: circle(35% at 50% 50%);
+        border-left: none;
       }
       .poline-picker {
         height: 50vw;
@@ -468,8 +469,12 @@
     }
     @media (prefers-color-scheme: dark) {
       :root {
-      --bg: var(--dark);
-      --onBg: var(--light);
+        --bg: var(--dark);
+        --onBg: var(--light);
+      }
+
+      .l-demo {
+        border-left: 1px solid rgba(255, 255, 255, .1);
       }
     }
   </style>
