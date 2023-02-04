@@ -420,18 +420,38 @@
         position: fixed;
         top: 0%;
         width: 100%;
-        height: 55vh;
+        height: 50vh;
         border-left: none;
         z-index: 10;
+        background: rgba(255,255,255,.2);
+        backdrop-filter: blur(5px);
+        clip-path: circle(35% at 50% 50%);
       }
       .poline-picker {
         height: 50vw;
         width: 50vw;
       }
       .picker {
-        border: 7vw solid #fff;
-        margin-left: -7vw;
-        margin-top: -7vw;
+        /*border: 7vw solid #fff;*/
+        /*margin-left: -7vw;
+        margin-top: -7vw;*/
+      }
+      .drawer {
+        z-index: 11;
+        width: 100%;
+        height: 33%;
+        transform: none;
+        inset: 0;
+        bottom: 100%;
+        transform: translateY(-100%) translateY(var(--preview-width));
+      }
+      .drawer__preview {
+        width: 100%;
+        bottom: 0;
+        top: auto;
+        height: var(--preview-width);
+
+        background: linear-gradient(90deg, var(--prev));
       }
     }
   </style>
