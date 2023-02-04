@@ -411,6 +411,16 @@
     .toc li {
       margin: 0.5em 0 0;
     }
+    .key {
+      display: inline-block;
+      width: 1.5em;
+      height: 1.5em;
+      border-radius: 0.2em;
+      border: 1px solid rgba(0,0,0,.2);
+      box-shadow: 0 2px 0 rgba(0,0,0,.2);
+      background: var(--bg);
+      text-align: center;
+    }
     @media (orientation: portrait) {
       :root {
         font-size: calc(0.6rem + 0.5vw);
@@ -794,25 +804,20 @@ poline.colorsCSS</code></pre>
 } from 'https://unpkg.com/poline?module'</code></pre>
         </div>
       </article>
-      
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="theEnd">
-          <h2 id="theEnd">License</h2>
-          <p>
-            And thus, the tome of "<strong class="t">poline</strong>" has been written. 
-            Its mystical powers, steeped in the arcane knowledge of the ancients,
-            now reside within these pages. May this compendium serve you in your quest
-            for the ultimate color palette.
-          </p>
-          <p>
-            The project is <a href="https://github.com/meodai/poline/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT licensed</a> and open source.
-            If you find any bugs or have any suggestions please open an issue on <a href="https://github.com/meodai/poline/issues " target="_blank" rel="noopener noreferrer">GitHub</a>.
-          </p>
-        </div>
-      </article>
 
-      <div class="controls l-sec">
-        <div class="l-sec__inner">
+      <aside class="controls l-sec">
+        <div class="l-sec__inner" data-section="playground">
+          <h2 id="playground">Playground</h2>
+          <p>
+            Experience the magic of "<strong class="t">poline</strong>" for yourself, dear color explorer. 
+            The playground awaits your touch, where you may explore the
+            uncharted territories of color creation. Unleash your imagination, and let the sorcery begin!
+          </p>
+          <p>
+            And let not your journey end here, dear sorcerer. Interactive exploration awaits you in the playground below. With a
+            simple press of the <strong class="key">P</strong> key, you may <strong>add anchor</strong> points to your whims, and with the <strong class="key" aria-label="backspace">⌫</strong> 
+            key, you may <strong>remove the last selected anchor</strong> point. So go forth, and let the magic unfold.
+          </p>
           <label>
             <span class="t">Steps</span>
             <input type="range" min="1" max="15" value="3" data-steps>
@@ -842,7 +847,25 @@ poline.colorsCSS</code></pre>
           </label>
           <button data-randomize>Randomize Anchors</button>
         </div>
-      </div>
+      </aside>
+
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="theEnd">
+          <h2 id="theEnd">License</h2>
+          <p>
+            And thus, the tome of "<strong class="t">poline</strong>" has been written.
+            Its mystical powers, steeped in the arcane knowledge of the ancients,
+            now reside within these pages. May this compendium serve you in your quest
+            for the ultimate color palette.
+          </p>
+          <p>
+            The project is <a href="https://github.com/meodai/poline/blob/main/LICENSE" target="_blank"
+              rel="noopener noreferrer">MIT licensed</a> and open source.
+            If you find any bugs or have any suggestions please open an issue on <a
+              href="https://github.com/meodai/poline/issues " target="_blank" rel="noopener noreferrer">GitHub</a>.
+          </p>
+        </div>
+      </article>
     </section>
     <div class="l-demo">
       <div class="poline-picker">
@@ -936,7 +959,7 @@ poline.colorsCSS</code></pre>
     const $allSelect = document.querySelector('[data-select="all"]');
     const $models = document.querySelectorAll('[data-models]');
     const $loop = document.querySelectorAll('[data-loop]');
-    const $randomize = document.querySelector('[data-randomize]');
+    const $randomize = document.querySelectorAll('[data-randomize]');
     const $toc = document.querySelector('[data-toc]');
 
     $models.forEach($model => {
@@ -1066,7 +1089,6 @@ poline.colorsCSS</code></pre>
     $loop.forEach($l => {
       $l.checked = poline.closedLoop;
       $l.addEventListener('change', () => {
-        console.log('loop change')
         poline.closedLoop = $l.checked;
         updateSVG();
         $loop.forEach($l => {
@@ -1127,16 +1149,18 @@ poline.colorsCSS</code></pre>
       });
     });
 
-    $randomize.addEventListener('click', () => {
-      poline.anchorPoints.forEach(anchor => {
-        anchor.hsl = [
-          (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
-          Math.random(),
-          anchor.color[2] + (-.05 + Math.random() * .1)
-        ];
+    $randomize.forEach($randomize => {
+      $randomize.addEventListener('click', () => {
+        poline.anchorPoints.forEach(anchor => {
+          anchor.hsl = [
+            (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
+            Math.random(),
+            anchor.color[2] + (-.05 + Math.random() * .1)
+          ];
+        });
+        poline.updatePointPairs();
+        updateSVG();
       });
-      poline.updatePointPairs();
-      updateSVG();
     });
 
     let currentPoint = null;
