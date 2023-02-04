@@ -608,6 +608,22 @@
             The chosen function will determine the distribution of colors between the anchors.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="positionFunction"></code></pre>
+          <p>
+            If none is provided, "<strong class="t">Poline</strong>" will use the default function, which is a sinusoidal function.
+          </p>
+          <p>
+            The following position functions are available and can be included by importing the <strong>positionFunctions</strong> object from the "<strong class="t">Poline</strong>" module:
+            <ul>
+              <li>linearPosition</li>
+              <li>exponentialPosition</li>
+              <li>quadraticPosition</li>
+              <li>cubicPosition</li>
+              <li>quarticPosition</li>
+              <li>sinusoidalPosition <strong>(default)</strong></li>
+              <li>asinusoidalPosition</li>
+              <li>arcPosition</li>
+            </ul>
+          </p>
           <div class="l-sec__controls">
             <label>
               <span><span class="t">Position Fn</span></span>
@@ -621,9 +637,9 @@
         <div class="l-sec__inner" data-section="positionFunctions">
           <h2 id="positionFunctions">Arcs</h2>
           <p>
-            By defining the position functions for each axis, you can control the distribution of colors along each axis 
-            (<strong>positionFunctionX</strong>, <strong>positionFunctionY</strong>, <strong>positionFunctionZ</strong>)  and create a diverse range of color palettes, 
-            using the same anchor positions.
+            By defining <strong>different position functions for each axis</strong>, you can control the distribution of colors along each axis 
+            (<strong>positionFunctionX</strong>, <strong>positionFunctionY</strong>, <strong>positionFunctionZ</strong>). 
+            This will draw different arcs and create a diverse range of color palettes.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
 
@@ -1283,7 +1299,7 @@ poline.addAnchorPoint({
         });
       }
       poline.closedLoop = false;
-      poline.positionFunction = positionFunctions[fnx];
+      poline.positionFunction = positionFunctions.linearPosition;
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `import {
@@ -1291,12 +1307,8 @@ Poline, positionFunctions
 } from 'poline';
 
 new Poline({
-positionFunctionX: 
-  positionFunctions.${poline.positionFunctionX.name},
-positionFunctionY: 
-  positionFunctions.${poline.positionFunctionY.name},
-positionFunctionZ: 
-  positionFunctions.${poline.positionFunctionZ.name},
+  positionFunction: 
+    positionFunctions.linearPosition,
 });`;
       hljs.highlightElement($code);
       updateSVG();
@@ -1317,11 +1329,7 @@ positionFunctionZ:
       poline.positionFunctionZ = positionFunctions[fnz];
       poline.updatePointPairs();
       const $code = section.target.querySelector('[data-code]');
-      $code.innerHTML = `import {
-  Poline, positionFunctions
-} from 'poline';
-
-new Poline({
+      $code.innerHTML = `new Poline({
   positionFunctionX: 
     positionFunctions.${poline.positionFunctionX.name},
   positionFunctionY: 
