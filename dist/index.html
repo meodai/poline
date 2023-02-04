@@ -397,6 +397,43 @@
     .toc li {
       margin: 0.5em 0 0;
     }
+    @media (orientation: portrait) {
+      :root {
+        font-size: calc(0.6rem + 0.5vw);
+      }
+      h1, h2, h3 {
+        text-align: center;
+      }
+      h2, h3 {
+        margin-bottom: 1em;
+      }
+
+      .l-wrap {
+        display: block;
+      }
+      .l-menu {
+        width: 100%;
+        
+        padding: 30vh 10vw 20vh 10vw;
+      }
+      .l-demo {
+        position: fixed;
+        top: 0%;
+        width: 100%;
+        height: 55vh;
+        border-left: none;
+        z-index: 10;
+      }
+      .poline-picker {
+        height: 50vw;
+        width: 50vw;
+      }
+      .picker {
+        border: 7vw solid #fff;
+        margin-left: -7vw;
+        margin-top: -7vw;
+      }
+    }
   </style>
 </head>
 
