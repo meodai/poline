@@ -82,6 +82,8 @@ export declare class Poline {
     constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
     get numPoints(): number;
     set numPoints(numPoints: number);
+    set positionFunction(positionFunction: PositionFunction | PositionFunction[]);
+    get positionFunction(): PositionFunction | PositionFunction[];
     set positionFunctionX(positionFunctionX: PositionFunction);
     get positionFunctionX(): PositionFunction;
     set positionFunctionY(positionFunctionY: PositionFunction);

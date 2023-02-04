@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (xyz) => {
   const [x, y, z] = xyz;
@@ -56,27 +54,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 4);
+    return 1 - (1 - t) ** 4;
   }
-  return __pow(t, 4);
+  return t ** 4;
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 5);
+    return 1 - (1 - t) ** 5;
   }
-  return __pow(t, 5);
+  return t ** 5;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -92,7 +90,7 @@ var asinusoidalPosition = (t, reverse = false) => {
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - __pow(1 - t, 2));
+    return Math.sqrt(1 - (1 - t) ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -209,6 +207,34 @@ var Poline = class {
     }
     this._numPoints = numPoints + 2;
     this.updatePointPairs();
+  }
+  set positionFunction(positionFunction) {
+    if (Array.isArray(positionFunction)) {
+      if (positionFunction.length !== 3) {
+        throw new Error("Position function array must have 3 elements");
+      }
+      if (typeof positionFunction[0] !== "function" || typeof positionFunction[1] !== "function" || typeof positionFunction[2] !== "function") {
+        throw new Error("Position function array must have 3 functions");
+      }
+      this._positionFunctionX = positionFunction[0];
+      this._positionFunctionY = positionFunction[1];
+      this._positionFunctionZ = positionFunction[2];
+    } else {
+      this._positionFunctionX = positionFunction;
+      this._positionFunctionY = positionFunction;
+      this._positionFunctionZ = positionFunction;
+    }
+    this.updatePointPairs();
+  }
+  get positionFunction() {
+    if (this._positionFunctionX === this._positionFunctionY && this._positionFunctionX === this._positionFunctionZ) {
+      return this._positionFunctionX;
+    }
+    return [
+      this._positionFunctionX,
+      this._positionFunctionY,
+      this._positionFunctionZ
+    ];
   }
   set positionFunctionX(positionFunctionX) {
     this._positionFunctionX = positionFunctionX;
@@ -385,4 +411,3 @@ export {
   randomHSLPair,
   randomHSLTriple
 };
-//# sourceMappingURL=index.mjs.map

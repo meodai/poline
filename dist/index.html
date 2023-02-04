@@ -358,11 +358,12 @@
       height: 2px;
       background: var(--bg);
     }
-
     .l-sec__preview figcaption {
       display: none;
     }
-    
+    .l-sec__controls {
+      margin-top: 2rem;
+    }
     code {
       position: relative;
       display: block;
@@ -500,9 +501,7 @@
             The tome of "<strong class="t">Poline</strong>" documentation is a comprehensive guide to the arcane arts of color generation, 
             you will gain an understanding of how this tool creates its mystical and captivating palettes through the following sections.
           </p>
-          <ol data-toc class="toc">
-
-          </ol>
+          <ol data-toc class="toc"></ol>
         </div>
       </aside>
       <article class="l-sec">
@@ -524,7 +523,6 @@
             represented as a list of <strong>hsl</strong> values.</p-->
 
           <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
-          
         </div>
       </article>
       <article class="l-sec">
@@ -551,10 +549,12 @@
             The resulting palette is a product of points multiplied by the number of anchor pairs.
             It can be changed after initialization by setting the <strong>numPoints</strong> property on your "<strong class="t">Poline</strong>" instance.
           </p>
-          <label>
-            <span class="t">Steps</span>
-            <input type="range" min="1" max="15" value="4" data-steps>
-          </label>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Steps</span>
+              <input type="range" min="1" max="15" value="4" data-steps>
+            </label>
+          </div>
         </div>
       </article>
       <article class="l-sec">
@@ -590,24 +590,40 @@
             representation or an <strong>XYZ</strong> position array.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
-          <button data-randomize>Randomize Positions</button>
+          <div class="l-sec__controls">
+            <button data-randomize>Randomize Positions</button>
+          </div>
+        </div>
+      </article>
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="positionFunction">
+          <h2 id="positionFunction">Position Function</h2>
+          <p>
+            The <strong>position function</strong> in "<strong class="t">Poline</strong>" plays a crucial role in determining the <strong>distribution of colors between the anchors</strong>.
+            It works similar to easing functions and can be imported from the "<strong class="t">Poline</strong>" module.
+          </p>
+          <p>
+            A position function is a mathematical function that maps a value <strong>between 0 and 1</strong> to another value between 0 and 1.
+            By definition the same position function for all axes "<strong class="t">Poline</strong>" will draw a straight line between the anchors.
+            The chosen function will determine the distribution of colors between the anchors.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="positionFunction"></code></pre>
+          <div class="l-sec__controls">
+            <label>
+              <span><span class="t">Position Fn</span></span>
+              <select data-select="all">
+              </select>
+            </label>
+          </div>
         </div>
       </article>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="positionFunctions">
-          <h2 id="positionFunctions">Position Functions</h2>
+          <h2 id="positionFunctions">Arcs</h2>
           <p>
-            The <strong>position functions</strong> in "<strong class="t">Poline</strong>" play a crucial role in determining the <strong>distribution of colors between the anchors</strong>.
-            They work similar to easing functions and can be imported from the "<strong class="t">Poline</strong>" module.
-          </p>
-          <p>
-            A position function is a mathematical function that maps a value between 0 and 1 to another value between 0 and 1. 
             By defining the position functions for each axis, you can control the distribution of colors along each axis 
             (<strong>positionFunctionX</strong>, <strong>positionFunctionY</strong>, <strong>positionFunctionZ</strong>)  and create a diverse range of color palettes, 
             using the same anchor positions.
-          </p>
-          <p>
-            Alternatively, you can use a single position function for all axes (<strong>positionFunction</strong>) if you prefer a unified approach.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
 
@@ -623,21 +639,23 @@
             Any function that takes a <strong>number between 0 and 1</strong> and returns a number between 0 and 1 can be used as a <strong>position function</strong>.
             The second argument is called `reverse`. It is a boolean set to true on every second connection between anchors.
           </p-->
-          <label>
-            <span><span class="t">Position fn X</span>(Hue / Light)</span>
-            <select data-select="x">
-            </select>
-          </label>
-          <label>
-            <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-            <select data-select="y">
-            </select>
-          </label>
-          <label>
-            <span><span class="t">Position fn Z</span> (Saturation)</span>
-            <select data-select="z">
-            </select>
-          </label>
+          <div class="l-sec__controls">
+            <label>
+              <span><span class="t">Position fn X</span>(Hue / Light)</span>
+              <select data-select="x">
+              </select>
+            </label>
+            <label>
+              <span><span class="t">Position fn Y</span>(Hue / Light)</span>
+              <select data-select="y">
+              </select>
+            </label>
+            <label>
+              <span><span class="t">Position fn Z</span> (Saturation)</span>
+              <select data-select="z">
+              </select>
+            </label>
+          </div>
         </div>
       </article>
       <article class="l-sec">
@@ -651,9 +669,11 @@
           <p>
             It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
           </p>
-          <label>
-            <span class="t">Closed Loop<input type="checkbox" checked="checked" data-loop></span>
-          </label>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Closed Loop<input type="checkbox" checked="checked" data-loop></span>
+            </label>
+          </div>
         </div>
       </article>
       <article class="l-sec">
@@ -701,9 +721,11 @@
           </p>
           <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
 poline.colorsCSS</code></pre>
-          <figure class="l-sec__preview">
-            <figcaption>Colors as HSL</figcaption>
-          </figure>
+          <div class="l-sec__controls">
+            <figure class="l-sec__preview">
+              <figcaption>Colors as HSL</figcaption>
+            </figure>
+          </div>
         </div>
       </article>
 
@@ -725,11 +747,13 @@ poline.colorsCSS</code></pre>
             To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
             However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
           <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
-          <label>
-            <span class="t">Color Model</span>
-            <select data-models>
-            </select>
-          </label>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Color Model</span>
+              <select data-models>
+              </select>
+            </label>
+          </div>
         </div>
       </article>
 
@@ -887,6 +911,7 @@ poline.colorsCSS</code></pre>
     const $xSelect = document.querySelector('[data-select="x"]');
     const $ySelect = document.querySelector('[data-select="y"]');
     const $zSelect = document.querySelector('[data-select="z"]');
+    const $allSelect = document.querySelector('[data-select="all"]');
     const $models = document.querySelector('[data-models]');
     const $loop = document.querySelector('[data-loop]');
     const $randomize = document.querySelector('[data-randomize]');
@@ -906,6 +931,7 @@ poline.colorsCSS</code></pre>
     let fnx = 'sinusoidalPosition';
     let fny = 'quadraticPosition';
     let fnz = 'linearPosition';
+    let fnAll = 'sinusoidalPosition';
 
     $selects.forEach($select => {
       Object.keys(positionFunctions).forEach(fn => {
@@ -913,6 +939,7 @@ poline.colorsCSS</code></pre>
         if ($select === $xSelect && fn === fnx) $option.selected = true;
         if ($select === $ySelect && fn === fny) $option.selected = true;
         if ($select === $zSelect && fn === fnz) $option.selected = true;
+        if ($select === $allSelect && fn === fnAll) $option.selected = true;
         $option.value = fn;
         $option.textContent = fn;
         $select.appendChild($option);
@@ -1020,6 +1047,13 @@ poline.colorsCSS</code></pre>
     $steps.addEventListener('input', () => {
       steps = parseInt($steps.value);
       poline.numPoints = steps;
+      updateSVG();
+    });
+
+
+    $allSelect.addEventListener('input', () => {
+      fnAll = $allSelect.value;
+      poline.positionFunction = positionFunctions[fnAll];
       updateSVG();
     });
 
@@ -1238,6 +1272,35 @@ poline.addAnchorPoint({
       hljs.highlightElement($code);
       updateSVG();
     }
+  },
+  {
+    section: 'positionFunction',
+    fn: (section) => {
+      console.log('Position Function');
+      if (poline.anchorPoints.length > 3) {
+        poline.anchorPoints.forEach((anchor, i) => {
+          if (i > 1) poline.removeAnchorPoint({ point: anchor });
+        });
+      }
+      poline.closedLoop = false;
+      poline.positionFunction = positionFunctions[fnx];
+      poline.updatePointPairs();
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `import {
+Poline, positionFunctions
+} from 'poline';
+
+new Poline({
+positionFunctionX: 
+  positionFunctions.${poline.positionFunctionX.name},
+positionFunctionY: 
+  positionFunctions.${poline.positionFunctionY.name},
+positionFunctionZ: 
+  positionFunctions.${poline.positionFunctionZ.name},
+});`;
+      hljs.highlightElement($code);
+      updateSVG();
+    },
   },
   {
     section: 'positionFunctions',

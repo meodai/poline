@@ -237,6 +237,34 @@ var poline = (() => {
       this._numPoints = numPoints + 2;
       this.updatePointPairs();
     }
+    set positionFunction(positionFunction) {
+      if (Array.isArray(positionFunction)) {
+        if (positionFunction.length !== 3) {
+          throw new Error("Position function array must have 3 elements");
+        }
+        if (typeof positionFunction[0] !== "function" || typeof positionFunction[1] !== "function" || typeof positionFunction[2] !== "function") {
+          throw new Error("Position function array must have 3 functions");
+        }
+        this._positionFunctionX = positionFunction[0];
+        this._positionFunctionY = positionFunction[1];
+        this._positionFunctionZ = positionFunction[2];
+      } else {
+        this._positionFunctionX = positionFunction;
+        this._positionFunctionY = positionFunction;
+        this._positionFunctionZ = positionFunction;
+      }
+      this.updatePointPairs();
+    }
+    get positionFunction() {
+      if (this._positionFunctionX === this._positionFunctionY && this._positionFunctionX === this._positionFunctionZ) {
+        return this._positionFunctionX;
+      }
+      return [
+        this._positionFunctionX,
+        this._positionFunctionY,
+        this._positionFunctionZ
+      ];
+    }
     set positionFunctionX(positionFunctionX) {
       this._positionFunctionX = positionFunctionX;
       this.updatePointPairs();
