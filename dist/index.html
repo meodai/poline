@@ -36,8 +36,15 @@
   
   <style>
     :root {
-      background: #fff;
-      color: #202124;
+
+      --light: #fff;
+      --dark: #202124;
+
+      --bg: var(--light);
+      --onBg: var(--dark);
+
+      background: var(--bg);
+      color: var(--onBg);
 
       font-family: 'Work Sans', sans-serif;
       font-weight: 300;
@@ -48,7 +55,7 @@
     }
 
     a {
-      color: #202124;
+      color: var(--onBg);
     }
 
     a:hover {
@@ -112,7 +119,7 @@
       left: 50%;
       z-index: 3;
       transition: transform 0.5s cubic-bezier(0.3, 0.7, 0, 1);
-      box-shadow: 0 0 0 0.7vmin #fff;
+      box-shadow: 0 0 0 0.7vmin var(--bg);
       pointer-events: none;
       transform: translate(-50%, -50%) scale(0.4);
     }
@@ -124,7 +131,7 @@
       --s: .4;
       --l: .5;
       border-radius: 50%;
-      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), conic-gradient(from 90deg, var(--grad));
+      background: radial-gradient(closest-side, var(--onBg), rgba(255, 255, 255, 0), var(--bg)), conic-gradient(from 90deg, var(--grad));
     }
 
     svg {
@@ -136,14 +143,14 @@
     }
 
     svg line.wheel__line {
-      stroke: #202124;
+      stroke: var(--onBg);
       stroke-width: 0.25;
       stroke-dasharray: 0.5 0.5;
       pointer-events: none;
     }
 
     svg circle {
-      stroke: #000;
+      stroke: var(--onBg);
       stroke-width: 0.25;
     }
 
@@ -202,7 +209,7 @@
       left: 91%;
       right: 6vmin;
       height: 1px;
-      background: #202124;
+      background: var(--onBg);
       transform: translateY(50%);
     }
 
@@ -213,7 +220,7 @@
       left: 90%;
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
-      border: 1px solid #fff;
+      border: 1px solid var(--bg);
       transform: translate(-50%, 50%) scale(1);
       transition: transform 0.2s ease-in-out;
     }
@@ -247,8 +254,8 @@
 
     button {
       font-family: 'Aboreto', cursive;
-      background-color: #202125;
-      color: #fff;
+      background-color: var(--onBg);
+      color: var(--bg);
     }
 
     .l-wrap {
@@ -277,7 +284,7 @@
       left: 0;
       bottom: 0;
       width: 30%;
-      background: #202125;
+      background: var(--onBg);
       transform: translateX(calc(-100% + var(--preview-width)));
     }
 
@@ -349,7 +356,7 @@
       right: 0;
       top: calc(50% - 1px);
       height: 2px;
-      background: #fff;
+      background: var(--bg);
     }
 
     .l-sec__preview figcaption {
@@ -360,12 +367,12 @@
       position: relative;
       display: block;
       font-size: .85rem;
-      color: #000;
+      color: var(--onBg);
       background: #fff;
       padding: 1.5em 1.2em;
       border-radius: 0.2em;
       border: 1px solid #e0e0e0;
-      background-color: #fff;
+      background-color: var(--bg);
     }
     .code-ex {
       position: relative;
@@ -457,6 +464,12 @@
         height: var(--preview-width);
 
         background: linear-gradient(90deg, var(--prev));
+      }
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+      --bg: var(--dark);
+      --onBg: var(--light);
       }
     }
   </style>
