@@ -303,12 +303,25 @@ var poline = (() => {
       this.updatePointPairs();
       return newAnchor;
     }
-    removeAnchorPoint(point) {
-      const index = this.anchorPoints.indexOf(point);
-      if (index > -1) {
-        this.anchorPoints.splice(index, 1);
+    removeAnchorPoint({
+      point,
+      index
+    }) {
+      if (!point && index === void 0) {
+        throw new Error("Must provide a point or index");
       }
-      this.updatePointPairs();
+      let apid;
+      if (index !== void 0) {
+        apid = index;
+      } else if (point) {
+        apid = this.anchorPoints.indexOf(point);
+      }
+      if (apid > -1 && apid < this.anchorPoints.length) {
+        this.anchorPoints.splice(apid, 1);
+        this.updatePointPairs();
+      } else {
+        throw new Error("Point not found");
+      }
     }
     updateAnchorPoint({
       point,

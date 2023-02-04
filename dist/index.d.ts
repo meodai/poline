@@ -94,7 +94,10 @@ export declare class Poline {
     addAnchorPoint({ xyz, color, insertAtIndex, }: ColorPointCollection & {
         insertAtIndex: number;
     }): ColorPoint;
-    removeAnchorPoint(point: ColorPoint): void;
+    removeAnchorPoint({ point, index, }: {
+        point?: ColorPoint;
+        index?: number;
+    }): void;
     updateAnchorPoint({ point, pointIndex, xyz, color, }: {
         point?: ColorPoint;
         pointIndex?: number;

@@ -442,12 +442,31 @@ export class Poline {
     return newAnchor;
   }
 
-  removeAnchorPoint(point: ColorPoint): void {
-    const index = this.anchorPoints.indexOf(point);
-    if (index > -1) {
-      this.anchorPoints.splice(index, 1);
+  removeAnchorPoint({
+    point,
+    index,
+  }: {
+    point?: ColorPoint;
+    index?: number;
+  }): void {
+    if (!point && index === undefined) {
+      throw new Error("Must provide a point or index");
     }
-    this.updatePointPairs();
+
+    let apid;
+
+    if (index !== undefined) {
+      apid = index;
+    } else if (point) {
+      apid = this.anchorPoints.indexOf(point);
+    }
+
+    if (apid > -1 && apid < this.anchorPoints.length) {
+      this.anchorPoints.splice(apid, 1);
+      this.updatePointPairs();
+    } else {
+      throw new Error("Point not found");
+    }
   }
 
   updateAnchorPoint({

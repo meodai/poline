@@ -678,6 +678,18 @@ poline.colorsCSS</code></pre>
           </figure>
         </div>
       </article>
+
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="removeAnchor">
+          <h2 id="getColors">Remove Anchors</h2>
+          <p>
+            To remove an anchor, you can use the <strong>removeAnchorPoint</strong> method. 
+            It either takes an <strong>anchor</strong> reference or an <strong>index</strong> as an argument.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="removeAnchor"></code></pre>
+        </div>
+      </article>
+
       <article class="l-sec">
         <div class="l-sec__inner" data-section="colorSpace">
           <h2 id="colorSpace">Color Model</h2>
@@ -1038,7 +1050,7 @@ poline.colorsCSS</code></pre>
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (!lastSelectedPoint) return;
-      poline.removeAnchorPoint(lastSelectedPoint);
+      poline.removeAnchorPoint({point: lastSelectedPoint});
       updateSVG();
     }
 
@@ -1117,7 +1129,7 @@ poline.colorsCSS</code></pre>
       console.log('anchors');
       if (poline.anchorPoints.length > 2) {
         poline.anchorPoints.forEach((anchor, i) => {
-          if (i > 1) poline.removeAnchorPoint(anchor);
+          if (i > 1) poline.removeAnchorPoint({point: anchor});
         });
       }
       poline.addAnchorPoint({color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
@@ -1167,7 +1179,7 @@ poline.addAnchorPoint({
       console.log('Position Functions');
       if (poline.anchorPoints.length > 3) {
         poline.anchorPoints.forEach((anchor, i) => {
-          if (i > 1) poline.removeAnchorPoint(anchor);
+          if (i > 1) poline.removeAnchorPoint({point: anchor});
         });
       }
       poline.closedLoop = false;
@@ -1242,6 +1254,33 @@ new Poline({
       console.log('closestAnchor');
       const $code = section.target.querySelector('[data-code]');
       hljs.highlightElement($code);
+    },
+  },
+  {
+    section: 'removeAnchor',
+    fn: (section) => {
+      console.log('removeAnchor');
+
+      poline.closedLoop = false;
+      if (poline.anchorPoints.length < 3) {
+        while (poline.anchorPoints.length < 3) {
+          poline.addAnchorPoint({color: [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });
+        }
+      }
+
+      poline.removeAnchorPoint({index: poline.anchorPoints.length - 1});
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `poline.removeAnchorPoint({
+  point: poline.anchorPoints[
+    poline.anchorPoints.length - 1
+  ]
+});
+  // or
+poline.removeAnchorPoint({
+  index: poline.anchorPoints.length - 1
+});`;
+      hljs.highlightElement($code);
+      updateSVG();
     },
   },
   {
