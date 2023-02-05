@@ -1,6 +1,6 @@
 <h1><a href="https://meodai.github.io/poline/"><img width="200" src="https://meodai.github.io/poline/poline-logo.png" alt="poline" /></a></h1>
 
-color palette generator mico-lib
+## Esoteric Color palette Generator Mico-Lib
 
 "**poline**" is an enigmatic color palette generator, that harnesses the mystical witchcraft of polar coordinates. Its methodology, defying conventional color science, is steeped in the esoteric knowledge of the early 20th century. This magical technology defies explanation, drawing lines between anchors to produce visually striking and otherworldly palettes. It is an indispensable tool for the modern generative sorcerer, and a delight for the eye.
 
@@ -23,7 +23,7 @@ new Poline({
 ## Points
 The magic of "**Poline**" is revealed through its technique of drawing lines between anchor points. The richness of the palette is determined by the number of **points**, with each connection producing a unique color.
 
-As shown in the illustration, increasing the number of **points** will yield an even greater array of colors. By default, four points are used, but this can easily be adjusted through the 'numPoints' property on your Poline instance, as demonstrated in the code example.
+Increasing the number of **points** will yield an even greater array of colors. By default, four points are used, but this can easily be adjusted through the 'numPoints' property on your Poline instance, as demonstrated in the code example.
 
 ```js
 new Poline({
