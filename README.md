@@ -6,8 +6,8 @@ color palette generator mico-lib
 
 ![Poline DEMO UI](./dist/poline-wheel.png)
 
-## Summoning
 
+## Summoning
 The use of "**Poline**" begins with the invocation of its command, which can be performed with or without arguments. If called without, the tool will generate a mesmerizing palette featuring two randomly selected **anchors.**
 On the other hand, one can choose to provide their own **anchor** points, represented as a list of **hsl** values, for a more personal touch. The power to shape and mold the colors lies in your hands."
 
@@ -21,7 +21,6 @@ new Poline({
 ```
 
 ## Points
-
 The magic of "**Poline**" is revealed through its technique of drawing lines between anchor points. The richness of the palette is determined by the number of **points**, with each connection producing a unique color.
 
 As shown in the illustration, increasing the number of **points** will yield an even greater array of colors. By default, four points are used, but this can easily be adjusted through the 'numPoints' property on your Poline instance, as demonstrated in the code example.
