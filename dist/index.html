@@ -469,14 +469,6 @@
         height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
         height: fill-available;
       }
-      .l-wrap::before {
-        content: '';
-        position: absolute;
-        height: 5vh;
-        left: 0; right: 0;
-        top: 40vh;
-        background: linear-gradient(var(--bg), transparent 100%);
-      }
       .l-menu {
         position: absolute;
         width: 100%;
@@ -515,16 +507,16 @@
       }
       .drawer {
         position: absolute;
-        z-index: 11;
-        width: 40%;
-        height: 33%;
-        transform: none;
+        z-index: 1;
+        width: 100%;
         inset: 0;
-        top: 40vh;
-        transform: translateY(-100%) translateY(calc(var(--preview-width) / 4)) translateX(-50%);
+        top: 43vh;
+        bottom: auto;
+        transform: translateY(max(-43vh, calc(-1 * var(--scroll-y, 0px)))) translateY(-30%) translateX(-50%);
         height: calc(var(--preview-width) / 2);
         left: 50%;
         background: none;
+        will-change: transform;
       }
       .drawer__preview {
         position: relative;
@@ -536,6 +528,13 @@
 
       }
       .drawer__preview::before {
+        left: -1rem;
+        right: -1rem;
+        top: -1rem;
+        bottom: -1rem;
+        filter: blur(15px);
+        background: linear-gradient(90deg, var(--prev));
+        opacity: .5;
         display: none;
       }
     }
@@ -558,7 +557,7 @@
 
 <body>
   <main class="l-wrap">
-    <section class="l-menu">
+    <section class="l-menu" data-menu>
       <div class="l-sec l-sec--intro">
         <div class="l-sec__inner" data-section="intro">
           <h1>Poline</h1>
@@ -1745,6 +1744,13 @@ const LCHColors = [...poline.colors].map(
 
   sections.forEach(section => {
     observer.observe(section);
+  });
+
+  const $dmenu = document.querySelector('[data-menu]');
+
+  $dmenu.addEventListener('scroll', (e) => {
+    const scrollY = $dmenu.scrollTop;
+    document.documentElement.style.setProperty('--scroll-y', `${scrollY}px`);
   });
   </script>
 </body>
