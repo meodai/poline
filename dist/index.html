@@ -54,6 +54,16 @@
       font-size: calc(0.4rem + 0.5vw);
     }
 
+    ::-moz-selection { 
+      color: var(--c1);
+      background: var(--c0);
+    }
+
+    ::selection {
+      color: var(--c1);
+      background: var(--c0);
+    }
+
     a {
       color: var(--onBg);
     }
@@ -603,7 +613,7 @@
             The choice is yours, whether to provide your own anchor points during
             initialization or to allow "<strong class="t">Poline</strong>" to generate a random selection for you by omitting the 'anchorColors' argument. The
             versatility of "<strong class="t">Poline</strong>" extends beyond its initial setup, as you can also add anchors to your palette at any time using
-            the '<strong>addAnchor</strong>' method. This method accepts either a <strong>color</strong> as HSL array values or an array of <strong>X, Y, Z</strong> coordinates, 
+            the '<strong>addAnchorPoint</strong>' method. This method accepts either a <strong>color</strong> as HSL array values or an array of <strong>X, Y, Z</strong> coordinates, 
             further expanding the possibilities of your color creation.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="anchors"></code></pre>
@@ -676,7 +686,6 @@
             This will draw different arcs and create a diverse range of color palettes.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
-
           <!--p>
             The <strong>position functions</strong> are used to determine the position of the 
             <strong>points</strong> between the <strong>anchors</strong>. The <strong>position functions</strong> 
@@ -1117,6 +1126,16 @@ poline.colorsCSS</code></pre>
         '--prev-smooth',
         colors.join(',')
       )
+
+      document.documentElement.style.setProperty(
+        '--c0',
+        colors[colors.length - 1]
+      );
+
+      document.documentElement.style.setProperty(
+        '--c1',
+        colors[0]
+      );
     }
 
     updateSVG();
