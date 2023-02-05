@@ -463,8 +463,7 @@
         margin-bottom: 1em;
       }
       .l-wrap {
-        display: flex;
-        flex-direction: column-reverse;
+        display: block;
         height: 100%;
         height: -moz-available;          /* WebKit-based browsers will ignore this. */
         height: -webkit-fill-available;  /* Mozilla-based browsers will ignore this. */
@@ -479,26 +478,26 @@
         background: linear-gradient(var(--bg), transparent 100%);
       }
       .l-menu {
+        position: absolute;
         width: 100%;
-        flex: 0 1 60vh;
-        height: 60vh;
-        padding: 10vh 10vw 20vh 10vw;
+        max-height: 100%;
+        padding: 50vh 10vw 20vh 10vw;
         overflow-y: scroll;
         -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
       }
       .l-sec--intro {
         padding-top: 0;
       }
       .l-demo {
-        position: relative;
+        position: absolute;
         width: 100%;
         height: 40vh;
-        flex: 0 0 40vh;
         border-left: none;
         z-index: 10;
-        background: rgba(255,255,255,.2);
+        background: rgba(255,255,255,.5);
         border-left: none;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
       }
       .poline-picker {
         height: 27vh;
@@ -544,7 +543,7 @@
 
       .l-demo {
         border-left: 1px solid rgba(255, 255, 255, .1);
-        background-color: rgba(13,13,14,.1);
+        background-color: rgba(13,13,14,.05);
       }
     }
   </style>
