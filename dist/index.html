@@ -402,7 +402,7 @@
       font-size: 1em;
       list-style-type: upper-roman;
       font-family: 'Aboreto', cursive;
-      margin: 2em 0 0;
+      margin: 3em 0 0;
       padding: 0;
     }
 
@@ -410,7 +410,7 @@
       font-size: 1em;
       font-family: 'Work Sans', sans-serif;
     }
-    .toc li {
+    .toc li + li {
       margin: 0.5em 0 0;
     }
     .key {
@@ -509,8 +509,9 @@
           </p>
         </div>
       </div>
-      <aside class="l-sec" aria-label="Table of Contents">
-        <div class="l-sec__inner">
+
+      <aside class="l-sec">
+        <div class="l-sec__inner" aria-label="Table of Contents">
           <p>
             The tome of "<strong class="t">Poline</strong>" documentation is a comprehensive guide to the arcane arts of color generation, 
             you will gain an understanding of how this tool creates its mystical and captivating palettes through the following sections.
@@ -518,6 +519,24 @@
           <ol data-toc class="toc"></ol>
         </div>
       </aside>
+
+
+      <article class="l-sec">
+        <div class="l-sec__inner">
+          <h2>Terminology &amp; Working Principles</h2>
+          <p>
+            "<strong class="t">Poline</strong>" is a esoteric micro-library written in TypeScript</strong>
+          <p>
+          <p>
+            In "<strong class="t">Poline</strong>", <strong>anchors</strong> represent the points that the lines are drawn
+            between.
+            The number of <strong>points</strong> determines the number of colors generated between
+            each pair of anchors. The more points, the more colors generated. The positions of these points are determined by
+            <strong>position functions</strong>.
+          </p>
+        </div>
+      </article>
+
       <article class="l-sec">
         <div class="l-sec__inner" data-section="summoning">
           <h2 id="summoning">Summoning</h2>
@@ -528,14 +547,8 @@
           <p>
             On the other hand, one can choose to provide their own <strong>anchor</strong> points, 
             represented as a list of <strong>hsl</strong> values, for a more personal touch. 
-            The power to shape and mold the colors lies in your hands."
+            The power to shape and mold the colors lies in your hands.
           </p>
-          <!--p>
-            When summoning a "<strong class="t">poline</strong>" without providing any arguments. 
-            It will generate a palette with two random <strong>anchors</strong>. However, you can also
-            provide a list of <strong>anchors</strong> to the function. The <strong>anchors</strong> are
-            represented as a list of <strong>hsl</strong> values.</p-->
-
           <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
         </div>
       </article>
