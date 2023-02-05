@@ -552,6 +552,11 @@
             The power to shape and mold the colors lies in your hands.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
+          <p>
+            To create a palette, "<strong class="t">Poline</strong>" requires at least two anchor points, but the number of anchors you can provide is limitless.
+            The key to remember is that the more anchors you provide, the more challenging it becomes to generate a harmonious color
+            palette.
+          </p>
         </div>
       </article>
       <article class="l-sec">
@@ -1342,6 +1347,7 @@ poline.colorsCSS</code></pre>
     }, ${
       poline.anchorPoints[1].color[2].toFixed(2)
     }],
+    //... more colors
   ],
 });`;
 
@@ -1405,8 +1411,11 @@ poline.addAnchorPoint({
       poline.closedLoop = true;
       updateSVG();
       const $code = section.target.querySelector('[data-code]');
-      $code.innerHTML = `poline.closedLoop = true;
-`;
+      $code.innerHTML = `let poline = new Poline({
+  closedLoop: true,
+});
+// or
+poline.closedLoop = true;`;
       hljs.highlightElement($code);
       updateSVG();
     }
