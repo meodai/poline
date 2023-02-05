@@ -438,7 +438,8 @@ var poline = (() => {
       this.updatePointPairs();
     }
   };
-  if (typeof p5 !== "undefined") {
+  var { p5 } = globalThis;
+  if (p5) {
     const poline = new Poline();
     p5.prototype.poline = poline;
     const polineColors = poline.colorsCSS.map((c) => p5.Color(c));

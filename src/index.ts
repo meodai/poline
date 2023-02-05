@@ -613,7 +613,8 @@ export class Poline {
   }
 }
 
-const { p5 } = (globalThis as any);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const { p5 } = globalThis as any;
 
 if (p5) {
   const poline = new Poline();
