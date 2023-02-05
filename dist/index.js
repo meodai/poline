@@ -429,6 +429,7 @@ var poline = (() => {
   };
   var { p5 } = globalThis;
   if (p5) {
+    console.info("p5 detected, adding poline to p5 prototype");
     const poline = new Poline();
     p5.prototype.poline = poline;
     const polineColors = poline.colorsCSS.map((c) => p5.Color(c));
