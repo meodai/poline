@@ -613,14 +613,12 @@ export class Poline {
   }
 }
 
-// @ts-ignore
-if (typeof p5 !== "undefined") {
+const { p5 } = (globalThis as any);
+
+if (p5) {
   const poline = new Poline();
-  // @ts-ignore
   p5.prototype.poline = poline;
-  // @ts-ignore
   const polineColors = poline.colorsCSS.map((c) => p5.Color(c));
-  // @ts-ignore
   p5.prototype.polineColors = polineColors;
 
   globalThis.poline = poline;
