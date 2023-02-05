@@ -241,17 +241,29 @@
     }
 
     label {
-      display: block;
-      margin: 1rem 0;
+      display: flex;
+      margin: 1.5rem 0;
       font-size: .8rem;
+      justify-content: space-between;
+    }
+    label i {
+      text-align: right;
+      font-style: normal;
+      background-color: var(--bg);
     }
     label .t {
       display: block;
       margin: 0;
       font-size: 1.25rem;
+      flex: 0 1 auto;
+      background-color: var(--bg);
+      padding-right: .5ex;
+    }
+    label > *:nth-child(2) {
+      flex: 0 0 5rem;
+      margin-left: 1rem;
     }
     select {
-      margin-top: 1em;
       display: block;
       padding: 0;
       border: none;
@@ -261,7 +273,7 @@
       font-size: 1rem;
       text-decoration: underline;
       background: none;
-      
+      text-align: right;
     }
 
     button {
@@ -596,7 +608,7 @@
           <div class="l-sec__controls">
             <label>
               <span class="t">Steps</span>
-              <input type="range" min="1" max="15" value="4" data-steps>
+              <i><input type="range" min="1" max="15" value="4" data-steps></i>
             </label>
           </div>
         </div>
@@ -671,8 +683,10 @@
           <div class="l-sec__controls">
             <label>
               <span><span class="t">Position Fn</span></span>
-              <select data-select="all">
-              </select>
+              <i>
+                <select data-select="all">
+                </select>
+              </i>
             </label>
           </div>
         </div>
@@ -701,18 +715,18 @@
           <div class="l-sec__controls">
             <label>
               <span><span class="t">Position fn X</span>(Hue / Light)</span>
-              <select data-select="x">
-              </select>
+              <i><select data-select="x">
+              </select></i>
             </label>
             <label>
               <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-              <select data-select="y">
-              </select>
+              <i><select data-select="y">
+              </select></i>
             </label>
             <label>
               <span><span class="t">Position fn Z</span> (Saturation)</span>
-              <select data-select="z">
-              </select>
+              <i><select data-select="z">
+              </select></i>
             </label>
           </div>
         </div>
@@ -730,7 +744,8 @@
           </p>
           <div class="l-sec__controls">
             <label>
-              <span class="t">Closed Loop<input type="checkbox" checked="checked" data-loop></span>
+              <span class="t">Closed Loop</span>
+              <i><input type="checkbox" checked="checked" data-loop></i>
             </label>
           </div>
         </div>
@@ -809,8 +824,8 @@ poline.colorsCSS</code></pre>
           <div class="l-sec__controls">
             <label>
               <span class="t">Current Model</span>
-              <select data-models>
-              </select>
+              <i><select data-models>
+              </select></i>
             </label>
           </div>
         </div>
@@ -856,33 +871,34 @@ poline.colorsCSS</code></pre>
           <div class="l-sec__controls">
             <label>
               <span class="t">Steps</span>
-              <input type="range" min="1" max="15" value="3" data-steps>
+              <i><input type="range" min="1" max="15" value="3" data-steps></i>
             </label>
             <label>
-              <span class="t">Closed Loop<input type="checkbox" data-loop></span>
+              <span class="t">Closed Loop</span>
+              <i><input type="checkbox" data-loop></i>
             </label>
             <label>
               <span><span class="t">Position fn X</span>(Hue / Light)</span>
-              <select data-select="x">
-              </select>
+              <i><select data-select="x">
+              </select></i>
             </label>
             <label>
               <span><span class="t">Position fn Y</span>(Hue / Light)</span>
-              <select data-select="y">
-              </select>
+              <i><select data-select="y">
+              </select></i>
             </label>
             <label>
               <span><span class="t">Position fn Z</span> (Saturation)</span>
-              <select data-select="z">
-              </select>
+              <i><select data-select="z">
+              </select></i>
             </label>
             <label>
               <span class="t">Current Model</span>
-              <select data-models>
-              </select>
+              <i><select data-models>
+              </select></i>
             </label>
+            <button data-randomize>Randomize Anchors</button>
           </div>
-          <button data-randomize>Randomize Anchors</button>
           <p>
             And remember, the full potential of the "<strong class="t">poline</strong>" playground 
             is best unleashed on a desktop device. So gather your tools, and let the
