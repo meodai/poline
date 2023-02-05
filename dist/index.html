@@ -837,7 +837,7 @@ poline.colorsCSS</code></pre>
             key, you may <strong>remove the last selected anchor</strong> point. So go forth, and let the magic unfold.
           </p>
           <p>
-            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key">C</strong>.
+            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key">C</strong>, or use the <strong class="key" aria-label="left arrow">←</strong> and <strong class="key" aria-label="right arrow">→</strong> keys to change the hue of all colors.
           </p>
           <div class="l-sec__controls">
             <label>
@@ -1285,6 +1285,16 @@ poline.colorsCSS</code></pre>
       });
       document.body.appendChild($color);
       $color.click();
+    }
+
+    if (e.key === 'ArrowLeft') {
+      poline.shiftHue(-2)
+      updateSVG();
+    }
+
+    if (e.key === 'ArrowRight') {
+      poline.shiftHue(2)
+      updateSVG();
     }
   });
 
