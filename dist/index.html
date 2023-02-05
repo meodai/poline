@@ -494,20 +494,24 @@
         height: 40vh;
         border-left: none;
         z-index: 10;
-        background: rgba(255,255,255,.5);
         border-left: none;
+      }
+      .l-demo::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+
+        background: rgba(255,255,255,.5);
         backdrop-filter: blur(5px);
         -webkit-backdrop-filter: blur(5px);
+
+        margin-top: -1vh;
+        clip-path: circle(17vh at 50% 50%);
       }
       .poline-picker {
         height: 27vh;
         width: 27vh;
         margin-top: -1vh;
-      }
-      .picker {
-        /*border: 7vw solid #fff;*/
-        /*margin-left: -7vw;
-        margin-top: -7vw;*/
       }
       .drawer {
         position: absolute;
@@ -543,7 +547,10 @@
 
       .l-demo {
         border-left: 1px solid rgba(255, 255, 255, .1);
-        background-color: rgba(13,13,14,.05);
+      }
+
+      .l-demo::before {
+        background: rgba(13,13,14,.05);
       }
     }
   </style>
