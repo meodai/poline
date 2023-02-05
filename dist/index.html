@@ -1117,6 +1117,59 @@ poline.colorsCSS</code></pre>
       closedLoop: false,
     });
 
+
+    // favicon
+    let $favicon = document.querySelector('[rel="icon"]');
+    const $can = document.createElement('canvas');
+
+    $can.width = 256;
+    $can.height = 256;
+
+    let centerX = $can.width / 2;
+    let centerY = $can.height / 2;
+
+    const context = $can.getContext("2d");
+    const x = $can.width / 2;
+    const y = $can.height / 2;
+    const radius = Math.min($can.width, $can.height) * .5;
+    const counterClockwise = false;
+    let parts = 12;
+    let fraction = 360 / parts;
+    const overlapFix = .5;
+
+
+    const paintFavicon = (i = 0) => {
+      parts = poline.colors.length;
+      fraction = 360 / parts;
+
+      context.clearRect(0, 0, $can.width, $can.height);
+
+      context.beginPath();
+      context.arc(x, y, radius, 0, 2 * Math.PI);
+      context.closePath();
+      context.fillStyle = `rgba(255,255,255,.5)`;
+      context.fill();
+
+      for (let angle = 0; angle < 360; angle += fraction) {
+        let startAngle = (i + angle - 90 - fraction - overlapFix - (fraction * .5)) * Math.PI / 180;
+        let endAngle = (i + angle - 90 + overlapFix - (fraction * .5)) * Math.PI / 180;
+        const color = poline.colorsCSS[angle / fraction];
+        context.beginPath();
+        context.moveTo(x, y);
+        context.arc(x, y, radius, startAngle, endAngle, counterClockwise);
+        context.closePath();
+        context.fillStyle = color;
+        context.fill();
+      }
+
+
+      $favicon.href = $can.toDataURL('image/png');
+    }
+
+    paintFavicon();
+
+    // favicon end
+
     const $picker = document.querySelector('[data-picker]');
     const hueSteps = 360 / 10;
     
@@ -1132,6 +1185,8 @@ poline.colorsCSS</code></pre>
     //poline.addAnchorPoint({color: [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8] });    
     //poline.addAnchorPoint({color: poline.anchorPoints[0].color});
     //console.log(poline);
+
+    let timer = null;
 
     function updateSVG () {
       $huelabels.forEach(($huelabel, i) => {
@@ -1199,6 +1254,12 @@ poline.colorsCSS</code></pre>
         '--c1',
         colors[0]
       );
+
+
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        paintFavicon();
+      }, 100); 
     }
 
     updateSVG();
