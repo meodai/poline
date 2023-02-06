@@ -123,6 +123,9 @@ var poline = (() => {
     }
     return 1 - Math.sqrt(1 - t);
   };
+  var smoothSteopPosition = (t) => {
+    return t ** 2 * (3 - 2 * t);
+  };
   var positionFunctions = {
     linearPosition,
     exponentialPosition,
@@ -131,7 +134,8 @@ var poline = (() => {
     quarticPosition,
     sinusoidalPosition,
     asinusoidalPosition,
-    arcPosition
+    arcPosition,
+    smoothSteopPosition
   };
   var distance = (p1, p2, hueMode = false) => {
     const a1 = p1[0];
