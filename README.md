@@ -219,4 +219,4 @@ And thus, the tome of "**poline**" has been written. Its mystical powers, steepe
 
 The project is [MIT licensed](https://github.com/meodai/poline/blob/main/LICENSE) and open source. If you find any bugs or have any suggestions please open an issue on [GitHub]().
 
-### Inspired and created with the blessing of [Anatoly Zenkov](https://anatolyzenkov.com/)
+Inspired and created with the blessing of [Anatoly Zenkov](https://anatolyzenkov.com/)
