@@ -279,9 +279,9 @@ class ColorPoint {
   }
 
   get hslCSS(): string {
-    return `hsl(${this.color[0]}, ${this.color[1] * 100}%, ${
-      this.color[2] * 100
-    }%)`;
+    return `hsl(${this.color[0].toFixed(2)}, ${(this.color[1] * 100).toFixed(
+      2
+    )}%, ${(this.color[2] * 100).toFixed(2)}%)`;
   }
 
   shiftHue(angle: number): void {

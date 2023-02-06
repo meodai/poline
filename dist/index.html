@@ -1264,6 +1264,7 @@ poline.colorsCSS</code></pre>
           <ol class="export__list">
             ${colors.map(color => {
               const { requestedHex, name } = color;
+              const index = colorsHEX.indexOf(requestedHex);
               return `
               <li class="export__item" style="--c: ${requestedHex}">
                 <div class="export__sample"></div>

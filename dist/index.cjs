@@ -191,7 +191,9 @@ var ColorPoint = class {
     return this.color;
   }
   get hslCSS() {
-    return `hsl(${this.color[0]}, ${this.color[1] * 100}%, ${this.color[2] * 100}%)`;
+    return `hsl(${this.color[0].toFixed(2)}, ${(this.color[1] * 100).toFixed(
+      2
+    )}%, ${(this.color[2] * 100).toFixed(2)}%)`;
   }
   shiftHue(angle) {
     this.color[0] = (360 + (this.color[0] + angle)) % 360;
