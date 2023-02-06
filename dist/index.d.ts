@@ -41,7 +41,7 @@ export declare const positionFunctions: {
     sinusoidalPosition: PositionFunction;
     asinusoidalPosition: PositionFunction;
     arcPosition: PositionFunction;
-    smoothSteopPosition: PositionFunction;
+    smoothStepPosition: PositionFunction;
 };
 export type ColorPointCollection = {
     xyz?: Vector3;

@@ -178,7 +178,7 @@ const arcPosition: PositionFunction = (t: number, reverse = false) => {
   return 1 - Math.sqrt(1 - t);
 };
 
-const smoothSteopPosition: PositionFunction = (t: number) => {
+const smoothStepPosition: PositionFunction = (t: number) => {
   return t ** 2 * (3 - 2 * t);
 };
 
@@ -191,7 +191,7 @@ export const positionFunctions = {
   sinusoidalPosition,
   asinusoidalPosition,
   arcPosition,
-  smoothSteopPosition,
+  smoothStepPosition,
 };
 
 /**

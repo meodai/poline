@@ -124,7 +124,7 @@ var arcPosition = (t, reverse = false) => {
   }
   return 1 - Math.sqrt(1 - t);
 };
-var smoothSteopPosition = (t) => {
+var smoothStepPosition = (t) => {
   return __pow(t, 2) * (3 - 2 * t);
 };
 var positionFunctions = {
@@ -136,7 +136,7 @@ var positionFunctions = {
   sinusoidalPosition,
   asinusoidalPosition,
   arcPosition,
-  smoothSteopPosition
+  smoothStepPosition
 };
 var distance = (p1, p2, hueMode = false) => {
   const a1 = p1[0];
