@@ -114,8 +114,10 @@
     }
 
     .poline-picker {
+      --diameter:  min(60vmin, 60%);
       position: absolute;
-      width: min(60vmin, 60%);
+      width: var(--diameter);
+      height: var(--diameter);
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
@@ -152,7 +154,6 @@
       z-index: 2;
       overflow: visible !important;
       width: 100%;
-    
     }
 
     svg line.wheel__line {
@@ -191,19 +192,22 @@
     .wheel__huelabel {
       user-select: none;
       pointer-events: none;
-      font-weight: normal;
       box-sizing: border-box;
       position: absolute;
       top: 50%;
       left: 50%;
-      width: calc(100% + 16vmin);
-      transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg));
+      transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
       font-size: 1.7vmin;
-      padding: 0.2em 3em 0.2em 120.5%;
       z-index: 1;
-      text-align: right;
+      text-align: left;
       pointer-events: none;
       transition: font-size 0.3s cubic-bezier(.3,.7,0,1);
+      width: 5%;
+    }
+
+    .wheel__huelabel b {
+      display: block;
+      font-weight: normal;
     }
 
     .picker:hover .wheel__huelabel {
@@ -218,24 +222,29 @@
     .wheel__huelabel::after {
       content: "";
       position: absolute;
-      bottom: 50%;
-      left: 91%;
-      right: 6vmin;
-      height: 1px;
-      background: var(--onBg);
-      transform: translateY(50%);
     }
 
     .wheel__huelabel::after {
-      height: 30%;
+      overflow: hidden;
+      height: 40%;
+      bottom: 50%;
       aspect-ratio: 1;
       right: auto;
-      left: 90%;
+      left: -90%;
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
       border: 1px solid var(--bg);
       transform: translate(-50%, 50%) scale(1);
       transition: transform 0.2s ease-in-out;
+    }
+
+    .wheel__huelabel::before {
+      height: 1px;
+      left: -60%;
+      right: 125%;
+      background: var(--onBg);
+      top: 50%;
+      transform: translateY(-50%);
     }
 
     .wheel__huelabel--active::after {
@@ -250,6 +259,7 @@
       border: 1px solid #e0e0e0;
       padding: 1.5rem;
     }
+
     label + label {
       border-top: none;
       margin-top: -1px;
@@ -550,8 +560,7 @@
         clip-path: circle(17vh at 50% 50%);
       }
       .poline-picker {
-        height: 27vh;
-        width: 27vh;
+        --diameter: 27vh;
         margin-top: -1vh;
       }
       .drawer {
@@ -1098,7 +1107,9 @@ poline.colorsCSS</code></pre>
     const stepsToLabels = (steps = 360 / 10) => new Array(steps)
         .fill('')
         .map((_, i) => `
-          <strong class="wheel__huelabel" data-huelabel="${i}" style="--i: ${i / steps}">${i * 10}</strong>`)
+          <strong class="wheel__huelabel" data-huelabel="${i}" style="--i: ${i / steps}">
+            <b>${i * 10}</b>
+          </strong>`)
         .join('')
 
     const createCSSRainbowGradient = (steps = 360 / 10) => new Array(steps)
