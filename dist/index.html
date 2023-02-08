@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" class="is-loading">
 
 <head>
   <meta charset="utf-8" />
@@ -36,7 +36,6 @@
   
   <style>
     :root {
-
       --light: #fff;
       --dark: #202124;
 
@@ -54,6 +53,29 @@
       font-size: calc(0.4rem + 0.5vw);
 
       accent-color: var(--c0);
+    }
+
+    .l-wrap::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: -webkit-fill-available;
+      background: var(--bg);
+      transition: opacity 0.5s ease;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .is-loading .l-wrap::after {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .is-loading .l-demo {
+      border-left: 0;
     }
 
     ::-moz-selection { 
@@ -117,6 +139,7 @@
     }
 
     .poline-picker {
+      z-index: 4;
       --diameter:  min(60vmin, 60%);
       position: absolute;
       width: var(--diameter);
@@ -147,9 +170,16 @@
       aspect-ratio: 1;
       --s: .4;
       --l: .5;
+    }
+
+    .picker::before {
+      content: '';
+      position: absolute;
+      inset: 0;
       border-radius: 50%;
       background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), 
                   conic-gradient(from 90deg, var(--grad));
+      z-index: 2;
     }
 
     svg {
@@ -159,11 +189,29 @@
       width: 100%;
     }
 
-    svg line.wheel__line {
+    svg .wheel__line {
       stroke: var(--onBg);
-      stroke-width: 0.25;
-      stroke-dasharray: 0.5 0.5;
+      stroke-width: 0.15;
+      stroke-dasharray: var(--length) var(--length);
+      stroke-dashoffset: var(--length);
       pointer-events: none;
+      fill: none;
+      animation: dasharray .8s cubic-bezier(.3,.7,0,1) forwards;
+      animation-delay: 2s;
+    }
+
+    .is-loaded svg .wheel__line {
+      animation: none;
+      stroke-dashoffset: 0;
+    }
+    
+    @keyframes dasharray {
+      0% {
+        stroke-dashoffset: var(--length);
+      }
+      100% {
+        stroke-dashoffset: 0;
+      }
     }
 
     svg circle {
@@ -176,20 +224,24 @@
     }
 
     svg .wheel__anchor {
-      pointer-events: all;
       cursor: grab;
+      animation: anchor .2s cubic-bezier(0.3, 0.7, 0, 1) forwards;
+      animation-delay: 3s;
+      opacity: 0;
     }
 
-    svg line.wheel__satline {
-      stroke-dasharray: 0 0;
-      stroke-width: 1;
-      stroke-linecap: round;
+    .is-loaded svg .wheel__anchor {
+      animation: none;
+      opacity: 1;
     }
 
-    svg line.wheel__satline--bg {
-      stroke: #fff;
-      stroke-width: 1.5;
-      stroke-dasharray: 0 0;
+    @keyframes anchor {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
     }
 
     .wheel__huelabel {
@@ -199,18 +251,122 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      transform: translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
       font-size: 1.7vmin;
       z-index: 1;
       text-align: left;
       pointer-events: none;
       transition: font-size 0.3s cubic-bezier(.3,.7,0,1);
       width: 5%;
+      animation: dropIn 2s cubic-bezier(.3,.7,0,1);
+      animation-delay: calc(var(--i) * .5s);
+      animation-fill-mode: forwards;
+      opacity: 0;
+      transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
     }
+
+    @keyframes dropIn {
+      0% {
+        opacity: 0;
+        transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+      
+      }
+      15% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+      }
+    }
+
 
     .wheel__huelabel b {
       display: block;
       font-weight: normal;
+      animation-delay: calc(var(--i) * .5s);
+      animation-fill-mode: forwards;
+      animation: dropIndent 2s cubic-bezier(.3,.7,0,1);
+    }
+
+    .wheel__huelabel--flipped b {
+      /*transform: rotate(180deg);*/
+    }
+
+
+    @keyframes dropIndent {
+      0% {
+        transform: translateX(4000%);
+      }
+      100% {
+        transform: translateX(0%);
+      }
+    }
+
+    .picker svg .wheel__point {
+      animation: dropIn2 1.6s cubic-bezier(.3,.7,0,1);
+      animation-delay: calc(.6s + var(--i) * 100ms);
+      animation-fill-mode: forwards;
+      opacity: 0;
+      fill: var(--bg);
+    }
+
+    .is-loaded svg .wheel__point {
+      animation: none;
+      opacity: 1;
+      fill: var(--c);
+    }
+
+    @keyframes dropIn2 {
+      0% {
+        opacity: 0;
+        transform: scale(5);
+        fill: var(--bg);
+      }
+      85% {
+        fill: var(--bg);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+        fill: var(--c);
+      }
+    }
+
+    .poline-picker__circprev {
+      animation: scalein .5s cubic-bezier(.3,.7,0,1.2);
+      animation-delay: 2.7s;
+      animation-fill-mode: forwards;
+      transform: translate(-50%, -0%) scale(0) rotate(-720deg);
+    }
+
+    @keyframes scalein {
+      0% {
+        transform: translate(-50%, -0%) scale(0) rotate(-720deg);
+      }
+      100% {
+        transform: translate(-50%, 50%) scale(0.4);
+      }
+    }
+
+    .picker::before {
+      animation: scaleInWheel 3s cubic-bezier(.3,.7,0,1);
+      animation-delay: 0s;
+      animation-fill-mode: forwards;
+      transform: scale(0);
+    }
+
+    @keyframes scaleInWheel {
+      0% {
+        opacity: 0;
+        transform: scale(0) rotate(-720deg);
+      }
+      10% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+      }
     }
 
     .picker:hover .wheel__huelabel {
@@ -237,8 +393,26 @@
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
       border: 1px solid var(--bg);
-      transform: translate(-50%, 50%) scale(1);
+      transform: translate(-50%, 50%) scale(0);
       transition: transform 0.2s ease-in-out;
+      animation: scaleInD .5s cubic-bezier(.3,.7,0,1);
+      animation-delay: calc(1.2s + var(--i) * .5s);
+      animation-fill-mode: forwards;
+      --scale: 1;
+    }
+
+    .wheel__huelabel--active::after {
+      --scale: 1.2;
+      transform: translate(-50%, 50%) scale(0);
+    }
+
+    @keyframes scaleInD {
+      0% {
+        transform: translate(-50%, 50%) scale(0);
+      }
+      100% {
+        transform: translate(-50%, 50%) scale(var(--scale));
+      }
     }
 
     .wheel__huelabel::before {
@@ -247,11 +421,21 @@
       right: 125%;
       background: var(--onBg);
       top: 50%;
-      transform: translateY(-50%);
+      transform: translateY(-50%) scale(.9);
+      transform: translateY(-50%) scale(.9) scaleX(0);
+      transform-origin: 0 0;
+      animation: reveal .5s cubic-bezier(.3,.7,0,1);
+      animation-delay: calc(1.6s + var(--i) * .5s);
+      animation-fill-mode: forwards;  
     }
 
-    .wheel__huelabel--active::after {
-      transform: translate(-50%, 50%) scale(1.2);
+    @keyframes reveal {
+      0% {
+        transform: translateY(-50%) scale(.9) scaleX(0);
+      }
+      100% {
+        transform: translateY(-50%) scale(.9) scale(1);
+      }
     }
 
     label {
@@ -314,6 +498,7 @@
     }
 
     .l-demo {
+      z-index: 2;
       position: fixed;
       width: 60%;
       height: 100%;
@@ -338,8 +523,41 @@
       top: 0;
       width: var(--preview-width);
 
-      background: linear-gradient(0deg, var(--prev));
+      /*background: linear-gradient(0deg, var(--prev));*/
     }
+
+    .draw {
+      display: flex;
+      flex-direction: column-reverse;
+      position: absolute;
+      inset: 0;
+    }
+    .draw__item {
+      background-color: var(--c);
+      flex: 1 0 auto;
+      transform: translateX(-100%) scaleX(1) scale(1.01);
+      animation: draw 1s cubic-bezier(.3,.7,0,1);
+      animation-delay: calc(1.8s + var(--i) * .4s);
+      animation-fill-mode: forwards;
+      transform-origin: 100% 0;
+    }
+    .is-loaded .draw__item {
+      animation-duration: .5s;
+      animation-delay: calc(var(--i) * .5s);
+    }
+
+    @keyframes draw {
+      0% {
+        transform: translateX(-100%) scaleX(1) scale(1.01);
+      }
+      60% {
+        transform: translateX(105%) scaleX(2.5) scale(1.01);
+      }
+      100% {
+        transform: translateX(0) scaleX(1) scale(1.01);
+      }
+    }
+
     .drawer__preview::before,
     .drawer__preview::after {
       content: '';
@@ -361,6 +579,12 @@
       filter: blur(15px);
       opacity: 0.5;
       right: 0;
+      opacity: 0;
+      transition: .2s opacity linear;
+      display: none;
+    }
+    .is-loaded .drawer__preview::before {
+      opacity: 1;
     }
     .l-sec {
       min-height: 20vh;
@@ -577,14 +801,15 @@
         position: absolute;
         z-index: 1;
         width: 100%;
-        inset: 0;
-        top: 43vh;
-        bottom: auto;
-        transform: translateY(max(-43vh, calc(-1 * var(--scroll-y, 0px)))) translateY(-30%) translateX(-50%);
-        height: calc(var(--preview-width) / 2);
-        left: 50%;
+        bottom: 0;
+        top: auto;
+        height: calc(var(--preview-width) / 1.5);
         background: none;
-        will-change: transform;
+        transform: none;
+      }
+      .draw {
+        position: absolute;
+        flex-direction: row;
       }
       .drawer__preview {
         position: relative;
@@ -593,18 +818,37 @@
         height: 100%;
 
         background: linear-gradient(90deg, var(--prev));
+      }
+      
+      .draw__item {
+        transform: translateY(100%) scaleY(1) scaleX(1.01);
+        animation: draw 1s cubic-bezier(.3,.7,0,1);
+        animation-delay: calc(1.8s + var(--i) * .4s);
+        animation-fill-mode: forwards;
+        transform-origin: 0% 0%;
+      }
+      .is-loaded .draw__item {
+        animation-duration: .5s;
+        animation-delay: calc(var(--i) * .5s);
+      }
+      
+      @keyframes draw {
+        0% {
+          transform: translateY(100%) scaleY(1) scaleX(1.01);
+        }
+        60% {
+          transform: translateY(-70%) scaleY(2) scaleX(1.01);
+        }
+        100% {
+          transform: translateY(0) scaleY(1) scaleX(1.01);
+        }
+      }
 
+      .is-loaded .poline-picker__circprev {
+        transform: translate(-50%, max(-50%, calc(50% + -1 * var(--scroll-y, 0px)))) scale(0.4);
+        animation: none;
       }
-      .drawer__preview::before {
-        left: -1rem;
-        right: -1rem;
-        top: -1rem;
-        bottom: -1rem;
-        filter: blur(15px);
-        background: linear-gradient(90deg, var(--prev));
-        opacity: .5;
-        display: none;
-      }
+
       .ellogo {
         margin-left: auto;
         margin-right: auto;
@@ -1090,7 +1334,7 @@ poline.colorsCSS</code></pre>
   </main>
 
   <div class="drawer">
-    <div class="drawer__preview">
+    <div class="drawer__preview" data-draw>
 
     </div>
   </div>
@@ -1146,8 +1390,8 @@ poline.colorsCSS</code></pre>
     const stepsToLabels = (steps = 360 / 10) => new Array(steps)
         .fill('')
         .map((_, i) => `
-          <strong class="wheel__huelabel" data-huelabel="${i}" style="--i: ${i / steps}">
-            <b>${i * 10}</b>
+          <strong class="wheel__huelabel${i>9&&i<31 ? ' wheel__huelabel--flipped' : ''}" data-huelabel="${i}" style="--i: ${i / steps}">
+            <b aria-label="${i * 10}°">${i * 10}</b>
           </strong>`)
         .join('')
 
@@ -1179,6 +1423,7 @@ poline.colorsCSS</code></pre>
     const $randomize = document.querySelectorAll('[data-randomize]');
     const $toc = document.querySelector('[data-toc]');
     const $export = document.querySelector('[data-export]');
+    const $draw = document.querySelector('[data-draw]');
 
     $models.forEach($model => {
       $model.innerHTML = hueBasedModels
@@ -1330,7 +1575,34 @@ poline.colorsCSS</code></pre>
       });
     }
 
+    let drawTimer = null;
+    function updateDrawer () {
+      if (drawTimer) clearTimeout(drawTimer);
+      const $oldDraw = $draw.querySelectorAll('.draw');
+      const $newDraw = document.createElement('div');
+      $newDraw.classList.add('draw');
+      $newDraw.innerHTML = poline.colors.map((c, i) => {
+        return `
+          <div class="draw__item" style="--i: ${
+            i/poline.colors.length
+          }; --c: ${
+            formatHex({ mode: currentHueModel, ...currentModelFn(c) })
+          }"></div>
+        `;
+      }).join('');
+      $draw.appendChild($newDraw);
+      drawTimer = setTimeout(() => {
+        $oldDraw.forEach($el => $el.remove());
+      }, 1000);
+    }
+
+    let untilDrawTimer = null;
     function updateSVG () {
+      if (untilDrawTimer) clearTimeout(untilDrawTimer);
+      untilDrawTimer = setTimeout(() => {
+        updateDrawer();
+      }, 100);
+
       $huelabels.forEach(($huelabel, i) => {
         $huelabel.classList.remove('wheel__huelabel--active');
         // if the HUE label is within the range of the current anchor point
@@ -1341,6 +1613,34 @@ poline.colorsCSS</code></pre>
       });
 
       $svg.innerHTML = '';
+
+      /*
+      poline.flattenedPoints.forEach((point, i) => {
+        const $line = document.createElementNS(namespaceURI, 'line');
+        $line.classList.add('wheel__line');
+        $line.setAttribute('x1', point.x * svgscale);
+        $line.setAttribute('y1', point.y * svgscale);
+        const nextI = (i + 1) % poline.flattenedPoints.length;
+        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * svgscale);
+        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * svgscale);
+        if (i !== poline.flattenedPoints.length - 1) {
+          $svg.appendChild($line);
+        }
+
+      });*/
+
+
+      const $polylines = document.createElementNS(namespaceURI, 'polyline');
+      $polylines.classList.add('wheel__line');
+      $polylines.setAttribute('points', poline.flattenedPoints.map(point => `${point.x * svgscale},${point.y * svgscale}`).join(' '));
+      $svg.appendChild($polylines);
+
+      // calculate the length of the polyline
+      // set the stroke-dasharray and stroke-dashoffset to the length of the polyline
+      
+      const length = $polylines.getTotalLength();
+      $polylines.style.setProperty('--length', length);
+      
 
       poline.anchorPoints.forEach(anchor => {
         const $circle = document.createElementNS(namespaceURI, 'circle');
@@ -1354,23 +1654,14 @@ poline.colorsCSS</code></pre>
       });
 
       poline.flattenedPoints.forEach((point, i) => {
-        const $line = document.createElementNS(namespaceURI, 'line');
-        $line.classList.add('wheel__line');
-        $line.setAttribute('x1', point.x * svgscale);
-        $line.setAttribute('y1', point.y * svgscale);
-        const nextI = (i + 1) % poline.flattenedPoints.length;
-        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * svgscale);
-        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * svgscale);
-        if (i !== poline.flattenedPoints.length - 1) {
-          $svg.appendChild($line);
-        }
-
         const $circle = document.createElementNS(namespaceURI, 'circle');
         $circle.setAttribute('cx', point.x * svgscale);
         $circle.setAttribute('cy', point.y * svgscale);
         $circle.setAttribute('r', .5 + point.color[1] * 1)
         $circle.classList.add('wheel__point');
-        $circle.setAttribute('fill', formatHex({ mode: currentHueModel, ...currentModelFn(point.color) }) );
+        $circle.style.setProperty('--i', i);
+        const c = formatHex({ mode: currentHueModel, ...currentModelFn(point.color) });
+        $circle.style.setProperty('--c', c);
         $svg.appendChild($circle);
       });
       
@@ -1950,6 +2241,13 @@ const LCHColors = [...poline.colors].map(
     const scrollY = $dmenu.scrollTop;
     document.documentElement.style.setProperty('--scroll-y', `${scrollY}px`);
   });
+
+  setTimeout(() => {
+    document.documentElement.classList.remove('is-loading');
+    setTimeout(() => {
+      document.documentElement.classList.add('is-loaded');
+    }, 1000);
+  }, 2000);
   </script>
 </body>
 
