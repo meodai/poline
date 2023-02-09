@@ -197,7 +197,7 @@
       width: 100%;
     }
 
-    svg .wheel__line {
+    .wheel__line {
       stroke: var(--onBg);
       stroke-width: 0.15;
       stroke-dasharray: var(--length) var(--length);
@@ -208,7 +208,7 @@
       animation-delay: 2s;
     }
 
-    .is-loaded svg .wheel__line {
+    .is-loaded .wheel__line {
       animation: none;
       stroke-dashoffset: 0;
     }
@@ -407,13 +407,13 @@
       left: -90%;
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
-      border: 1px solid var(--onBg);
+      border: 1px solid var(--dark);
       transform: translate(-50%, 50%) scale(0);
       animation: scaleInD .5s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(1.2s + var(--i) * .5s);
       animation-fill-mode: forwards;
       --scale: .5;
-      box-shadow: 0 0 0 3px var(--bg);
+      box-shadow: 0 0 0 3px var(--light);
     }
 
     .wheel__huelabel--active::after {
@@ -896,6 +896,13 @@
 
       .l-demo::before {
         background: rgba(13,13,14,.05);
+      }
+
+      .wheel__line {
+        stroke: var(--dark);
+      }
+      .wheel__point {
+        stroke: var(--dark);
       }
     }
   </style>
