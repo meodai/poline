@@ -214,23 +214,32 @@
       }
     }
 
-    svg circle {
+    .wheel__point {
       stroke: var(--onBg);
-      stroke-width: 0.25;
+      stroke-width: 0.15;
+      /*stroke-dasharray: var(--circ) var(--circ);
+      stroke-dashoffset: calc(var(--circ) - var(--circ) * var(--s));*/
     }
 
-    svg .wheel__point {
+    .wheel__point {
       pointer-events: none;
     }
 
-    svg .wheel__anchor {
+    .wheel__anchor {
       cursor: grab;
-      animation: anchor .2s cubic-bezier(0.3, 0.7, 0, 1) forwards;
+      animation: anchor .3s cubic-bezier(0.3, 0.7, 0, 1) forwards;
       animation-delay: 3s;
       opacity: 0;
+      stroke-dasharray: 12.5 12.5;
+      stroke-dashoffset: calc(12.5 - 12.5 * var(--s));
+      stroke-dashoffset: 12.5;
+      stroke: transparent;
+      stroke-width: 0.2;
+      fill: var(--bg);
+      stroke: var(--onBg);
     }
 
-    .is-loaded svg .wheel__anchor {
+    .is-loaded .wheel__anchor {
       animation: none;
       opacity: 1;
     }
@@ -252,23 +261,22 @@
       top: 50%;
       left: 50%;
       font-size: 1.7vmin;
-      z-index: 1;
       text-align: left;
       pointer-events: none;
       transition: font-size 0.3s cubic-bezier(.3,.7,0,1);
       width: 5%;
-      animation: dropIn 2s cubic-bezier(.3,.7,0,1);
+      animation: dropIn 1.5s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(var(--i) * .5s);
       animation-fill-mode: forwards;
       opacity: 0;
       transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+      will-change: transform, opacity, font-size;
     }
 
     @keyframes dropIn {
       0% {
         opacity: 0;
         transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
-      
       }
       15% {
         opacity: 0;
@@ -279,19 +287,18 @@
       }
     }
 
-
     .wheel__huelabel b {
       display: block;
       font-weight: normal;
       animation-delay: calc(var(--i) * .5s);
       animation-fill-mode: forwards;
-      animation: dropIndent 2s cubic-bezier(.3,.7,0,1);
+      animation: dropIndent 1.5s cubic-bezier(.3,.7,0,1);
+      transition: font-size 0.1s cubic-bezier(.3,.7,0,1);
     }
 
     .wheel__huelabel--flipped b {
       /*transform: rotate(180deg);*/
     }
-
 
     @keyframes dropIndent {
       0% {
@@ -302,7 +309,7 @@
       }
     }
 
-    .picker svg .wheel__point {
+    .picker .wheel__point {
       animation: dropIn2 1.6s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(.6s + var(--i) * 100ms);
       animation-fill-mode: forwards;
@@ -310,7 +317,7 @@
       fill: var(--bg);
     }
 
-    .is-loaded svg .wheel__point {
+    .is-loaded .wheel__point {
       animation: none;
       opacity: 1;
       fill: var(--c);
@@ -373,7 +380,7 @@
       font-size: 1vmin;
     }
 
-    .picker:hover .wheel__huelabel--active {
+    .picker:hover .wheel__huelabel--active b {
       font-size: 1.7vmin;
     }
 
@@ -385,7 +392,7 @@
 
     .wheel__huelabel::after {
       overflow: hidden;
-      height: 40%;
+      width: 35%;
       bottom: 50%;
       aspect-ratio: 1;
       right: auto;
@@ -1627,9 +1634,17 @@ poline.colorsCSS</code></pre>
         if (i !== poline.flattenedPoints.length - 1) {
           $svg.appendChild($line);
         }
-
       });*/
-
+      poline.anchorPoints.forEach(anchor => {
+        const $circle = document.createElementNS(namespaceURI, 'circle');
+        $circle.setAttribute('cx', anchor.x * svgscale);
+        $circle.setAttribute('cy', anchor.y * svgscale);
+        $circle.setAttribute('r', 2)
+        //anchor.hslCSS
+        $circle.classList.add('wheel__anchor');
+        $circle.style.setProperty('--s', anchor.color[1]);
+        $svg.appendChild($circle);
+      });
 
       const $polylines = document.createElementNS(namespaceURI, 'polyline');
       $polylines.classList.add('wheel__line');
@@ -1638,29 +1653,19 @@ poline.colorsCSS</code></pre>
 
       // calculate the length of the polyline
       // set the stroke-dasharray and stroke-dashoffset to the length of the polyline
-      
       const length = $polylines.getTotalLength();
       $polylines.style.setProperty('--length', length);
-      
-
-      poline.anchorPoints.forEach(anchor => {
-        const $circle = document.createElementNS(namespaceURI, 'circle');
-        $circle.setAttribute('cx', anchor.x * svgscale);
-        $circle.setAttribute('cy', anchor.y * svgscale);
-        $circle.setAttribute('r', 2)
-        //anchor.hslCSS
-        $circle.classList.add('wheel__anchor');
-        $circle.setAttribute('fill', '#fff');
-        $svg.appendChild($circle);
-      });
-
+    
       poline.flattenedPoints.forEach((point, i) => {
         const $circle = document.createElementNS(namespaceURI, 'circle');
         $circle.setAttribute('cx', point.x * svgscale);
         $circle.setAttribute('cy', point.y * svgscale);
-        $circle.setAttribute('r', .5 + point.color[1] * 1)
+        const radius = .5 + point.color[1]
+        $circle.setAttribute('r', radius);
         $circle.classList.add('wheel__point');
         $circle.style.setProperty('--i', i);
+        $circle.style.setProperty('--circ', 2 * Math.PI * radius);
+        $circle.style.setProperty('--s', point.color[1]);
         const c = formatHex({ mode: currentHueModel, ...currentModelFn(point.color) });
         $circle.style.setProperty('--c', c);
         $svg.appendChild($circle);
@@ -2247,7 +2252,7 @@ const LCHColors = [...poline.colors].map(
     document.documentElement.classList.remove('is-loading');
     setTimeout(() => {
       document.documentElement.classList.add('is-loaded');
-    }, 1000);
+    }, 1500);
   }, 2000);
   </script>
 </body>
