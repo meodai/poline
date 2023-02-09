@@ -172,6 +172,14 @@
       --l: .5;
     }
 
+    .is-loading .picker {
+      pointer-events: none;
+    }
+
+    .is-loaded .picker {
+      pointer-events: all;
+    }
+
     .picker::before {
       content: '';
       position: absolute;
@@ -264,26 +272,27 @@
       text-align: left;
       pointer-events: none;
       transition: font-size 0.3s cubic-bezier(.3,.7,0,1);
-      width: 5%;
+      width: 10%;
       animation: dropIn 1.5s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(var(--i) * .5s);
       animation-fill-mode: forwards;
       opacity: 0;
-      transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+      transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(540%) translateX(100%);
       will-change: transform, opacity, font-size;
+      z-index: 2;
     }
 
     @keyframes dropIn {
       0% {
         opacity: 0;
-        transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+        transform: scale(5) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(540%) translateX(100%);
       }
       15% {
         opacity: 0;
       }
       100% {
         opacity: 1;
-        transform: scale(1) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(1080%) translateX(100%);
+        transform: scale(1) translate(-50%, -50%) rotate(calc(var(--i, 0) * 360deg)) translateX(540%) translateX(100%);
       }
     }
 
@@ -379,7 +388,6 @@
     .picker:hover .wheel__huelabel {
       font-size: 1vmin;
     }
-
     .picker:hover .wheel__huelabel--active b {
       font-size: 1.7vmin;
     }
@@ -399,18 +407,23 @@
       left: -90%;
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
-      border: 1px solid var(--bg);
+      border: 1px solid var(--onBg);
       transform: translate(-50%, 50%) scale(0);
-      transition: transform 0.2s ease-in-out;
       animation: scaleInD .5s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(1.2s + var(--i) * .5s);
       animation-fill-mode: forwards;
-      --scale: 1;
+      --scale: .5;
+      box-shadow: 0 0 0 3px var(--bg);
     }
 
     .wheel__huelabel--active::after {
-      --scale: 1.2;
+      --scale: .5;
       transform: translate(-50%, 50%) scale(0);
+    }
+
+
+    .picker:hover .wheel__huelabel--active::after {
+      --scale: .8;
     }
 
     @keyframes scaleInD {
@@ -422,26 +435,31 @@
       }
     }
 
+    .is-loaded .wheel__huelabel::after {
+      animation: none;
+      transform: translate(-50%, 50%) scale(var(--scale));
+      transition: transform 0.3s cubic-bezier(.3,.7,0,1);
+    }
+
     .wheel__huelabel::before {
       height: 1px;
       left: -60%;
       right: 125%;
       background: var(--onBg);
       top: 50%;
-      transform: translateY(-50%) scale(.9);
-      transform: translateY(-50%) scale(.9) scaleX(0);
+      transform: translateY(-50%) scale(.7) scaleX(0);
       transform-origin: 0 0;
-      animation: reveal .5s cubic-bezier(.3,.7,0,1);
+      animation: reveal 1s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(1.6s + var(--i) * .5s);
       animation-fill-mode: forwards;  
     }
 
     @keyframes reveal {
       0% {
-        transform: translateY(-50%) scale(.9) scaleX(0);
+        transform: translateY(-50%) scale(.6) scaleX(0);
       }
       100% {
-        transform: translateY(-50%) scale(.9) scale(1);
+        transform: translateY(-50%) scale(.6) scaleX(2.2);
       }
     }
 
