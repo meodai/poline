@@ -65,16 +65,27 @@ var randomHSLTriple = (startHue = Math.random() * 360, saturations = [Math.rando
   [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
   [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]]
 ];
+var vectorOnLine = (t, p1, p2, invert = false, fx = (t2, invert2) => invert2 ? 1 - t2 : t2, fy = (t2, invert2) => invert2 ? 1 - t2 : t2, fz = (t2, invert2) => invert2 ? 1 - t2 : t2) => {
+  const tModifiedX = fx(t, invert);
+  const tModifiedY = fy(t, invert);
+  const tModifiedZ = fz(t, invert);
+  const x = (1 - tModifiedX) * p1[0] + tModifiedX * p2[0];
+  const y = (1 - tModifiedY) * p1[1] + tModifiedY * p2[1];
+  const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
+  return [x, y, z];
+};
 var vectorsOnLine = (p1, p2, numPoints = 4, invert = false, fx = (t, invert2) => invert2 ? 1 - t : t, fy = (t, invert2) => invert2 ? 1 - t : t, fz = (t, invert2) => invert2 ? 1 - t : t) => {
   const points = [];
   for (let i = 0; i < numPoints; i++) {
-    const t = i / (numPoints - 1);
-    const tModifiedX = fx(t, invert);
-    const tModifiedY = fy(t, invert);
-    const tModifiedZ = fz(t, invert);
-    const x = (1 - tModifiedX) * p1[0] + tModifiedX * p2[0];
-    const y = (1 - tModifiedY) * p1[1] + tModifiedY * p2[1];
-    const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
+    const [x, y, z] = vectorOnLine(
+      i / (numPoints - 1),
+      p1,
+      p2,
+      invert,
+      fx,
+      fy,
+      fz
+    );
     points.push([x, y, z]);
   }
   return points;
@@ -232,7 +243,7 @@ var Poline = class {
     this._positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
     this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
     this.connectLastAndFirstAnchor = closedLoop;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get numPoints() {
     return this._numPoints - 2;
@@ -242,7 +253,7 @@ var Poline = class {
       throw new Error("Must have at least one point");
     }
     this._numPoints = numPoints + 2;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   set positionFunction(positionFunction) {
     if (Array.isArray(positionFunction)) {
@@ -260,7 +271,7 @@ var Poline = class {
       this._positionFunctionY = positionFunction;
       this._positionFunctionZ = positionFunction;
     }
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get positionFunction() {
     if (this._positionFunctionX === this._positionFunctionY && this._positionFunctionX === this._positionFunctionZ) {
@@ -274,21 +285,21 @@ var Poline = class {
   }
   set positionFunctionX(positionFunctionX) {
     this._positionFunctionX = positionFunctionX;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get positionFunctionX() {
     return this._positionFunctionX;
   }
   set positionFunctionY(positionFunctionY) {
     this._positionFunctionY = positionFunctionY;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get positionFunctionY() {
     return this._positionFunctionY;
   }
   set positionFunctionZ(positionFunctionZ) {
     this._positionFunctionZ = positionFunctionZ;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get positionFunctionZ() {
     return this._positionFunctionZ;
@@ -298,19 +309,19 @@ var Poline = class {
   }
   set anchorPoints(anchorPoints) {
     this._anchorPoints = anchorPoints;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
-  updatePointPairs() {
-    const pairs = [];
+  updateAnchorPairs() {
+    this._anchorPairs = [];
     const anchorPointsLength = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
     for (let i = 0; i < anchorPointsLength; i++) {
       const pair = [
         this.anchorPoints[i],
         this.anchorPoints[(i + 1) % this.anchorPoints.length]
       ];
-      pairs.push(pair);
+      this._anchorPairs.push(pair);
     }
-    this.points = pairs.map((pair, i) => {
+    this.points = this._anchorPairs.map((pair, i) => {
       const p1position = pair[0] ? pair[0].position : [0, 0, 0];
       const p2position = pair[1] ? pair[1].position : [0, 0, 0];
       return vectorsOnLine(
@@ -335,7 +346,7 @@ var Poline = class {
     } else {
       this.anchorPoints.push(newAnchor);
     }
-    this.updatePointPairs();
+    this.updateAnchorPairs();
     return newAnchor;
   }
   removeAnchorPoint({
@@ -353,7 +364,7 @@ var Poline = class {
     }
     if (apid > -1 && apid < this.anchorPoints.length) {
       this.anchorPoints.splice(apid, 1);
-      this.updatePointPairs();
+      this.updateAnchorPairs();
     } else {
       throw new Error("Point not found");
     }
@@ -377,7 +388,7 @@ var Poline = class {
       point.position = xyz;
     if (color)
       point.hsl = color;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
     return point;
   }
   getClosestAnchorPoint({
@@ -407,7 +418,7 @@ var Poline = class {
   }
   set closedLoop(newStatus) {
     this.connectLastAndFirstAnchor = newStatus;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
   get closedLoop() {
     return this.connectLastAndFirstAnchor;
@@ -431,7 +442,7 @@ var Poline = class {
   }
   shiftHue(hShift = 20) {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 };
 var { p5 } = globalThis;

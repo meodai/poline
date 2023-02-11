@@ -97,6 +97,25 @@ export const randomHSLTriple = (
   [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]],
 ];
 
+const vectorOnLine = (
+  t: number,
+  p1: Vector3,
+  p2: Vector3,
+  invert = false,
+  fx = (t: number, invert: boolean): number => (invert ? 1 - t : t),
+  fy = (t: number, invert: boolean): number => (invert ? 1 - t : t),
+  fz = (t: number, invert: boolean): number => (invert ? 1 - t : t)
+): Vector3 => {
+  const tModifiedX = fx(t, invert);
+  const tModifiedY = fy(t, invert);
+  const tModifiedZ = fz(t, invert);
+  const x = (1 - tModifiedX) * p1[0] + tModifiedX * p2[0];
+  const y = (1 - tModifiedY) * p1[1] + tModifiedY * p2[1];
+  const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
+
+  return [x, y, z];
+};
+
 const vectorsOnLine = (
   p1: Vector3,
   p2: Vector3,
@@ -109,14 +128,15 @@ const vectorsOnLine = (
   const points: Vector3[] = [];
 
   for (let i = 0; i < numPoints; i++) {
-    const t = i / (numPoints - 1);
-    const tModifiedX = fx(t, invert);
-    const tModifiedY = fy(t, invert);
-    const tModifiedZ = fz(t, invert);
-    const x = (1 - tModifiedX) * p1[0] + tModifiedX * p2[0];
-    const y = (1 - tModifiedY) * p1[1] + tModifiedY * p2[1];
-    const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
-
+    const [x, y, z] = vectorOnLine(
+      i / (numPoints - 1),
+      p1,
+      p2,
+      invert,
+      fx,
+      fy,
+      fz
+    );
     points.push([x, y, z]);
   }
 
@@ -310,6 +330,8 @@ export class Poline {
   private _positionFunctionY = sinusoidalPosition;
   private _positionFunctionZ = sinusoidalPosition;
 
+  private _anchorPairs: ColorPoint[][];
+
   private connectLastAndFirstAnchor = false;
 
   private _animationFrame: null | number = null;
@@ -349,7 +371,7 @@ export class Poline {
 
     this.connectLastAndFirstAnchor = closedLoop;
 
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get numPoints(): number {
@@ -361,7 +383,7 @@ export class Poline {
       throw new Error("Must have at least one point");
     }
     this._numPoints = numPoints + 2; // add two for the anchor points
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public set positionFunction(
@@ -387,7 +409,7 @@ export class Poline {
       this._positionFunctionZ = positionFunction;
     }
 
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get positionFunction(): PositionFunction | PositionFunction[] {
@@ -408,7 +430,7 @@ export class Poline {
 
   public set positionFunctionX(positionFunctionX: PositionFunction) {
     this._positionFunctionX = positionFunctionX;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get positionFunctionX(): PositionFunction {
@@ -417,7 +439,7 @@ export class Poline {
 
   public set positionFunctionY(positionFunctionY: PositionFunction) {
     this._positionFunctionY = positionFunctionY;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get positionFunctionY(): PositionFunction {
@@ -426,7 +448,7 @@ export class Poline {
 
   public set positionFunctionZ(positionFunctionZ: PositionFunction) {
     this._positionFunctionZ = positionFunctionZ;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get positionFunctionZ(): PositionFunction {
@@ -439,11 +461,11 @@ export class Poline {
 
   public set anchorPoints(anchorPoints: ColorPoint[]) {
     this._anchorPoints = anchorPoints;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
-  public updatePointPairs(): void {
-    const pairs = [] as ColorPoint[][];
+  public updateAnchorPairs(): void {
+    this._anchorPairs = [] as ColorPoint[][];
 
     const anchorPointsLength = this.connectLastAndFirstAnchor
       ? this.anchorPoints.length
@@ -455,10 +477,10 @@ export class Poline {
         this.anchorPoints[(i + 1) % this.anchorPoints.length],
       ] as ColorPoint[];
 
-      pairs.push(pair);
+      this._anchorPairs.push(pair);
     }
 
-    this.points = pairs.map((pair, i) => {
+    this.points = this._anchorPairs.map((pair, i) => {
       const p1position = pair[0] ? pair[0].position : ([0, 0, 0] as Vector3);
       const p2position = pair[1] ? pair[1].position : ([0, 0, 0] as Vector3);
 
@@ -485,7 +507,7 @@ export class Poline {
     } else {
       this.anchorPoints.push(newAnchor);
     }
-    this.updatePointPairs();
+    this.updateAnchorPairs();
     return newAnchor;
   }
 
@@ -510,7 +532,7 @@ export class Poline {
 
     if (apid > -1 && apid < this.anchorPoints.length) {
       this.anchorPoints.splice(apid, 1);
-      this.updatePointPairs();
+      this.updateAnchorPairs();
     } else {
       throw new Error("Point not found");
     }
@@ -540,7 +562,7 @@ export class Poline {
     if (xyz) point.position = xyz;
     if (color) point.hsl = color;
 
-    this.updatePointPairs();
+    this.updateAnchorPairs();
 
     return point;
   }
@@ -583,7 +605,7 @@ export class Poline {
 
   public set closedLoop(newStatus: boolean) {
     this.connectLastAndFirstAnchor = newStatus;
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 
   public get closedLoop(): boolean {
@@ -614,7 +636,7 @@ export class Poline {
 
   public shiftHue(hShift = 20): void {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
-    this.updatePointPairs();
+    this.updateAnchorPairs();
   }
 }
 

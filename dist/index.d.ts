@@ -78,6 +78,7 @@ export declare class Poline {
     private _positionFunctionX;
     private _positionFunctionY;
     private _positionFunctionZ;
+    private _anchorPairs;
     private connectLastAndFirstAnchor;
     private _animationFrame;
     constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
@@ -93,7 +94,7 @@ export declare class Poline {
     get positionFunctionZ(): PositionFunction;
     get anchorPoints(): ColorPoint[];
     set anchorPoints(anchorPoints: ColorPoint[]);
-    updatePointPairs(): void;
+    updateAnchorPairs(): void;
     addAnchorPoint({ xyz, color, insertAtIndex, }: ColorPointCollection & {
         insertAtIndex: number;
     }): ColorPoint;

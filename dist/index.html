@@ -653,6 +653,11 @@
     .l-sec__preview figcaption {
       display: none;
     }
+
+    .color-at-sample {
+      height: 1.75rem;
+      background: var(--color-at);
+    }
     .l-sec__controls {
       margin-top: 2rem;
       margin-bottom: 2rem;
@@ -1006,6 +1011,29 @@
           </div>
         </div>
       </article>
+
+
+      <!--article class="l-sec">
+        <div class="l-sec__inner" data-section="colorAt">
+          <h2 id="colorAt">Color at Point</h2>
+          <p>
+            You can also use "<strong class="t">Poline</strong>" to generate a single color at a specific point along the line. 
+            The <strong>colorAt</strong> method takes a value between 0 and 1 as an argument, 
+            it refers to the position of the point along the sum of all lines.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="points">poline.getColorAt(.4)</code></pre>
+          <div class="color-at-sample">
+
+          </div>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Color at Point</span>
+              <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
+            </label>
+          </div>
+        </div>
+      </article-->
+
       <article class="l-sec">
         <div class="l-sec__inner" data-section="anchors">
           <h2 id="anchors">Anchors</h2>
@@ -1446,6 +1474,7 @@ poline.colorsCSS</code></pre>
     ).join();
 
     const $steps = document.querySelectorAll('[data-steps]');
+    //const $colorAt = document.querySelector('[data-colorat]');
     const $selects = document.querySelectorAll('[data-select]');
     const $xSelect = document.querySelectorAll('[data-select="x"]');
     const $ySelect = document.querySelectorAll('[data-select="y"]');
@@ -1505,7 +1534,6 @@ poline.colorsCSS</code></pre>
       positionFunctionZ: positionFunctions[fnz],
       closedLoop: false,
     });
-
 
     // favicon
     let $favicon = document.querySelector('[rel="icon"]');
@@ -1724,7 +1752,7 @@ poline.colorsCSS</code></pre>
       timer = setTimeout(() => {
         paintFavicon();
         updateExport()
-      }, 100); 
+      }, 100);
     }
 
     updateSVG();
@@ -1801,7 +1829,7 @@ poline.colorsCSS</code></pre>
             anchor.color[2] + (-.05 + Math.random() * .1)
           ];
         });
-        poline.updatePointPairs();
+        poline.updateAnchorPairs();
         updateSVG();
       });
     });
@@ -1842,6 +1870,12 @@ poline.colorsCSS</code></pre>
   $picker.addEventListener('pointerup', (e) => {
     currentPoint = null;
   });
+  /*
+  $colorAt.addEventListener('input', (e) => {
+    const val = Math.max(0, Math.min(1, e.target.value));
+    const color = poline.getColorAt(val);
+    document.documentElement.style.setProperty('--color-at', color.hslCSS);
+  });*/
 
   // listen for keypresses
   document.addEventListener('keydown', (e) => {
@@ -2017,7 +2051,7 @@ poline.closedLoop = true;`;
       }
       poline.closedLoop = false;
       poline.positionFunction = positionFunctions.linearPosition;
-      poline.updatePointPairs();
+      poline.updateAnchorPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `import {
 Poline, positionFunctions
@@ -2053,7 +2087,7 @@ new Poline({
       $zSelect.forEach($zs => {
         $zs.value = fnz;
       });
-      poline.updatePointPairs();
+      poline.updateAnchorPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
   positionFunctionX: 
@@ -2072,7 +2106,7 @@ new Poline({
     fn: (section) => {
       console.log('closedLoop');
       poline.closedLoop = true;
-      poline.updatePointPairs();
+      poline.updateAnchorPairs();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
   closedLoop: true,
