@@ -1669,25 +1669,32 @@ poline.colorsCSS</code></pre>
         // if the HUE label is within the range of the current anchor point
         poline.anchorPoints.forEach(anchor => {
           const currentHue = anchor.color[0];
-          currentHue - hueSteps / 2 < i * 10 && currentHue + hueSteps / 2 > i * 10 && $huelabel.classList.add('wheel__huelabel--active');
+          const currentHueDec = Math.round(currentHue / 10);
+
+          /*
+          if(
+            (currentHue - hueSteps / 2 < i * 10) && 
+            (currentHue + hueSteps / 2 > i * 10)
+          ) {
+            $huelabel.classList.add('wheel__huelabel--active');
+          }
+          */
+
+          console.log(currentHueDec, i)
+
+          if (
+            //(Math.abs((currentHueDec - i + 36) % 36) <= 1) || (Math.abs((currentHueDec - i + 36) % 36) >= 35)
+            (currentHueDec - i + 36) % 36 === 0
+          ) {
+            $huelabel.classList.add('wheel__huelabel--active');
+          }
+          
+
         });
       });
 
       $svg.innerHTML = '';
 
-      /*
-      poline.flattenedPoints.forEach((point, i) => {
-        const $line = document.createElementNS(namespaceURI, 'line');
-        $line.classList.add('wheel__line');
-        $line.setAttribute('x1', point.x * svgscale);
-        $line.setAttribute('y1', point.y * svgscale);
-        const nextI = (i + 1) % poline.flattenedPoints.length;
-        $line.setAttribute('x2', poline.flattenedPoints[nextI].x * svgscale);
-        $line.setAttribute('y2', poline.flattenedPoints[nextI].y * svgscale);
-        if (i !== poline.flattenedPoints.length - 1) {
-          $svg.appendChild($line);
-        }
-      });*/
       poline.anchorPoints.forEach(anchor => {
         const $circle = document.createElementNS(namespaceURI, 'circle');
         $circle.setAttribute('cx', anchor.x * svgscale);
