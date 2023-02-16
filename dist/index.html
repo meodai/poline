@@ -369,19 +369,26 @@
       animation-delay: 0s;
       animation-fill-mode: forwards;
       transform: scale(0);
+      /*filter: grayscale(1);*/
+      will-change: transform, opacity;
     }
 
     @keyframes scaleInWheel {
       0% {
         opacity: 0;
         transform: scale(0) rotate(-720deg);
+        /*filter: grayscale(1);*/
       }
       10% {
         opacity: 0;
-      }
+      }/*
+      20% {
+        filter: grayscale(1);
+      }*/
       100% {
         opacity: 1;
         transform: scale(1) rotate(0deg);
+        /*filter: grayscale(0);*/
       }
     }
 
@@ -1353,7 +1360,7 @@ poline.colorsCSS</code></pre>
             <p>
               As the creator of "<strong class="t">Poline</strong>", I invite you to join me on this journey to 
               explore the boundless possibilities of color. Your support, be it through contributions (<a target="_blank"
-                rel="noopener noreferrer" href="https://ko-fi.com/meodai">coffee</a>, <a target="_blank" rel="noopener noreferrer" href="https://github.com/sponsors/meodai/">sponsorship</a>, or <a target="_blank" rel="noopener noreferrer" href="https://elastiq.ch/">work with me</a> on your next project) or simply <a href="https://twitter.com/meodai" target="_blank" rel="noopener noreferrer">spreading the word</a>, 
+                rel="noopener noreferrer" href="https://ko-fi.com/colorparrot">coffee</a>, <a target="_blank" rel="noopener noreferrer" href="https://github.com/sponsors/meodai/">sponsorship</a>, or <a target="_blank" rel="noopener noreferrer" href="https://elastiq.ch/">work with me</a> on your next project) or simply <a href="https://twitter.com/meodai" target="_blank" rel="noopener noreferrer">spreading the word</a>, 
                 will aid in the evolution of this and <a target="_blank" rel="noopener noreferrer" href="https://elastiq.notion.site/Color-My-Journey-Through-the-Spectrum-2cfd8dc540474b1c9ef381b9a3bc0f8e">my other tools</a>, bringing us one step closer to unlocking the full potential of color magic.
             </p>
             <a href="https://www.elastiq.ch/" hreflang="en" class="ellogo" target="_blank" rel="noopener noreferrer"><svg
@@ -1458,6 +1465,7 @@ poline.colorsCSS</code></pre>
 
     const createCSSRainbowGradient = (steps = 360 / 10) => new Array(steps)
         .fill('')
+        //.map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%)) calc(${i / (steps - 1) * 100}% + 1px)`)
         .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%))`)
         .join(',');
 
