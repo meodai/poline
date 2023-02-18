@@ -916,6 +916,10 @@
       .wheel__point {
         stroke: var(--dark);
       }
+      .key {
+        background: var(--light);
+        color: var(--dark);
+      }
     }
   </style>
 </head>
@@ -2221,7 +2225,7 @@ const LCHColors = [...poline.colors].map(
       l: hsl[2] * 100,  
     }
   })
-);`
+);`;
       hljs.highlightElement($code);
       updateSVG();
     },
@@ -2260,6 +2264,10 @@ const LCHColors = [...poline.colors].map(
     section: 'playground',
     fn: (section) => {
       console.log('Playground');
+
+      currentHueModel = 'okhsl';
+      currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
+      $models.forEach($model => $model.value = currentHueModel);
     },
   }
 ];
