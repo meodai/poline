@@ -646,10 +646,18 @@ const { p5 } = globalThis as any;
 if (p5) {
   console.info("p5 detected, adding poline to p5 prototype");
 
+  //console.log(p5.color('red'))
+
   const poline = new Poline();
   p5.prototype.poline = poline;
-  const polineColors = poline.colorsCSS.map((c) => p5.Color(c));
+
+  const polineColors = () =>
+    poline.colors.map(
+      (c) =>
+        /*p5.Color(c)*/ `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
+    );
   p5.prototype.polineColors = polineColors;
+  p5.prototype.registerMethod("polineColors", p5.prototype.polineColors);
 
   globalThis.poline = poline;
   globalThis.polineColors = polineColors;

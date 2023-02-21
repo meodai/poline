@@ -3,17 +3,22 @@
 <html lang="en">
 <head>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.5.0/p5.js"></script>
-  <script src="index.js"></script>
+  <script type="module" src="index.mjs"></script>
 </head>
 <body>
   <script>
     function setup() {
-      background(50, 20, 30);
+      poline.numPoints = 20;
+      noStroke();
     }
-
     function draw() {
-      fill(100, 100, 100);
-      rect(100, 100, 100, 100);
+      poline.shiftHue(1);
+      let colors = polineColors();
+      colors.forEach((color, i) => {
+        let w = width/colors.length;
+        fill(color);
+        rect(i*w, 0, w, 100);
+      });
     }
   </script>
 </body>
