@@ -645,9 +645,7 @@ const { p5 } = globalThis as any;
 
 if (p5) {
   console.info("p5 detected, adding poline to p5 prototype");
-
-  //console.log(p5.color('red'))
-
+  
   const poline = new Poline();
   p5.prototype.poline = poline;
 
