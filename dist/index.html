@@ -775,6 +775,36 @@
       overflow: hidden;
       height: 0;
     }
+
+    [data-export] {
+      transition: opacity 0.1s ease;
+    }
+    .support {
+      font-size: 1.4em;
+      margin-top: 10vmin;
+      flex-wrap: wrap;
+    }
+    .support p {
+      font-size: .8em;
+    }
+    .support__title {
+      flex: 0 0 100%;
+    }
+    .kofi {
+      display: block;
+      width: 2.5em;
+      height: 2.5em;
+      margin-right: 1em;
+      margin-left: -0.4em;
+      margin-top: -0.2em;
+    }
+    .kofi:hover img {
+      animation: shakeup 0.5s ease;
+    }
+    .kofi img {
+      width: 100%;
+      transform-origin: 50% 50%;
+    }
     @media (orientation: portrait) {
       :root {
         font-size: calc(0.6rem + 0.5vw);
@@ -890,6 +920,20 @@
       .ellogo {
         margin-left: auto;
         margin-right: auto;
+      }
+      .kofi {
+        margin: 1em auto;
+      }
+    }
+    @keyframes shakeup {
+      0%, 100% {
+        transform: translateY(0) rotate(0);
+      }
+      10%, 30%, 50%, 70%, 90% {
+        transform: translateY(-10px) rotate(-6deg);
+      }
+      20%, 40%, 60%, 80% {
+        transform: translateY(-8px) rotate(10deg);
       }
     }
     @media (prefers-color-scheme: dark) {
@@ -1393,6 +1437,17 @@ poline.colorsCSS</code></pre>
             <div data-export>
           
             </div>
+
+            <div class="support">
+
+              <h2 class="subtitle support__title">Support</h2>
+              <p>
+                I need your contribution to keep this project alive. Please consider <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">buying me a coffee</a>. PS: Especially because the <a href="https://github.com/meodai/color-names" rel="noopener" target="_blank">color name API</a> was hit <strong>2.5 million</strong> times in the last 24h.
+              </p>
+              <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank" class="kofi">
+                <img src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_logo_nolabel.png">
+              </a>
+            </div>
           </div>
         </div>
       </aside>
@@ -1613,7 +1668,7 @@ poline.colorsCSS</code></pre>
 
     function updateExport () {
       $export.style.height = `${$export.scrollHeight}px`;
-      $export.innerHTML = '';
+      $export.style.opacity = .5;
 
       const $list = document.createElement('ol');
       $list.classList.add('export__list');
@@ -1645,6 +1700,7 @@ poline.colorsCSS</code></pre>
           </ol>
         `;
         $export.style.height = 'auto';
+        $export.style.opacity = 1;
       });
     }
 
