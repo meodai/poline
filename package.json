@@ -1,6 +1,6 @@
 {
   "name": "poline",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "color palette generator mico-lib",
   "type": "module",
   "main": "./dist/index.cjs",
