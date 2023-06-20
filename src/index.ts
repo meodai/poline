@@ -319,9 +319,24 @@ class ColorPoint {
   }
 
   get hslCSS(): string {
-    return `hsl(${this.color[0].toFixed(2)}, ${(this.color[1] * 100).toFixed(
+    const [h, s, l] = this.color;
+    return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(l * 100).toFixed(
       2
-    )}%, ${(this.color[2] * 100).toFixed(2)}%)`;
+    )}%)`;
+  }
+
+  get oklchCSS(): string {
+    const [h, s, l] = this.color;
+    return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
+      2
+    )})`;
+  }
+
+  get lchCSS(): string {
+    const [h, s, l] = this.color;
+    return `lch(${(l * 100).toFixed(2)}% ${(s * 150).toFixed(2)} ${h.toFixed(
+      2
+    )})`;
   }
 
   shiftHue(angle: number): void {
@@ -671,12 +686,29 @@ export class Poline {
     return colors;
   }
 
-  public get colorsCSS() {
-    const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
+  public cssColors(mode: "hsl" | "oklch" | "lch" = "hsl") {
+    const methods = {
+      hsl: (p) => p.hslCSS,
+      oklch: (p) => p.oklchCSS,
+      lch: (p) => p.lchCSS,
+    };
+    const cssColors = this.flattenedPoints.map(methods[mode]);
     if (this.connectLastAndFirstAnchor) {
       cssColors.pop();
     }
     return cssColors;
+  }
+
+  public get colorsCSS() {
+    return this.cssColors("hsl");
+  }
+
+  public get colorsCSSlch() {
+    return this.cssColors("lch");
+  }
+
+  public get colorsCSSoklch() {
+    return this.cssColors("oklch");
   }
 
   public shiftHue(hShift = 20): void {

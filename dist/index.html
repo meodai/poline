@@ -746,6 +746,7 @@
       margin-top: 1.25em;
     }
     .export__sample {
+      position: relative;
       width: 2.5em;
       height: 2.5em;
       flex: 0 0 2.5em;
@@ -754,6 +755,13 @@
       background: var(--c);
       margin-right: 1em;
       box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
+    }
+    .export__sample::after {
+      content: '';
+      position: absolute;
+      inset: 50% 2px 2px;
+      border-radius: 0.2em;
+      background: var(--cHex);
     }
     .export__name,
     .export__hex {
@@ -1269,10 +1277,12 @@
         <div class="l-sec__inner" data-section="getColors">
           <h2 id="getColors">Color List</h2>
           <p>
-            The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings.
+            The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings, either formatted in <strong>HSL</strong> or stretched to <strong>OKlch</strong> or <strong>lch</strong>.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
-poline.colorsCSS</code></pre>
+poline.colorsCSS
+poline.colorsCSSlch
+poline.colorsCSSoklch</code></pre>
           <div class="l-sec__controls">
             <figure class="l-sec__preview">
               <figcaption>Colors as HSL</figcaption>
@@ -1469,7 +1479,7 @@ poline.colorsCSS</code></pre>
 
               <h2 class="subtitle support__title">Support</h2>
               <p>
-                I need your contribution to keep this project alive. Please consider <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">buying me a coffee</a>. PS: Especially because the <a href="https://github.com/meodai/color-names" rel="noopener" target="_blank">color name API</a> was hit <strong>2.5 million</strong> times in the last 24h.
+                I need your contribution to keep this project alive. Please consider <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">buying me a coffee</a>.
               </p>
               <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank" class="kofi">
                 <img src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_logo_nolabel.png">
@@ -1496,7 +1506,8 @@ poline.colorsCSS</code></pre>
 
   <script type="module">
     console.clear();
-    import { formatHex, converter } from 'https://cdn.skypack.dev/culori@^2.1.1';
+
+    import { formatHex, converter, formatCss, inGamut } from 'https://cdn.skypack.dev/culori@^3.1.1';
     import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
     
     import {
@@ -1506,6 +1517,8 @@ poline.colorsCSS</code></pre>
     } from "./index.mjs";
 
     const toHSL = converter('hsl');
+    const toOKlab = converter('oklab');
+    const inRgb = inGamut('rgb')
 
     const svgscale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
@@ -1669,6 +1682,7 @@ poline.colorsCSS</code></pre>
         let startAngle = (i + angle - 90 - fraction - overlapFix - (fraction * .5)) * Math.PI / 180;
         let endAngle = (i + angle - 90 + overlapFix - (fraction * .5)) * Math.PI / 180;
         const color = poline.colorsCSS[angle / fraction];
+
         context.beginPath();
         context.moveTo(x, y);
         context.arc(x, y, radius, startAngle, endAngle, counterClockwise);
@@ -1704,9 +1718,18 @@ poline.colorsCSS</code></pre>
       const $list = document.createElement('ol');
       $list.classList.add('export__list');
 
-      const colorsHEX = poline.colors.map(color => formatHex(
+
+      const colorsOKlab = poline.colors.map(color => toOKlab(
         { mode: currentHueModel, ...currentModelFn(color) }
       ));
+
+      const colorCSSOKlab = colorsOKlab.map(color => formatCss(color));
+
+      const colorsInGamut = colorsOKlab.map(c => inRgb(c))
+
+      const colorsHEX = poline.colors.map(color => formatHex(
+        { mode: currentHueModel, ...currentModelFn(color) }
+      ))
 
       fetch(`https://api.color.pizza/v1/?values=${
         colorsHEX.map(c => c.replace('#', '')).join()
@@ -1719,12 +1742,15 @@ poline.colorsCSS</code></pre>
             ${colors.map(color => {
               const { requestedHex, name } = color;
               const index = colorsHEX.indexOf(requestedHex);
+              const oklabcss = colorCSSOKlab[index];
+              const {l, a, b} = colorsOKlab[index];
+              const isInSrgb = colorsInGamut[index];
               return `
-              <li class="export__item" style="--c: ${requestedHex}">
+              <li class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}">
                 <div class="export__sample"></div>
                 <div class="export__label">
                   <strong class="export__name">${name}</strong>
-                  <span class="export__hex">${requestedHex}</span>
+                  <span class="export__hex">${isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`}</span>
                 </div>
               </li>
             `}).join('')}
@@ -1746,7 +1772,10 @@ poline.colorsCSS</code></pre>
           <div class="draw__item" style="--i: ${
             i/poline.colors.length
           }; --c: ${
-            formatHex({ mode: currentHueModel, ...currentModelFn(c) })
+            formatCss(toOKlab(
+            { mode: currentHueModel, ...currentModelFn(c) }
+            ))
+            //formatHex({ mode: currentHueModel, ...currentModelFn(c) })
           }"></div>
         `;
       }).join('');
@@ -1828,7 +1857,7 @@ poline.colorsCSS</code></pre>
       
       let cssColors = [...poline.colorsCSS];
       let colors = [...poline.colors].map(c => formatHex({ mode: currentHueModel, ...currentModelFn(c) }));
-      //colors = [...poline.colors].map(c => formatCss({ mode: 'p3', ...currentModelFn(c) }));
+
       document.documentElement.style.setProperty(
         '--prev',
         colorArrToSteppedGradient(colors)

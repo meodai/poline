@@ -61,6 +61,8 @@ declare class ColorPoint {
     set hsl([h, s, l]: Vector3);
     get hsl(): Vector3;
     get hslCSS(): string;
+    get oklchCSS(): string;
+    get lchCSS(): string;
     shiftHue(angle: number): void;
 }
 export type PolineOptions = {
@@ -121,7 +123,10 @@ export declare class Poline {
     get invertedLightness(): boolean;
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
-    get colorsCSS(): string[];
+    cssColors(mode?: "hsl" | "oklch" | "lch"): any[];
+    get colorsCSS(): any[];
+    get colorsCSSlch(): any[];
+    get colorsCSSoklch(): any[];
     shiftHue(hShift?: number): void;
 }
 export {};
