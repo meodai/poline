@@ -6,8 +6,8 @@
  * to visualize and edits its properties and settings.
  */
 
-let svgscale = 100;
-let uuid = 0;
+const svgscale = 100;
+const uuid = 0;
 
 const namespaceURI = "http://www.w3.org/2000/svg";
 const $wheel = document.createElement("div");

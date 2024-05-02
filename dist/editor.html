@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+</head>
+
+<body>
+  <div is="poline-editor" title="Hello, World!"></div>
+  <script type="module">
+    import {Poline} from './index.mjs';
+    const poline = new Poline();
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS, "svg");
+    svg.setAttribute("viewBox", "0 0 100 100");
+
+    class PolineEditor extends HTMLDivElement { // Change extends value to HTMLDivElement
+      constructor() {
+        super();
+        this.attachShadow({ mode: "open" });
+      }
+
+      connectedCallback() {
+        console.log("Custom element added to page.");
+        this.#initDom();
+      }
+
+      disconnectedCallback() {
+        console.log("Custom element removed from page.");
+      }
+
+      adoptedCallback() {
+        console.log("Custom element moved to new page.");
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        console.log(`Attribute ${name} has changed.`);
+      }
+
+      static get observedAttributes() {
+        return ["title"];
+      }
+
+      get title() {
+        return this.getAttribute("title");
+      }
+
+      #initDom() {
+        this.shadowRoot.innerHTML = `
+          <style>
+            div {
+              border: 1px solid #000;
+              padding: 10px;
+            }
+          </style>
+          <div>
+            <h1>${this.getAttribute("title")}</h1>
+          </div>
+        `;
+      }
+    }
+
+    customElements.define("poline-editor", PolineEditor, { extends: "div" });
+
+    const editor = document.querySelector("div[is=poline-editor]");
+
+    editor.addEventListener("click", () => {
+      editor.setAttribute("title", "Hello, World!" + Math.random());
+    });
+  </script>
+
+</body>
+
+</html>
