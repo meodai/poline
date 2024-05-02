@@ -17,7 +17,10 @@ export type PartialVector3 = [number | null, number | null, number | null];
  * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
  **/
 
-export const pointToHSL = (xyz: Vector3): Vector3 => {
+export const pointToHSL = (
+  xyz: Vector3,
+  invertedLightness: boolean
+): Vector3 => {
   const [x, y, z] = xyz;
 
   // cy and cx are the center (y and x) values
@@ -39,7 +42,7 @@ export const pointToHSL = (xyz: Vector3): Vector3 => {
   const l = dist / cx;
 
   // Return the HSL color as an array [hue, saturation, lightness]
-  return [deg, s, l];
+  return [deg, s, invertedLightness ? 1 - l : l];
 };
 
 /**
@@ -55,7 +58,10 @@ export const pointToHSL = (xyz: Vector3): Vector3 => {
  * hslToPoint([0, 1, 1]) // [0.5, 0.5, 1]
  * hslToPoint([0, 0, 0.5]) // [0.5, 0.5, 0]
  **/
-export const hslToPoint = (hsl: Vector3): Vector3 => {
+export const hslToPoint = (
+  hsl: Vector3,
+  invertedLightness: boolean
+): Vector3 => {
   // Destructure the input array into separate hue, saturation, and lightness values
   const [h, s, l] = hsl;
   // cx and cy are the center (x and y) values
@@ -63,8 +69,10 @@ export const hslToPoint = (hsl: Vector3): Vector3 => {
   const cy = 0.5;
   // Calculate the angle in radians based on the hue value
   const radians = h / (180 / Math.PI);
+
   // Calculate the distance from the center based on the lightness value
-  const dist = l * cx;
+  const dist = (invertedLightness ? 1 - l : l) * cx;
+
   // Calculate the x and y coordinates based on the distance and angle
   const x = cx + dist * Math.cos(radians);
   const y = cy + dist * Math.sin(radians);
@@ -252,6 +260,7 @@ const distance = (
 export type ColorPointCollection = {
   xyz?: Vector3;
   color?: Vector3;
+  invertedLightness?: boolean;
 };
 
 class ColorPoint {
@@ -259,22 +268,27 @@ class ColorPoint {
   public y = 0;
   public z = 0;
   public color: Vector3 = [0, 0, 0];
+  private _invertedLightness = false;
 
-  constructor({ xyz, color }: ColorPointCollection = {}) {
-    this.positionOrColor({ xyz, color });
+  constructor({ xyz, color, invertedLightness }: ColorPointCollection = {}) {
+    this._invertedLightness = invertedLightness || false;
+    this.positionOrColor({ xyz, color, invertedLightness });
   }
 
-  positionOrColor({ xyz, color }: ColorPointCollection) {
+  positionOrColor({ xyz, color, invertedLightness }: ColorPointCollection) {
     if (xyz && color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (xyz) {
       this.x = xyz[0];
       this.y = xyz[1];
       this.z = xyz[2];
-      this.color = pointToHSL([this.x, this.y, this.z]);
+      this.color = pointToHSL(
+        [this.x, this.y, this.z],
+        invertedLightness || false
+      );
     } else if (color) {
       this.color = color;
-      [this.x, this.y, this.z] = hslToPoint(color);
+      [this.x, this.y, this.z] = hslToPoint(color, invertedLightness || false);
     }
   }
 
@@ -282,7 +296,10 @@ class ColorPoint {
     this.x = x;
     this.y = y;
     this.z = z;
-    this.color = pointToHSL([this.x, this.y, this.z]);
+    this.color = pointToHSL(
+      [this.x, this.y, this.z] as Vector3,
+      this._invertedLightness
+    );
   }
 
   get position(): Vector3 {
@@ -291,7 +308,10 @@ class ColorPoint {
 
   set hsl([h, s, l]: Vector3) {
     this.color = [h, s, l];
-    [this.x, this.y, this.z] = hslToPoint(this.color);
+    [this.x, this.y, this.z] = hslToPoint(
+      this.color as Vector3,
+      this._invertedLightness
+    );
   }
 
   get hsl(): Vector3 {
@@ -299,14 +319,32 @@ class ColorPoint {
   }
 
   get hslCSS(): string {
-    return `hsl(${this.color[0].toFixed(2)}, ${(this.color[1] * 100).toFixed(
+    const [h, s, l] = this.color;
+    return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(l * 100).toFixed(
       2
-    )}%, ${(this.color[2] * 100).toFixed(2)}%)`;
+    )}%)`;
+  }
+
+  get oklchCSS(): string {
+    const [h, s, l] = this.color;
+    return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
+      2
+    )})`;
+  }
+
+  get lchCSS(): string {
+    const [h, s, l] = this.color;
+    return `lch(${(l * 100).toFixed(2)}% ${(s * 150).toFixed(2)} ${h.toFixed(
+      2
+    )})`;
   }
 
   shiftHue(angle: number): void {
     this.color[0] = (360 + (this.color[0] + angle)) % 360;
-    [this.x, this.y, this.z] = hslToPoint(this.color);
+    [this.x, this.y, this.z] = hslToPoint(
+      this.color as Vector3,
+      this._invertedLightness
+    );
   }
 }
 
@@ -317,7 +355,8 @@ export type PolineOptions = {
   positionFunctionX?: (t: number, invert?: boolean) => number;
   positionFunctionY?: (t: number, invert?: boolean) => number;
   positionFunctionZ?: (t: number, invert?: boolean) => number;
-  closedLoop: boolean;
+  invertedLightness?: boolean;
+  closedLoop?: boolean;
 };
 export class Poline {
   private _needsUpdate = true;
@@ -336,6 +375,8 @@ export class Poline {
 
   private _animationFrame: null | number = null;
 
+  private _invertedLightness = false;
+
   constructor(
     {
       anchorColors = randomHSLPair(),
@@ -345,6 +386,7 @@ export class Poline {
       positionFunctionY,
       positionFunctionZ,
       closedLoop,
+      invertedLightness,
     }: PolineOptions = {
       anchorColors: randomHSLPair(),
       numPoints: 4,
@@ -357,7 +399,7 @@ export class Poline {
     }
 
     this._anchorPoints = anchorColors.map(
-      (point) => new ColorPoint({ color: point })
+      (point) => new ColorPoint({ color: point, invertedLightness })
     );
 
     this._numPoints = numPoints + 2; // add two for the anchor points
@@ -369,7 +411,9 @@ export class Poline {
     this._positionFunctionZ =
       positionFunctionZ || positionFunction || sinusoidalPosition;
 
-    this.connectLastAndFirstAnchor = closedLoop;
+    this.connectLastAndFirstAnchor = closedLoop || false;
+
+    this._invertedLightness = invertedLightness || false;
 
     this.updateAnchorPairs();
   }
@@ -492,7 +536,10 @@ export class Poline {
         this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
-      ).map((p) => new ColorPoint({ xyz: p }));
+      ).map(
+        (p) =>
+          new ColorPoint({ xyz: p, invertedLightness: this._invertedLightness })
+      );
     });
   }
 
@@ -501,7 +548,11 @@ export class Poline {
     color,
     insertAtIndex,
   }: ColorPointCollection & { insertAtIndex: number }): ColorPoint {
-    const newAnchor = new ColorPoint({ xyz, color });
+    const newAnchor = new ColorPoint({
+      xyz,
+      color,
+      invertedLightness: this._invertedLightness,
+    });
     if (insertAtIndex) {
       this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
     } else {
@@ -612,6 +663,15 @@ export class Poline {
     return this.connectLastAndFirstAnchor;
   }
 
+  public set invertedLightness(newStatus: boolean) {
+    this._invertedLightness = newStatus;
+    this.updateAnchorPairs();
+  }
+
+  public get invertedLightness(): boolean {
+    return this._invertedLightness;
+  }
+
   public get flattenedPoints() {
     return this.points
       .flat()
@@ -626,12 +686,29 @@ export class Poline {
     return colors;
   }
 
-  public get colorsCSS() {
-    const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
+  public cssColors(mode: "hsl" | "oklch" | "lch" = "hsl") {
+    const methods = {
+      hsl: (p) => p.hslCSS,
+      oklch: (p) => p.oklchCSS,
+      lch: (p) => p.lchCSS,
+    };
+    const cssColors = this.flattenedPoints.map(methods[mode]);
     if (this.connectLastAndFirstAnchor) {
       cssColors.pop();
     }
     return cssColors;
+  }
+
+  public get colorsCSS() {
+    return this.cssColors("hsl");
+  }
+
+  public get colorsCSSlch() {
+    return this.cssColors("lch");
+  }
+
+  public get colorsCSSoklch() {
+    return this.cssColors("oklch");
   }
 
   public shiftHue(hShift = 20): void {
@@ -645,14 +722,12 @@ const { p5 } = globalThis as any;
 
 if (p5) {
   console.info("p5 detected, adding poline to p5 prototype");
-  
   const poline = new Poline();
   p5.prototype.poline = poline;
 
   const polineColors = () =>
     poline.colors.map(
-      (c) =>
-        /*p5.Color(c)*/ `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
+      (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
     );
   p5.prototype.polineColors = polineColors;
   p5.prototype.registerMethod("polineColors", p5.prototype.polineColors);

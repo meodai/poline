@@ -170,6 +170,8 @@
       aspect-ratio: 1;
       --s: .4;
       --l: .5;
+      --minL: #000;
+      --maxL: #fff;
     }
 
     .is-loading .picker {
@@ -185,7 +187,7 @@
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      background: radial-gradient(closest-side, #000, rgba(255, 255, 255, 0), #fff), 
+      background: radial-gradient(closest-side, var(--minL), rgba(255, 255, 255, 0), var(--maxL)), 
                   conic-gradient(from 90deg, var(--grad));
       z-index: 2;
     }
@@ -414,13 +416,13 @@
       left: -90%;
       background: hsl(calc(360 * var(--i, 0)), 100%, 70%);
       border-radius: 50%;
-      border: 1px solid var(--dark);
+      border: 1px solid var(--minL);
       transform: translate(-50%, 50%) scale(0);
       animation: scaleInD .5s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(1.2s + var(--i) * .5s);
       animation-fill-mode: forwards;
       --scale: .5;
-      box-shadow: 0 0 0 3px var(--light);
+      box-shadow: 0 0 0 3px var(--maxL);
     }
 
     .wheel__huelabel--active::after {
@@ -744,6 +746,7 @@
       margin-top: 1.25em;
     }
     .export__sample {
+      position: relative;
       width: 2.5em;
       height: 2.5em;
       flex: 0 0 2.5em;
@@ -752,6 +755,13 @@
       background: var(--c);
       margin-right: 1em;
       box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
+    }
+    .export__sample::after {
+      content: '';
+      position: absolute;
+      inset: 50% 2px 2px;
+      border-radius: 0.2em;
+      background: var(--cHex);
     }
     .export__name,
     .export__hex {
@@ -1267,10 +1277,12 @@
         <div class="l-sec__inner" data-section="getColors">
           <h2 id="getColors">Color List</h2>
           <p>
-            The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings.
+            The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings, either formatted in <strong>HSL</strong> or stretched to <strong>OKlch</strong> or <strong>lch</strong>.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
-poline.colorsCSS</code></pre>
+poline.colorsCSS
+poline.colorsCSSlch
+poline.colorsCSSoklch</code></pre>
           <div class="l-sec__controls">
             <figure class="l-sec__preview">
               <figcaption>Colors as HSL</figcaption>
@@ -1287,6 +1299,27 @@ poline.colorsCSS</code></pre>
             It either takes an <strong>anchor</strong> reference or an <strong>index</strong> as an argument.
           </p>
           <pre class="code-ex"><code class="language-js" data-code="removeAnchor"></code></pre>
+        </div>
+      </article>
+
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="invertedLightness">
+          <h2 id="invertedLightness">Invert lightness</h2>
+          <p>
+            "<strong class="t">Poline</strong>"'s default lightness setting places 0 in the center of the circle and 1 at its edges. However, you have the option
+            to invert the lightness, flipping the scheme so that 0 resides at the edges and 1 at the center.
+          </p>
+          <p>
+            Like the turning of night into day, or the unfolding of a magical spell, "<strong class="t">Poline</strong>"'s inverted lightness feature imbues your
+            palettes with a mystical quality that will unleash your inner wizard. 
+          </p> 
+          <pre class="code-ex"><code class="language-js" data-code="invertedLightness"></code></pre>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Invert Lightness</span>
+              <i><input type="checkbox" data-invertlightness></i>
+            </label>
+          </div>
         </div>
       </article>
 
@@ -1348,6 +1381,10 @@ poline.colorsCSS</code></pre>
             <label>
               <span class="t">Steps</span>
               <i><input type="range" min="1" max="15" value="3" data-steps></i>
+            </label>
+            <label>
+              <span class="t">Invert Lightness</span>
+              <i><input type="checkbox" data-invertlightness></i>
             </label>
             <label>
               <span class="t">Closed Loop</span>
@@ -1442,7 +1479,7 @@ poline.colorsCSS</code></pre>
 
               <h2 class="subtitle support__title">Support</h2>
               <p>
-                I need your contribution to keep this project alive. Please consider <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">buying me a coffee</a>. PS: Especially because the <a href="https://github.com/meodai/color-names" rel="noopener" target="_blank">color name API</a> was hit <strong>2.5 million</strong> times in the last 24h.
+                I need your contribution to keep this project alive. Please consider <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">buying me a coffee</a>.
               </p>
               <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank" class="kofi">
                 <img src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_logo_nolabel.png">
@@ -1469,7 +1506,8 @@ poline.colorsCSS</code></pre>
 
   <script type="module">
     console.clear();
-    import { formatHex, converter } from 'https://cdn.skypack.dev/culori';
+
+    import { formatHex, converter, formatCss, inGamut } from 'https://cdn.skypack.dev/culori@^3.1.1';
     import hljs from 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js';
     
     import {
@@ -1479,6 +1517,8 @@ poline.colorsCSS</code></pre>
     } from "./index.mjs";
 
     const toHSL = converter('hsl');
+    const toOKlab = converter('oklab');
+    const inRgb = inGamut('rgb')
 
     const svgscale = 100;
     const namespaceURI = 'http://www.w3.org/2000/svg';
@@ -1506,10 +1546,10 @@ poline.colorsCSS</code></pre>
       label: 'LCH',
       fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
     }, {
-        key: 'dlch',
-        label: 'DLCH',
-        fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
-      }];
+      key: 'dlch',
+      label: 'DLCH',
+      fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
+    }];
 
     let currentHueModel = 'hsl';
     let currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
@@ -1549,6 +1589,7 @@ poline.colorsCSS</code></pre>
     const $allSelect = document.querySelector('[data-select="all"]');
     const $models = document.querySelectorAll('[data-models]');
     const $loop = document.querySelectorAll('[data-loop]');
+    const $invertLightness = document.querySelectorAll('[data-invertlightness]');
     const $randomize = document.querySelectorAll('[data-randomize]');
     const $toc = document.querySelector('[data-toc]');
     const $export = document.querySelector('[data-export]');
@@ -1571,6 +1612,8 @@ poline.colorsCSS</code></pre>
     let fny = 'quadraticPosition';
     let fnz = 'linearPosition';
     let fnAll = 'sinusoidalPosition';
+
+    let invertedLightness = false;
 
     $selects.forEach($select => {
       Object.keys(positionFunctions).forEach(fn => {
@@ -1600,6 +1643,7 @@ poline.colorsCSS</code></pre>
       positionFunctionY: positionFunctions[fny],
       positionFunctionZ: positionFunctions[fnz],
       closedLoop: false,
+      invertedLightness: false,
     });
 
     // favicon
@@ -1638,6 +1682,7 @@ poline.colorsCSS</code></pre>
         let startAngle = (i + angle - 90 - fraction - overlapFix - (fraction * .5)) * Math.PI / 180;
         let endAngle = (i + angle - 90 + overlapFix - (fraction * .5)) * Math.PI / 180;
         const color = poline.colorsCSS[angle / fraction];
+
         context.beginPath();
         context.moveTo(x, y);
         context.arc(x, y, radius, startAngle, endAngle, counterClockwise);
@@ -1673,9 +1718,18 @@ poline.colorsCSS</code></pre>
       const $list = document.createElement('ol');
       $list.classList.add('export__list');
 
-      const colorsHEX = poline.colors.map(color => formatHex(
+
+      const colorsOKlab = poline.colors.map(color => toOKlab(
         { mode: currentHueModel, ...currentModelFn(color) }
       ));
+
+      const colorCSSOKlab = colorsOKlab.map(color => formatCss(color));
+
+      const colorsInGamut = colorsOKlab.map(c => inRgb(c))
+
+      const colorsHEX = poline.colors.map(color => formatHex(
+        { mode: currentHueModel, ...currentModelFn(color) }
+      ))
 
       fetch(`https://api.color.pizza/v1/?values=${
         colorsHEX.map(c => c.replace('#', '')).join()
@@ -1688,12 +1742,15 @@ poline.colorsCSS</code></pre>
             ${colors.map(color => {
               const { requestedHex, name } = color;
               const index = colorsHEX.indexOf(requestedHex);
+              const oklabcss = colorCSSOKlab[index];
+              const {l, a, b} = colorsOKlab[index];
+              const isInSrgb = colorsInGamut[index];
               return `
-              <li class="export__item" style="--c: ${requestedHex}">
+              <li class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}">
                 <div class="export__sample"></div>
                 <div class="export__label">
                   <strong class="export__name">${name}</strong>
-                  <span class="export__hex">${requestedHex}</span>
+                  <span class="export__hex">${isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`}</span>
                 </div>
               </li>
             `}).join('')}
@@ -1715,7 +1772,10 @@ poline.colorsCSS</code></pre>
           <div class="draw__item" style="--i: ${
             i/poline.colors.length
           }; --c: ${
-            formatHex({ mode: currentHueModel, ...currentModelFn(c) })
+            formatCss(toOKlab(
+            { mode: currentHueModel, ...currentModelFn(c) }
+            ))
+            //formatHex({ mode: currentHueModel, ...currentModelFn(c) })
           }"></div>
         `;
       }).join('');
@@ -1732,6 +1792,15 @@ poline.colorsCSS</code></pre>
         updateDrawer();
       }, 100);
 
+
+      if (invertedLightness) {
+        $picker.style.setProperty('--minL', '#fff');
+        $picker.style.setProperty('--maxL', '#202125');
+      } else {
+        $picker.style.setProperty('--minL', '#000');
+        $picker.style.setProperty('--maxL', '#fff');
+      }
+
       $huelabels.forEach(($huelabel, i) => {
         $huelabel.classList.remove('wheel__huelabel--active');
         // if the HUE label is within the range of the current anchor point
@@ -1739,25 +1808,12 @@ poline.colorsCSS</code></pre>
           const currentHue = anchor.color[0];
           const currentHueDec = Math.round(currentHue / 10);
 
-          /*
-          if(
-            (currentHue - hueSteps / 2 < i * 10) && 
-            (currentHue + hueSteps / 2 > i * 10)
-          ) {
-            $huelabel.classList.add('wheel__huelabel--active');
-          }
-          */
-
-          console.log(currentHueDec, i)
-
           if (
             //(Math.abs((currentHueDec - i + 36) % 36) <= 1) || (Math.abs((currentHueDec - i + 36) % 36) >= 35)
             (currentHueDec - i + 36) % 36 === 0
           ) {
             $huelabel.classList.add('wheel__huelabel--active');
           }
-          
-
         });
       });
 
@@ -1801,7 +1857,7 @@ poline.colorsCSS</code></pre>
       
       let cssColors = [...poline.colorsCSS];
       let colors = [...poline.colors].map(c => formatHex({ mode: currentHueModel, ...currentModelFn(c) }));
-      //colors = [...poline.colors].map(c => formatCss({ mode: 'p3', ...currentModelFn(c) }));
+
       document.documentElement.style.setProperty(
         '--prev',
         colorArrToSteppedGradient(colors)
@@ -1830,6 +1886,18 @@ poline.colorsCSS</code></pre>
     }
 
     updateSVG();
+
+    $invertLightness.forEach($l => {
+      $l.checked = poline.invertedLightness;
+      $l.addEventListener('change', () => {
+        poline.invertedLightness = $l.checked;
+        invertedLightness = $l.checked;
+        updateSVG();
+        $invertLightness.forEach($l => {
+          $l.checked = poline.invertedLightness;
+        });
+      });
+    });
 
     $loop.forEach($l => {
       $l.checked = poline.closedLoop;
@@ -2239,6 +2307,8 @@ new Poline({
         }
       }
 
+      poline.invertedLightness = false;
+      invertedLightness = false;
       poline.removeAnchorPoint({index: poline.anchorPoints.length - 1});
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `poline.removeAnchorPoint({
@@ -2255,9 +2325,32 @@ poline.removeAnchorPoint({
     },
   },
   {
+    section: 'invertedLightness',
+    fn: (section) => {
+      console.log('invertedLightness');
+      poline.invertedLightness = true;
+      invertedLightness = true;
+      const $code = section.target.querySelector('[data-code]');
+      $code.innerHTML = `new Poline({
+  invertedLightness: true,
+});
+// or
+poline.invertedLightness = true;`;
+      hljs.highlightElement($code);
+
+      $invertLightness.forEach($l => {
+        $l.checked = poline.invertedLightness;
+      });
+
+      updateSVG();
+    },
+  },
+  {
     section: 'colorSpace',
     fn: (section) => {
       console.log('colorSpace');
+      poline.invertedLightness = false;
+      invertedLightness = false;
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `import {Poline} from "poline";
 import {formatHex} from "culori";

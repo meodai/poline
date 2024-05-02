@@ -14,7 +14,7 @@ export type PartialVector3 = [number | null, number | null, number | null];
  * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
  * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
  **/
-export declare const pointToHSL: (xyz: [number, number, number]) => [number, number, number];
+export declare const pointToHSL: (xyz: [number, number, number], invertedLightness: boolean) => [number, number, number];
 /**
  * Converts the given HSL color to an (x, y, z) coordinate
  * The hue value is used to calculate the (x, y) position, while the saturation value is used as the z coordinate
@@ -28,7 +28,7 @@ export declare const pointToHSL: (xyz: [number, number, number]) => [number, num
  * hslToPoint([0, 1, 1]) // [0.5, 0.5, 1]
  * hslToPoint([0, 0, 0.5]) // [0.5, 0.5, 0]
  **/
-export declare const hslToPoint: (hsl: [number, number, number]) => [number, number, number];
+export declare const hslToPoint: (hsl: [number, number, number], invertedLightness: boolean) => [number, number, number];
 export declare const randomHSLPair: (startHue?: number, saturations?: Vector2, lightnesses?: Vector2) => [Vector3, Vector3];
 export declare const randomHSLTriple: (startHue?: number, saturations?: [number, number, number], lightnesses?: [number, number, number]) => [Vector3, Vector3, Vector3];
 export type PositionFunction = (t: number, reverse?: boolean) => number;
@@ -46,19 +46,23 @@ export declare const positionFunctions: {
 export type ColorPointCollection = {
     xyz?: Vector3;
     color?: Vector3;
+    invertedLightness?: boolean;
 };
 declare class ColorPoint {
     x: number;
     y: number;
     z: number;
     color: Vector3;
-    constructor({ xyz, color }?: ColorPointCollection);
-    positionOrColor({ xyz, color }: ColorPointCollection): void;
+    private _invertedLightness;
+    constructor({ xyz, color, invertedLightness }?: ColorPointCollection);
+    positionOrColor({ xyz, color, invertedLightness }: ColorPointCollection): void;
     set position([x, y, z]: Vector3);
     get position(): Vector3;
     set hsl([h, s, l]: Vector3);
     get hsl(): Vector3;
     get hslCSS(): string;
+    get oklchCSS(): string;
+    get lchCSS(): string;
     shiftHue(angle: number): void;
 }
 export type PolineOptions = {
@@ -68,7 +72,8 @@ export type PolineOptions = {
     positionFunctionX?: (t: number, invert?: boolean) => number;
     positionFunctionY?: (t: number, invert?: boolean) => number;
     positionFunctionZ?: (t: number, invert?: boolean) => number;
-    closedLoop: boolean;
+    invertedLightness?: boolean;
+    closedLoop?: boolean;
 };
 export declare class Poline {
     private _needsUpdate;
@@ -81,7 +86,8 @@ export declare class Poline {
     private _anchorPairs;
     private connectLastAndFirstAnchor;
     private _animationFrame;
-    constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, }?: PolineOptions);
+    private _invertedLightness;
+    constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, invertedLightness, }?: PolineOptions);
     get numPoints(): number;
     set numPoints(numPoints: number);
     set positionFunction(positionFunction: PositionFunction | PositionFunction[]);
@@ -113,9 +119,14 @@ export declare class Poline {
     }): ColorPoint | null;
     set closedLoop(newStatus: boolean);
     get closedLoop(): boolean;
+    set invertedLightness(newStatus: boolean);
+    get invertedLightness(): boolean;
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
-    get colorsCSS(): string[];
+    cssColors(mode?: "hsl" | "oklch" | "lch"): any[];
+    get colorsCSS(): any[];
+    get colorsCSSlch(): any[];
+    get colorsCSSoklch(): any[];
     shiftHue(hShift?: number): void;
 }
 export {};

@@ -28,7 +28,7 @@ var poline = (() => {
     randomHSLPair: () => randomHSLPair,
     randomHSLTriple: () => randomHSLTriple
   });
-  var pointToHSL = (xyz) => {
+  var pointToHSL = (xyz, invertedLightness) => {
     const [x, y, z] = xyz;
     const cx = 0.5;
     const cy = 0.5;
@@ -38,14 +38,14 @@ var poline = (() => {
     const s = z;
     const dist = Math.sqrt(Math.pow(y - cy, 2) + Math.pow(x - cx, 2));
     const l = dist / cx;
-    return [deg, s, l];
+    return [deg, s, invertedLightness ? 1 - l : l];
   };
-  var hslToPoint = (hsl) => {
+  var hslToPoint = (hsl, invertedLightness) => {
     const [h, s, l] = hsl;
     const cx = 0.5;
     const cy = 0.5;
     const radians = h / (180 / Math.PI);
-    const dist = l * cx;
+    const dist = (invertedLightness ? 1 - l : l) * cx;
     const x = cx + dist * Math.cos(radians);
     const y = cy + dist * Math.sin(radians);
     const z = s;
@@ -164,50 +164,77 @@ var poline = (() => {
     return Math.sqrt(a * a + b * b + c * c);
   };
   var ColorPoint = class {
-    constructor({ xyz, color } = {}) {
+    constructor({ xyz, color, invertedLightness } = {}) {
       this.x = 0;
       this.y = 0;
       this.z = 0;
       this.color = [0, 0, 0];
-      this.positionOrColor({ xyz, color });
+      this._invertedLightness = false;
+      this._invertedLightness = invertedLightness || false;
+      this.positionOrColor({ xyz, color, invertedLightness });
     }
-    positionOrColor({ xyz, color }) {
+    positionOrColor({ xyz, color, invertedLightness }) {
       if (xyz && color) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
       } else if (xyz) {
         this.x = xyz[0];
         this.y = xyz[1];
         this.z = xyz[2];
-        this.color = pointToHSL([this.x, this.y, this.z]);
+        this.color = pointToHSL(
+          [this.x, this.y, this.z],
+          invertedLightness || false
+        );
       } else if (color) {
         this.color = color;
-        [this.x, this.y, this.z] = hslToPoint(color);
+        [this.x, this.y, this.z] = hslToPoint(color, invertedLightness || false);
       }
     }
     set position([x, y, z]) {
       this.x = x;
       this.y = y;
       this.z = z;
-      this.color = pointToHSL([this.x, this.y, this.z]);
+      this.color = pointToHSL(
+        [this.x, this.y, this.z],
+        this._invertedLightness
+      );
     }
     get position() {
       return [this.x, this.y, this.z];
     }
     set hsl([h, s, l]) {
       this.color = [h, s, l];
-      [this.x, this.y, this.z] = hslToPoint(this.color);
+      [this.x, this.y, this.z] = hslToPoint(
+        this.color,
+        this._invertedLightness
+      );
     }
     get hsl() {
       return this.color;
     }
     get hslCSS() {
-      return `hsl(${this.color[0].toFixed(2)}, ${(this.color[1] * 100).toFixed(
+      const [h, s, l] = this.color;
+      return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(l * 100).toFixed(
         2
-      )}%, ${(this.color[2] * 100).toFixed(2)}%)`;
+      )}%)`;
+    }
+    get oklchCSS() {
+      const [h, s, l] = this.color;
+      return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
+        2
+      )})`;
+    }
+    get lchCSS() {
+      const [h, s, l] = this.color;
+      return `lch(${(l * 100).toFixed(2)}% ${(s * 150).toFixed(2)} ${h.toFixed(
+        2
+      )})`;
     }
     shiftHue(angle) {
       this.color[0] = (360 + (this.color[0] + angle)) % 360;
-      [this.x, this.y, this.z] = hslToPoint(this.color);
+      [this.x, this.y, this.z] = hslToPoint(
+        this.color,
+        this._invertedLightness
+      );
     }
   };
   var Poline = class {
@@ -218,7 +245,8 @@ var poline = (() => {
       positionFunctionX,
       positionFunctionY,
       positionFunctionZ,
-      closedLoop
+      closedLoop,
+      invertedLightness
     } = {
       anchorColors: randomHSLPair(),
       numPoints: 4,
@@ -231,17 +259,19 @@ var poline = (() => {
       this._positionFunctionZ = sinusoidalPosition;
       this.connectLastAndFirstAnchor = false;
       this._animationFrame = null;
+      this._invertedLightness = false;
       if (!anchorColors || anchorColors.length < 2) {
         throw new Error("Must have at least two anchor colors");
       }
       this._anchorPoints = anchorColors.map(
-        (point) => new ColorPoint({ color: point })
+        (point) => new ColorPoint({ color: point, invertedLightness })
       );
       this._numPoints = numPoints + 2;
       this._positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
       this._positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
       this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
-      this.connectLastAndFirstAnchor = closedLoop;
+      this.connectLastAndFirstAnchor = closedLoop || false;
+      this._invertedLightness = invertedLightness || false;
       this.updateAnchorPairs();
     }
     get numPoints() {
@@ -331,7 +361,9 @@ var poline = (() => {
           this.positionFunctionX,
           this.positionFunctionY,
           this.positionFunctionZ
-        ).map((p) => new ColorPoint({ xyz: p }));
+        ).map(
+          (p) => new ColorPoint({ xyz: p, invertedLightness: this._invertedLightness })
+        );
       });
     }
     addAnchorPoint({
@@ -339,7 +371,11 @@ var poline = (() => {
       color,
       insertAtIndex
     }) {
-      const newAnchor = new ColorPoint({ xyz, color });
+      const newAnchor = new ColorPoint({
+        xyz,
+        color,
+        invertedLightness: this._invertedLightness
+      });
       if (insertAtIndex) {
         this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
       } else {
@@ -422,6 +458,13 @@ var poline = (() => {
     get closedLoop() {
       return this.connectLastAndFirstAnchor;
     }
+    set invertedLightness(newStatus) {
+      this._invertedLightness = newStatus;
+      this.updateAnchorPairs();
+    }
+    get invertedLightness() {
+      return this._invertedLightness;
+    }
     get flattenedPoints() {
       return this.points.flat().filter((p, i) => i != 0 ? i % this._numPoints : true);
     }
@@ -432,12 +475,26 @@ var poline = (() => {
       }
       return colors;
     }
-    get colorsCSS() {
-      const cssColors = this.flattenedPoints.map((p) => p.hslCSS);
+    cssColors(mode = "hsl") {
+      const methods = {
+        hsl: (p) => p.hslCSS,
+        oklch: (p) => p.oklchCSS,
+        lch: (p) => p.lchCSS
+      };
+      const cssColors = this.flattenedPoints.map(methods[mode]);
       if (this.connectLastAndFirstAnchor) {
         cssColors.pop();
       }
       return cssColors;
+    }
+    get colorsCSS() {
+      return this.cssColors("hsl");
+    }
+    get colorsCSSlch() {
+      return this.cssColors("lch");
+    }
+    get colorsCSSoklch() {
+      return this.cssColors("oklch");
     }
     shiftHue(hShift = 20) {
       this.anchorPoints.forEach((p) => p.shiftHue(hShift));
@@ -450,8 +507,7 @@ var poline = (() => {
     const poline = new Poline();
     p5.prototype.poline = poline;
     const polineColors = () => poline.colors.map(
-      (c) => /*p5.Color(c)*/
-      `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
+      (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
     );
     p5.prototype.polineColors = polineColors;
     p5.prototype.registerMethod("polineColors", p5.prototype.polineColors);
