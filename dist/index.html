@@ -1533,8 +1533,14 @@ poline.colorsCSSoklch</code></pre>
       key: 'hsl',
       label: 'HSL',
       fn: (hsl) => { return { h: hsl[0], s: hsl[1], l: hsl[2] } },
-    }
-    , {
+    }, {
+      key: 'rgb',
+      label: 'RYBitten',
+      fn: (hsl) => {
+        const [r, g, b] = rybHsl2rgb(hsl);
+        return { r, g, b };
+      },
+    }, {
       key: 'jch',
       label: 'JCH',
       fn: (hsl) => { return { j: hsl[2] * 0.222, c: hsl[1] * 0.190, h: hsl[0] } },
@@ -1550,14 +1556,8 @@ poline.colorsCSSoklch</code></pre>
       key: 'dlch',
       label: 'DLCH',
       fn: (hsl) => { return { l: hsl[2] * 100, c: hsl[1] * 51.484, h: hsl[0] } },
-    }, {
-      key: 'rgb',
-      label: 'RYBitten',
-      fn: (hsl) => {
-        const [r,g,b] = rybHsl2rgb(hsl);
-        return { r, g, b };
-      },
-    }];
+    },
+    ];
 
     let currentHueModel = 'hsl';
     let currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
