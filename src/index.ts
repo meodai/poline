@@ -4,6 +4,12 @@ export type Vector2 = [number, number];
 export type Vector3 = [number, ...Vector2];
 export type PartialVector3 = [number | null, number | null, number | null];
 
+type CSSColorMethods = {
+  hsl: (p: ColorPoint) => string;
+  oklch: (p: ColorPoint) => string;
+  lch: (p: ColorPoint) => string;
+};
+
 /**
  * Converts the given (x, y, z) coordinate to an HSL color
  * The (x, y) values are used to calculate the hue, while the z value is used as the saturation
@@ -12,9 +18,8 @@ export type PartialVector3 = [number | null, number | null, number | null];
  * @param xyz:Vector3 [x, y, z] coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
  * @returns [hue, saturation, lightness]: Vector3 color array in HSL format (0-360, 0-1, 0-1)
  * @example
- * pointToHSL(0.5, 0.5, 1) // [0, 1, 0.5]
- * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
- * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
+ * pointToHSL([0.5, 0.5, 1]) // [0, 1, 0.5]
+ * pointToHSL([0.5, 0.5, 0]) // [0, 1, 0]
  **/
 
 export const pointToHSL = (
@@ -201,7 +206,7 @@ const asinusoidalPosition: PositionFunction = (t: number, reverse = false) => {
 
 const arcPosition: PositionFunction = (t: number, reverse = false) => {
   if (reverse) {
-    return Math.sqrt(1 - (1 - t) ** 2);
+    return 1 - Math.sqrt(1 - t ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
@@ -270,25 +275,30 @@ class ColorPoint {
   public color: Vector3 = [0, 0, 0];
   private _invertedLightness = false;
 
-  constructor({ xyz, color, invertedLightness }: ColorPointCollection = {}) {
-    this._invertedLightness = invertedLightness || false;
+  constructor({
+    xyz,
+    color,
+    invertedLightness = false,
+  }: ColorPointCollection = {}) {
+    this._invertedLightness = invertedLightness;
     this.positionOrColor({ xyz, color, invertedLightness });
   }
 
-  positionOrColor({ xyz, color, invertedLightness }: ColorPointCollection) {
-    if (xyz && color) {
+  positionOrColor({
+    xyz,
+    color,
+    invertedLightness = false,
+  }: ColorPointCollection) {
+    if ((xyz && color) || (!xyz && !color)) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (xyz) {
       this.x = xyz[0];
       this.y = xyz[1];
       this.z = xyz[2];
-      this.color = pointToHSL(
-        [this.x, this.y, this.z],
-        invertedLightness || false
-      );
+      this.color = pointToHSL([this.x, this.y, this.z], invertedLightness);
     } else if (color) {
       this.color = color;
-      [this.x, this.y, this.z] = hslToPoint(color, invertedLightness || false);
+      [this.x, this.y, this.z] = hslToPoint(color, invertedLightness);
     }
   }
 
@@ -573,6 +583,10 @@ export class Poline {
       throw new Error("Must provide a point or index");
     }
 
+    if (this.anchorPoints.length < 3) {
+      throw new Error("Must have at least two anchor points");
+    }
+
     let apid;
 
     if (index !== undefined) {
@@ -672,6 +686,21 @@ export class Poline {
     return this._invertedLightness;
   }
 
+  /**
+   * Returns a flattened array of all points across all segments,
+   * removing duplicated anchor points at segment boundaries.
+   *
+   * Since anchor points exist at both the end of one segment and
+   * the beginning of the next, this method keeps only one instance of each.
+   * The filter logic keeps the first point (index 0) and then filters out
+   * points whose indices are multiples of the segment size (_numPoints),
+   * which are the anchor points at the start of each segment (except the first).
+   *
+   * This approach ensures we get all unique points in the correct order
+   * while avoiding duplicated anchor points.
+   *
+   * @returns {ColorPoint[]} A flat array of unique ColorPoint instances
+   */
   public get flattenedPoints() {
     return this.points
       .flat()
@@ -686,11 +715,11 @@ export class Poline {
     return colors;
   }
 
-  public cssColors(mode: "hsl" | "oklch" | "lch" = "hsl") {
-    const methods = {
-      hsl: (p) => p.hslCSS,
-      oklch: (p) => p.oklchCSS,
-      lch: (p) => p.lchCSS,
+  public cssColors(mode: "hsl" | "oklch" | "lch" = "hsl"): string[] {
+    const methods: CSSColorMethods = {
+      hsl: (p: ColorPoint): string => p.hslCSS,
+      oklch: (p: ColorPoint): string => p.oklchCSS,
+      lch: (p: ColorPoint): string => p.lchCSS,
     };
     const cssColors = this.flattenedPoints.map(methods[mode]);
     if (this.connectLastAndFirstAnchor) {

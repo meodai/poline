@@ -10,9 +10,8 @@ export type PartialVector3 = [number | null, number | null, number | null];
  * @param xyz:Vector3 [x, y, z] coordinate array in (x, y, z) format (0-1, 0-1, 0-1)
  * @returns [hue, saturation, lightness]: Vector3 color array in HSL format (0-360, 0-1, 0-1)
  * @example
- * pointToHSL(0.5, 0.5, 1) // [0, 1, 0.5]
- * pointToHSL(0.5, 0.5, 0) // [0, 1, 0]
- * pointToHSL(0.5, 0.5, 1) // [0, 1, 1]
+ * pointToHSL([0.5, 0.5, 1]) // [0, 1, 0.5]
+ * pointToHSL([0.5, 0.5, 0]) // [0, 1, 0]
  **/
 export declare const pointToHSL: (xyz: [number, number, number], invertedLightness: boolean) => [number, number, number];
 /**
@@ -54,8 +53,8 @@ declare class ColorPoint {
     z: number;
     color: Vector3;
     private _invertedLightness;
-    constructor({ xyz, color, invertedLightness }?: ColorPointCollection);
-    positionOrColor({ xyz, color, invertedLightness }: ColorPointCollection): void;
+    constructor({ xyz, color, invertedLightness, }?: ColorPointCollection);
+    positionOrColor({ xyz, color, invertedLightness, }: ColorPointCollection): void;
     set position([x, y, z]: Vector3);
     get position(): Vector3;
     set hsl([h, s, l]: Vector3);
@@ -121,12 +120,27 @@ export declare class Poline {
     get closedLoop(): boolean;
     set invertedLightness(newStatus: boolean);
     get invertedLightness(): boolean;
+    /**
+     * Returns a flattened array of all points across all segments,
+     * removing duplicated anchor points at segment boundaries.
+     *
+     * Since anchor points exist at both the end of one segment and
+     * the beginning of the next, this method keeps only one instance of each.
+     * The filter logic keeps the first point (index 0) and then filters out
+     * points whose indices are multiples of the segment size (_numPoints),
+     * which are the anchor points at the start of each segment (except the first).
+     *
+     * This approach ensures we get all unique points in the correct order
+     * while avoiding duplicated anchor points.
+     *
+     * @returns {ColorPoint[]} A flat array of unique ColorPoint instances
+     */
     get flattenedPoints(): ColorPoint[];
     get colors(): [number, number, number][];
-    cssColors(mode?: "hsl" | "oklch" | "lch"): any[];
-    get colorsCSS(): any[];
-    get colorsCSSlch(): any[];
-    get colorsCSSoklch(): any[];
+    cssColors(mode?: "hsl" | "oklch" | "lch"): string[];
+    get colorsCSS(): string[];
+    get colorsCSSlch(): string[];
+    get colorsCSSoklch(): string[];
     shiftHue(hShift?: number): void;
 }
 export {};

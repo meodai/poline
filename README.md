@@ -146,10 +146,13 @@ Any of the **xyz** or **hsl** components can be null. If they are **null**, they
 
 ## Color List
 
-The '**poline**' instance returns all colors as an array of **hsl** arrays or alternatively as an array of **CSS** strings.
+The '**poline**' instance returns all colors as an array of **hsl**, **lch** or 
+**oklch** arrays or alternatively as an array of **CSS** strings.
 ```js
 poline.colors
 poline.colorsCSS
+poline.colorsCSSlch
+poline.colorsCSSoklch
 ```
 
 ## Remove Anchors

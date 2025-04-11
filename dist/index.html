@@ -1412,13 +1412,18 @@ poline.colorsCSSoklch</code></pre>
             </label>
             <button data-randomize>Randomize Anchors</button>
           </div>
-          <p>
-            And remember, the full potential of the "<strong class="t">poline</strong>" playground 
-            is best unleashed on a desktop device. So gather your tools, and let the
-            mystical journey commence.
-          </p>
         </div>
       </aside>
+
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="examples">
+          <h2 id="examples">Playground Code</h2>
+          <pre class="code-ex"><code class="language-js" data-code="playground"></code></pre>
+          <p>
+            The code above mimics the current state of the playground.
+          </p>
+        </div>
+      </article>
 
       <article class="l-sec">
         <div class="l-sec__inner" data-section="theEnd">
@@ -1438,6 +1443,11 @@ poline.colorsCSSoklch</code></pre>
           <p>
             Inspired by <strong><a href="https://anatolyzenkov.com/" target="_blank"
               rel="noopener noreferrer">Anatoly Zenkov</a>'s</strong> idea and created with his blessing and support.
+          </p>
+          <p>
+            And remember, the full potential of the "<strong class="t">poline</strong>" playground
+            is best unleashed on a desktop device. So gather your tools, and let the
+            mystical journey commence.
           </p>
 
           <section aria-label="Author">
@@ -1602,6 +1612,7 @@ poline.colorsCSSoklch</code></pre>
     const $toc = document.querySelector('[data-toc]');
     const $export = document.querySelector('[data-export]');
     const $draw = document.querySelector('[data-draw]');
+    const $mainCodeBlock = document.querySelector('[data-code="playground"]');
 
     $models.forEach($model => {
       $model.innerHTML = hueBasedModels
@@ -1653,6 +1664,29 @@ poline.colorsCSSoklch</code></pre>
       closedLoop: false,
       invertedLightness: false,
     });
+
+    function updateFullCode () {
+      let anchorColors = poline.anchorPoints.map(c => {
+        const [h, s, l] = c.color;
+        return `[${Math.round(h)}, ${s.toFixed(2)}, ${l.toFixed(2) }]`;
+      });
+      const code = `new Poline({
+  anchorColors: ${
+    anchorColors.length > 0 ? `[\n    ${anchorColors.join(',\n    ')}\n  ]` : '[]'
+  },
+  numPoints: ${poline.numPoints},
+  positionFunctionX: 
+    positionFunctions['${fnx}'],
+  positionFunctionY: 
+    positionFunctions['${fny}'],
+  positionFunctionZ: 
+    positionFunctions['${fnz}'],
+  closedLoop: ${poline.closedLoop},
+  invertedLightness: ${poline.invertedLightness},
+});`;
+      $mainCodeBlock.innerHTML = code;
+      hljs.highlightElement($mainCodeBlock);
+    }
 
     // favicon
     let $favicon = document.querySelector('[rel="icon"]');
@@ -1894,6 +1928,7 @@ poline.colorsCSSoklch</code></pre>
     }
 
     updateSVG();
+    updateFullCode();
 
     $invertLightness.forEach($l => {
       $l.checked = poline.invertedLightness;
@@ -1901,6 +1936,7 @@ poline.colorsCSSoklch</code></pre>
         poline.invertedLightness = $l.checked;
         invertedLightness = $l.checked;
         updateSVG();
+        updateFullCode();
         $invertLightness.forEach($l => {
           $l.checked = poline.invertedLightness;
         });
@@ -1912,6 +1948,7 @@ poline.colorsCSSoklch</code></pre>
       $l.addEventListener('change', () => {
         poline.closedLoop = $l.checked;
         updateSVG();
+        updateFullCode();
         $loop.forEach($l => {
           $l.checked = poline.closedLoop;
         });
@@ -1923,6 +1960,7 @@ poline.colorsCSSoklch</code></pre>
         steps = parseInt($step.value);
         poline.numPoints = steps;
         updateSVG();
+        updateFullCode();
         $steps.forEach($step => {
           $step.value = steps;
         });
@@ -1934,6 +1972,7 @@ poline.colorsCSSoklch</code></pre>
       fnAll = $allSelect.value;
       poline.positionFunction = positionFunctions[fnAll];
       updateSVG();
+      updateFullCode();
     });
 
     $xSelect.forEach($xSelect => {
@@ -1941,6 +1980,7 @@ poline.colorsCSSoklch</code></pre>
         fnx = $xSelect.value;
         poline.positionFunctionX = positionFunctions[fnx];
         updateSVG();
+        updateFullCode();
         $xSelect.forEach($el => {
           $el.value = fnx;
         });
@@ -1953,6 +1993,7 @@ poline.colorsCSSoklch</code></pre>
         fny = $ySelect.value;
         poline.positionFunctionY = positionFunctions[fny];
         updateSVG();
+        updateFullCode();
         $ySelect.forEach($el => {
           $el.value = fnx;
         });
@@ -1964,6 +2005,7 @@ poline.colorsCSSoklch</code></pre>
         fnz = $zSelect.value;
         poline.positionFunctionZ = positionFunctions[fnz];
         updateSVG();
+        updateFullCode();
         $zSelect.forEach($el => {
           $el.value = fnz;
         });
@@ -1981,6 +2023,7 @@ poline.colorsCSSoklch</code></pre>
         });
         poline.updateAnchorPairs();
         updateSVG();
+        updateFullCode();
       });
     });
 
@@ -1995,7 +2038,6 @@ poline.colorsCSSoklch</code></pre>
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
       if (!currentPoint) {
-        
         currentPoint = poline.getClosestAnchorPoint({ 
           xyz: [x, y, null], 
           maxDistance: .1 
@@ -2014,6 +2056,7 @@ poline.colorsCSSoklch</code></pre>
         e.stopPropagation();
         poline.updateAnchorPoint({point: currentPoint, xyz: [x, y, currentPoint.z]});
         updateSVG();
+        updateFullCode();
       } 
     });
 
@@ -2033,11 +2076,13 @@ poline.colorsCSSoklch</code></pre>
       if (!lastSelectedPoint) return;
       poline.removeAnchorPoint({point: lastSelectedPoint});
       updateSVG();
+      updateFullCode();
     }
 
     if (e.key === 'p') {
       lastSelectedPoint = poline.addAnchorPoint({xyz: [lastX, lastY, lastY]});
       updateSVG();
+      updateFullCode();
     }
 
     if (e.key === 'c') {
@@ -2057,6 +2102,7 @@ poline.colorsCSSoklch</code></pre>
         });
         
         updateSVG();
+        updateFullCode();
       });
       document.body.appendChild($color);
       $color.click();
@@ -2065,11 +2111,13 @@ poline.colorsCSSoklch</code></pre>
     if (e.key === 'ArrowLeft') {
       poline.shiftHue(-2)
       updateSVG();
+      updateFullCode();
     }
 
     if (e.key === 'ArrowRight') {
       poline.shiftHue(2)
       updateSVG();
+      updateFullCode();
     }
   });
 
@@ -2085,6 +2133,7 @@ poline.colorsCSSoklch</code></pre>
         numPoints: steps,
       });
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2100,6 +2149,7 @@ poline.colorsCSSoklch</code></pre>
         ],
       });
       updateSVG();
+      updateFullCode();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
   anchorColors: [
@@ -2130,6 +2180,7 @@ poline.colorsCSSoklch</code></pre>
       console.log('points');
       poline.numPoints = 6;
       updateSVG();
+      updateFullCode();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
   numPoints: 6,
@@ -2172,6 +2223,7 @@ poline.addAnchorPoint({
 });`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2180,6 +2232,7 @@ poline.addAnchorPoint({
       console.log('closedLoop');
       poline.closedLoop = true;
       updateSVG();
+      updateFullCode();
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `let poline = new Poline({
   closedLoop: true,
@@ -2188,6 +2241,7 @@ poline.addAnchorPoint({
 poline.closedLoop = true;`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     }
   },
   {
@@ -2213,6 +2267,7 @@ new Poline({
 });`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2249,6 +2304,7 @@ new Poline({
 });`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2262,7 +2318,8 @@ new Poline({
   closedLoop: true,
 });`;
       hljs.highlightElement($code);
-      updateSVG()
+      updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2293,6 +2350,7 @@ new Poline({
 });`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     }, 
   },
   {
@@ -2330,6 +2388,7 @@ poline.removeAnchorPoint({
 });`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2351,6 +2410,7 @@ poline.invertedLightness = true;`;
       });
 
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2385,6 +2445,7 @@ const LCHColors = [...poline.colors].map(
 );`;
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
@@ -2397,6 +2458,7 @@ const LCHColors = [...poline.colors].map(
       globalInterval = setInterval(() => {
         poline.shiftHue(1);
         updateSVG();
+        updateFullCode();
       }, 16.66);
     }
   },
@@ -2407,6 +2469,7 @@ const LCHColors = [...poline.colors].map(
       const $code = section.target.querySelector('[data-code]');
       hljs.highlightElement($code);
       updateSVG();
+      updateFullCode();
     },
   },
   {
