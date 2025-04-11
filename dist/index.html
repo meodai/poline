@@ -1680,9 +1680,9 @@ poline.colorsCSSoklch</code></pre>
   positionFunctionY: 
     positionFunctions['${fny}'],
   positionFunctionZ: 
-    positionFunctions['${fnz}'],
-  closedLoop: ${poline.closedLoop},
-  invertedLightness: ${poline.invertedLightness},
+    positionFunctions['${fnz}'],${poline.closedLoop ? `
+  closedLoop: ${poline.closedLoop},` : ''}${poline.invertedLightness ? `
+  invertedLightness: ${poline.invertedLightness},` : ''} 
 });`;
       $mainCodeBlock.innerHTML = code;
       hljs.highlightElement($mainCodeBlock);
