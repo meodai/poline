@@ -1775,7 +1775,13 @@ poline.colorsCSSoklch</code></pre>
 
       fetch(`https://api.color.pizza/v1/?values=${
         colorsHEX.map(c => c.replace('#', '')).join()
-      }&list=bestOf&noduplicates=true`).then(res => res.json())
+      }&list=bestOf&noduplicates=true`,
+      {
+        headers: {
+          'X-Referrer': 'https://meodai.github.io/poline/',
+        }
+      }
+    ).then(res => res.json())
       .then(data => {
         let { colors , paletteTitle } = data;
         $export.innerHTML = `
