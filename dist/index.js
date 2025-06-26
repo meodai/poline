@@ -21,6 +21,7 @@ var poline = (() => {
   // src/index.ts
   var src_exports = {};
   __export(src_exports, {
+    ColorPoint: () => ColorPoint,
     Poline: () => Poline,
     hslToPoint: () => hslToPoint,
     pointToHSL: () => pointToHSL,
@@ -381,7 +382,7 @@ var poline = (() => {
         color,
         invertedLightness: this._invertedLightness
       });
-      if (insertAtIndex) {
+      if (insertAtIndex !== void 0) {
         this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
       } else {
         this.anchorPoints.push(newAnchor);
@@ -418,7 +419,7 @@ var poline = (() => {
       xyz,
       color
     }) {
-      if (pointIndex) {
+      if (pointIndex !== void 0) {
         point = this.anchorPoints[pointIndex];
       }
       if (!point) {

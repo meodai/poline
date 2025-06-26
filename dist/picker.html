@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Poline Picker Example</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: grid;
+        place-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background: #f0f0f0;
+      }
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+      }
+      .controls {
+        display: flex;
+        gap: 15px;
+        align-items: center;
+      }
+      poline-picker {
+        width: 300px;
+        height: 300px;
+        --poline-picker-line-color: #333;
+        --poline-picker-bg-color: #fff;
+      }
+      #colors {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 20px;
+        max-width: 300px;
+      }
+      .color-swatch {
+        width: 50px;
+        height: 50px;
+        border-radius: 5px;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      h1 {
+        margin: 0;
+        color: #333;
+      }
+      .instructions {
+        text-align: center;
+        color: #666;
+        max-width: 400px;
+        line-height: 1.5;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Poline Picker</h1>
+      <p class="instructions">
+        Drag existing anchor points to adjust colors. Press 'C' to add a new point at cursor position,
+        or use the "Add Points" checkbox to enable click-to-add mode.
+      </p>
+      <div class="controls">
+        <label>
+          <input type="checkbox" id="allowAddPoints"> Allow Add Points (Click)
+        </label>
+        <label>
+          <input type="checkbox" id="invertedLightness"> Inverted Lightness
+        </label>
+        <label>
+          <input type="checkbox" id="closedLoop"> Closed Loop
+        </label>
+      </div>
+      <poline-picker interactive></poline-picker>
+      <div id="colors"></div>
+    </div>
+
+    <script type="module">
+      import { Poline, positionFunctions } from "./picker.mjs";
+
+      const picker = document.querySelector("poline-picker");
+      const colorsContainer = document.getElementById("colors");
+      const allowAddPointsCheckbox = document.getElementById("allowAddPoints");
+      const invertedLightnessCheckbox = document.getElementById("invertedLightness");
+      const closedLoopCheckbox = document.getElementById("closedLoop");
+
+      const poline = new Poline({
+        anchorColors: [
+          [0, 1, 0.5],
+          [180, 1, 0.5],
+        ],
+        numPoints: 9,
+        positionFunctionX: positionFunctions.smoothStepPosition,
+        positionFunctionY: positionFunctions.smoothStepPosition,
+        positionFunctionZ: positionFunctions.linearPosition,
+        closedLoop: false,
+        invertedLightness: false,
+      });
+
+      picker.setPoline(poline);
+      
+      let lastMousePosition = { x: 0, y: 0 };
+
+      function updateColors() {
+        const colors = poline.colorsCSS;
+        colorsContainer.innerHTML = "";
+        
+        for (const color of colors) {
+          const swatch = document.createElement("div");
+          swatch.className = "color-swatch";
+          swatch.style.backgroundColor = color;
+          swatch.title = color;
+          colorsContainer.appendChild(swatch);
+        }
+      }
+
+      // Track mouse position for 'C' key functionality
+      picker.addEventListener("pointermove", (e) => {
+        const rect = picker.getBoundingClientRect();
+        lastMousePosition = {
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        };
+      });
+
+      // Listen for the custom event from the picker
+      picker.addEventListener("poline-change", updateColors);
+
+      // Handle allow add points toggle
+      allowAddPointsCheckbox.addEventListener("change", (e) => {
+        picker.setAllowAddPoints(e.target.checked);
+      });
+
+      // Handle inverted lightness toggle
+      invertedLightnessCheckbox.addEventListener("change", (e) => {
+        poline.invertedLightness = e.target.checked;
+        picker.setPoline(poline); // This will update the background
+        updateColors();
+      });
+
+      // Handle closed loop toggle
+      closedLoopCheckbox.addEventListener("change", (e) => {
+        poline.closedLoop = e.target.checked;
+        picker.setPoline(poline);
+        updateColors();
+      });
+
+      // Handle 'C' key to add points like in the demo
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "c" || e.key === "C") {
+          picker.addPointAtPosition(lastMousePosition.x, lastMousePosition.y);
+          updateColors();
+        }
+      });
+
+      // Initial color update
+      updateColors();
+    </script>
+  </body>
+</html>

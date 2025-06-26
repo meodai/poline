@@ -8,9 +8,16 @@
   "browser": "./dist/index.min.js",
   "jsdelivr": "./dist/index.umd.js",
   "exports": {
-    "require": "./dist/index.cjs",
-    "import": "./dist/index.mjs",
-    "types": "./dist/index.d.ts"
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts"
+    },
+    "./picker": {
+      "require": "./dist/picker.cjs",
+      "import": "./dist/picker.mjs",
+      "types": "./dist/webcomponent.d.ts"
+    }
   },
   "types": "dist/index.d.ts",
   "scripts": {

@@ -268,7 +268,7 @@ export type ColorPointCollection = {
   invertedLightness?: boolean;
 };
 
-class ColorPoint {
+export class ColorPoint {
   public x = 0;
   public y = 0;
   public z = 0;
@@ -557,13 +557,13 @@ export class Poline {
     xyz,
     color,
     insertAtIndex,
-  }: ColorPointCollection & { insertAtIndex: number }): ColorPoint {
+  }: ColorPointCollection & { insertAtIndex?: number }): ColorPoint {
     const newAnchor = new ColorPoint({
       xyz,
       color,
       invertedLightness: this._invertedLightness,
     });
-    if (insertAtIndex) {
+    if (insertAtIndex !== undefined) {
       this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
     } else {
       this.anchorPoints.push(newAnchor);
@@ -612,7 +612,7 @@ export class Poline {
     point?: ColorPoint;
     pointIndex?: number;
   } & ColorPointCollection): ColorPoint {
-    if (pointIndex) {
+    if (pointIndex !== undefined) {
       point = this.anchorPoints[pointIndex];
     }
 

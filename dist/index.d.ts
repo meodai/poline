@@ -47,7 +47,7 @@ export type ColorPointCollection = {
     color?: Vector3;
     invertedLightness?: boolean;
 };
-declare class ColorPoint {
+export declare class ColorPoint {
     x: number;
     y: number;
     z: number;
@@ -101,7 +101,7 @@ export declare class Poline {
     set anchorPoints(anchorPoints: ColorPoint[]);
     updateAnchorPairs(): void;
     addAnchorPoint({ xyz, color, insertAtIndex, }: ColorPointCollection & {
-        insertAtIndex: number;
+        insertAtIndex?: number;
     }): ColorPoint;
     removeAnchorPoint({ point, index, }: {
         point?: ColorPoint;
@@ -143,4 +143,3 @@ export declare class Poline {
     get colorsCSSoklch(): string[];
     shiftHue(hShift?: number): void;
 }
-export {};

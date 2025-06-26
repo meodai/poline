@@ -89,3 +89,66 @@ build({
   },
   outfile: "dist/index.umd.js",
 });
+
+// Bundled CJS
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  format: "cjs",
+  outfile: "dist/picker.cjs",
+});
+
+// Bundled CJS, minified
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  minify: true,
+  format: "cjs",
+  outfile: "dist/picker.min.cjs",
+});
+
+// Bundled ESM
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  format: "esm",
+  target: "es2020",
+  outfile: "dist/picker.mjs",
+});
+
+// Bundled ESM, minified
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  minify: true,
+  format: "esm",
+  target: "es2020",
+  outfile: "dist/picker.min.mjs",
+});
+
+// Bundled IIFE
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  format: "iife",
+  target: "node14",
+  globalName: "polinePicker",
+  outfile: "dist/picker.js",
+});
+
+// Bundled IIFE, minified
+build({
+  entryPoints: ["./src/webcomponent.ts"],
+  logLevel: "info",
+  bundle: true,
+  minify: true,
+  format: "iife",
+  target: "es6",
+  globalName: "polinePicker",
+  outfile: "dist/picker.min.js",
+});

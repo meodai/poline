@@ -26,15 +26,6 @@ var randomHSLPair = (startHue = Math.random() * 360, saturations = [Math.random(
   [startHue, saturations[0], lightnesses[0]],
   [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]]
 ];
-var randomHSLTriple = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random(), Math.random()], lightnesses = [
-  0.75 + Math.random() * 0.2,
-  Math.random() * 0.2,
-  0.75 + Math.random() * 0.2
-]) => [
-  [startHue, saturations[0], lightnesses[0]],
-  [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
-  [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]]
-];
 var vectorOnLine = (t, p1, p2, invert = false, fx = (t2, invert2) => invert2 ? 1 - t2 : t2, fy = (t2, invert2) => invert2 ? 1 - t2 : t2, fz = (t2, invert2) => invert2 ? 1 - t2 : t2) => {
   const tModifiedX = fx(t, invert);
   const tModifiedY = fy(t, invert);
@@ -508,12 +499,268 @@ if (p5) {
   globalThis.poline = poline;
   globalThis.polineColors = polineColors;
 }
+
+// src/webcomponent.ts
+var namespaceURI = "http://www.w3.org/2000/svg";
+var svgscale = 100;
+var PolinePicker = class extends HTMLElement {
+  constructor() {
+    super();
+    this.currentPoint = null;
+    this.allowAddPoints = false;
+    this.attachShadow({ mode: "open" });
+    this.interactive = this.hasAttribute("interactive");
+    this.allowAddPoints = this.hasAttribute("allow-add-points");
+  }
+  connectedCallback() {
+    this.render();
+    if (this.interactive) {
+      this.addEventListeners();
+    }
+  }
+  setPoline(poline) {
+    this.poline = poline;
+    this.updateSVG();
+    this.updateLightnessBackground();
+  }
+  setAllowAddPoints(allow) {
+    this.allowAddPoints = allow;
+  }
+  addPointAtPosition(x, y) {
+    if (!this.poline)
+      return null;
+    const normalizedX = x / this.svg.clientWidth;
+    const normalizedY = y / this.svg.clientHeight;
+    const newPoint = this.poline.addAnchorPoint({
+      xyz: [normalizedX, normalizedY, normalizedY]
+    });
+    this.updateSVG();
+    this.dispatchEvent(
+      new CustomEvent("poline-change", {
+        detail: { poline: this.poline }
+      })
+    );
+    return newPoint;
+  }
+  updateLightnessBackground() {
+    const picker = this.shadowRoot?.querySelector(".picker");
+    if (picker && this.poline) {
+      if (this.poline.invertedLightness) {
+        picker.style.setProperty("--maxL", "#202125");
+        picker.style.setProperty("--minL", "#fff");
+      } else {
+        picker.style.setProperty("--maxL", "#fff");
+        picker.style.setProperty("--minL", "#000");
+      }
+    }
+  }
+  render() {
+    if (!this.shadowRoot) {
+      return;
+    }
+    this.shadowRoot.innerHTML = `
+      <style>
+        :host {
+          display: inline-block;
+          width: 200px;
+          height: 200px;
+          position: relative;
+        }
+        .picker {
+          position: relative;
+          width: 100%;
+          aspect-ratio: 1;
+          --s: .4;
+          --l: .5;
+          --minL: #000;
+          --maxL: #fff;
+          --grad: #ff0000 0deg, #ffff00 60deg, #00ff00 120deg, #00ffff 180deg, #0000ff 240deg, #ff00ff 300deg, #ff0000 360deg;
+        }
+        .picker::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          background: radial-gradient(closest-side, var(--minL), rgba(255, 255, 255, 0), var(--maxL)), 
+                      conic-gradient(from 90deg, var(--grad));
+          z-index: 1;
+        }
+        svg {
+          position: relative;
+          z-index: 2;
+          overflow: visible !important;
+          width: 100%;
+        }
+        .wheel__line {
+          stroke: var(--poline-picker-line-color, #000);
+          stroke-width: 0.15;
+          fill: none;
+        }
+        .wheel__anchor {
+          cursor: grab;
+          stroke: var(--poline-picker-line-color, #000);
+          stroke-width: 0.2;
+          fill: var(--poline-picker-bg-color, #fff);
+        }
+        .wheel__anchor:hover {
+          cursor: grabbing;
+        }
+        .wheel__bg {
+          stroke-width: 10;
+          fill: transparent;
+        }
+        .wheel__point {
+          stroke: var(--poline-picker-line-color, #000);
+          stroke-width: 0.15;
+          pointer-events: none;
+        }
+      </style>
+    `;
+    this.svg = this.createSVG();
+    const pickerDiv = document.createElement("div");
+    pickerDiv.className = "picker";
+    pickerDiv.appendChild(this.svg);
+    this.shadowRoot.appendChild(pickerDiv);
+    this.wheel = this.svg.querySelector(".wheel");
+    this.line = this.svg.querySelector(".wheel__line");
+    this.anchors = this.svg.querySelector(".wheel__anchors");
+    this.points = this.svg.querySelector(".wheel__points");
+    if (this.poline) {
+      this.updateSVG();
+    }
+  }
+  createSVG() {
+    const svg = document.createElementNS(namespaceURI, "svg");
+    svg.setAttribute("viewBox", `0 0 ${svgscale} ${svgscale}`);
+    svg.innerHTML = `
+      <defs>
+        <filter id="goo">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
+          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+          <feBlend in="SourceGraphic" in2="goo" />
+        </filter>
+      </defs>
+      <g class="wheel" filter="url(#goo)">
+        <polyline class="wheel__line" points="" />
+        <g class="wheel__anchors"></g>
+        <g class="wheel__points"></g>
+      </g>
+    `;
+    return svg;
+  }
+  updateSVG() {
+    if (!this.poline || !this.svg) {
+      return;
+    }
+    const pathPoints = this.poline.flattenedPoints.map((p) => {
+      const cartesian = this.pointToCartesian(p);
+      if (!cartesian)
+        return "";
+      const [x, y] = cartesian;
+      return `${x},${y}`;
+    }).filter((point) => point !== "").join(" ");
+    this.line.setAttribute("points", pathPoints);
+    this.anchors.innerHTML = "";
+    this.points.innerHTML = "";
+    this.poline.anchorPoints.forEach((point) => {
+      const cartesian = this.pointToCartesian(point);
+      if (!cartesian)
+        return;
+      const [x = 0, y = 0] = cartesian;
+      const anchor = document.createElementNS(namespaceURI, "circle");
+      anchor.setAttribute("class", "wheel__anchor");
+      anchor.setAttribute("cx", x.toString());
+      anchor.setAttribute("cy", y.toString());
+      anchor.setAttribute("r", "2");
+      anchor.setAttribute("fill", point.hslCSS);
+      this.anchors.appendChild(anchor);
+    });
+    this.poline.flattenedPoints.forEach((point) => {
+      const isAnchorPoint = this.poline.anchorPoints.some(
+        (anchor) => anchor.x === point.x && anchor.y === point.y && anchor.z === point.z
+      );
+      if (isAnchorPoint)
+        return;
+      const cartesian = this.pointToCartesian(point);
+      if (!cartesian)
+        return;
+      const [x = 0, y = 0] = cartesian;
+      const circle = document.createElementNS(namespaceURI, "circle");
+      circle.setAttribute("class", "wheel__point");
+      circle.setAttribute("cx", x.toString());
+      circle.setAttribute("cy", y.toString());
+      const radius = 0.5 + point.color[1];
+      circle.setAttribute("r", radius.toString());
+      circle.setAttribute("fill", point.hslCSS);
+      this.points.appendChild(circle);
+    });
+  }
+  pointToCartesian(point) {
+    const half = svgscale / 2;
+    const x = half + (point.x - 0.5) * svgscale;
+    const y = half + (point.y - 0.5) * svgscale;
+    return [x, y];
+  }
+  addEventListeners() {
+    this.svg.addEventListener("pointerdown", (e) => {
+      e.stopPropagation();
+      const svgRect = this.svg.getBoundingClientRect();
+      const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
+      const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
+      const normalizedX = svgX / svgscale;
+      const normalizedY = svgY / svgscale;
+      const closestAnchor = this.poline.getClosestAnchorPoint({
+        xyz: [normalizedX, normalizedY, null],
+        maxDistance: 0.1
+      });
+      if (closestAnchor) {
+        this.currentPoint = closestAnchor;
+      } else if (this.allowAddPoints) {
+        this.currentPoint = this.poline.addAnchorPoint({
+          xyz: [normalizedX, normalizedY, normalizedY]
+        });
+        this.updateSVG();
+        this.dispatchEvent(
+          new CustomEvent("poline-change", {
+            detail: { poline: this.poline }
+          })
+        );
+      }
+    });
+    this.svg.addEventListener("pointermove", (e) => {
+      if (this.currentPoint) {
+        const svgRect = this.svg.getBoundingClientRect();
+        const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
+        const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
+        const normalizedX = svgX / svgscale;
+        const normalizedY = svgY / svgscale;
+        this.poline.updateAnchorPoint({
+          point: this.currentPoint,
+          xyz: [normalizedX, normalizedY, this.currentPoint.z]
+        });
+        this.updateSVG();
+        this.dispatchEvent(
+          new CustomEvent("poline-change", {
+            detail: { poline: this.poline }
+          })
+        );
+      }
+    });
+    this.svg.addEventListener("pointerup", () => {
+      this.currentPoint = null;
+    });
+  }
+  getPointerPosition(e) {
+    const rect = this.svg.getBoundingClientRect();
+    return {
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top
+    };
+  }
+};
+customElements.define("poline-picker", PolinePicker);
 export {
-  ColorPoint,
   Poline,
-  hslToPoint,
-  pointToHSL,
-  positionFunctions,
-  randomHSLPair,
-  randomHSLTriple
+  PolinePicker,
+  positionFunctions
 };
