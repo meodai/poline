@@ -540,11 +540,7 @@ export class Poline {
 
       // Special handling for closed loop with exactly 2 anchors
       // we want to invert the ease for the first segment
-      const shouldInvertEase =
-        i % 2 ||
-        (this.connectLastAndFirstAnchor &&
-          this.anchorPoints.length === 2 &&
-          i === 0);
+      const shouldInvertEase = this.shouldInvertEaseForSegment(i);
 
       return vectorsOnLine(
         p1position,
@@ -808,26 +804,38 @@ export class Poline {
     const p2position = pair[1].position;
 
     // Apply the same easing logic as in updateAnchorPairs
-    const shouldInvertEase = !!(
-      actualSegmentIndex % 2 ||
-      (this.connectLastAndFirstAnchor &&
-        this.anchorPoints.length === 2 &&
-        actualSegmentIndex === 0)
+    const shouldInvertEase =
+      this.shouldInvertEaseForSegment(actualSegmentIndex);
+
+    // Use the existing vectorOnLine function for consistent interpolation
+    const xyz = vectorOnLine(
+      actualLocalT,
+      p1position,
+      p2position,
+      shouldInvertEase,
+      this._positionFunctionX,
+      this._positionFunctionY,
+      this._positionFunctionZ
     );
 
-    // Calculate the position using the same easing functions
-    const tModifiedX = this._positionFunctionX(actualLocalT, shouldInvertEase);
-    const tModifiedY = this._positionFunctionY(actualLocalT, shouldInvertEase);
-    const tModifiedZ = this._positionFunctionZ(actualLocalT, shouldInvertEase);
-
-    const x = (1 - tModifiedX) * p1position[0] + tModifiedX * p2position[0];
-    const y = (1 - tModifiedY) * p1position[1] + tModifiedY * p2position[1];
-    const z = (1 - tModifiedZ) * p1position[2] + tModifiedZ * p2position[2];
-
     return new ColorPoint({
-      xyz: [x, y, z],
+      xyz,
       invertedLightness: this._invertedLightness,
     });
+  }
+
+  /**
+   * Determines whether easing should be inverted for a given segment
+   * @param segmentIndex The index of the segment
+   * @returns Whether easing should be inverted
+   */
+  private shouldInvertEaseForSegment(segmentIndex: number): boolean {
+    return !!(
+      segmentIndex % 2 ||
+      (this.connectLastAndFirstAnchor &&
+        this.anchorPoints.length === 2 &&
+        segmentIndex === 0)
+    );
   }
 }
 

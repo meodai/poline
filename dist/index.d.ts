@@ -153,4 +153,10 @@ export declare class Poline {
      * getColorAt(1) // Returns color at the very end
      */
     getColorAt(t: number): ColorPoint;
+    /**
+     * Determines whether easing should be inverted for a given segment
+     * @param segmentIndex The index of the segment
+     * @returns Whether easing should be inverted
+     */
+    private shouldInvertEaseForSegment;
 }

@@ -1254,27 +1254,7 @@
           </p>
         </div>
       </article>
-      <article class="l-sec">
-        <div class="l-sec__inner" data-section="getColorAt">
-          <h2 id="getColorAt">Color At Position</h2>
-          <p>
-            The <strong>getColorAt</strong> method allows you to sample any color along the entire color journey by providing a position between 0 and 1.
-            This treats all segments as one continuous path, respecting the easing functions for each axis.
-          </p>
-          <p>
-            Position <strong>0</strong> returns the color at the very beginning, <strong>0.5</strong> returns the color at the middle of the entire journey,
-            and <strong>1</strong> returns the color at the very end. The method accounts for all easing functions and segment transitions.
-          </p>
-          <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
-          <div class="l-sec__controls">
-            <label>
-              <span class="t">Position</span>
-              <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
-            </label>
-            <div class="color-at-sample"></div>
-          </div>
-        </div>
-      </article>
+
       <article class="l-sec">
         <div class="l-sec__inner" data-section="closestAnchor">
           <h2 id="closestAnchor">Closest Anchor</h2>
@@ -1308,6 +1288,28 @@ poline.colorsCSSoklch</code></pre>
             <figure class="l-sec__preview">
               <figcaption>Colors as HSL</figcaption>
             </figure>
+          </div>
+        </div>
+      </article>
+
+      <article class="l-sec">
+        <div class="l-sec__inner" data-section="getColorAt">
+          <h2 id="getColorAt">Color At Position</h2>
+          <p>
+            The <strong>getColorAt</strong> method allows you to sample any color along the entire color journey by providing a position between 0 and 1.
+            This treats all segments as one continuous path, respecting the easing functions for each axis.
+          </p>
+          <p>
+            Position <strong>0</strong> returns the color at the very beginning, <strong>0.5</strong> returns the color at the middle of the entire journey,
+            and <strong>1</strong> returns the color at the very end. The method accounts for all easing functions and segment transitions.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Position</span>
+              <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
+            </label>
+            <div class="color-at-sample"></div>
           </div>
         </div>
       </article>
