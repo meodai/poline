@@ -115,7 +115,8 @@
       }
       
       #colors,
-      #colors-oklch {
+      #colors-oklch,
+      #colors-lch {
         display: flex;
         margin-top: .2rem;
         width: 300px;
@@ -246,6 +247,8 @@
         <div id="colors"></div>
         <h2>OKLch</h2>
         <div id="colors-oklch"></div>
+        <h2>Lch</h2>
+        <div id="colors-lch"></div>
       </article>
     </div>
 
@@ -255,6 +258,7 @@
       const picker = document.querySelector("poline-picker");
       const colorsContainer = document.getElementById("colors");
       const colorsOklchContainer = document.getElementById("colors-oklch");
+      const colorsLchContainer = document.getElementById("colors-lch");
       
       // Control elements
       const stepsInput = document.getElementById("steps");
@@ -281,9 +285,11 @@
       });
 
       // Populate position function selects
+      const positionSelects = [positionFunctionXSelect, positionFunctionYSelect, positionFunctionZSelect];
       const functionNames = Object.keys(positionFunctions);
-      functionNames.forEach(name => {
-        [positionFunctionXSelect, positionFunctionYSelect, positionFunctionZSelect].forEach(select => {
+      
+      positionSelects.forEach(select => {
+        functionNames.forEach(name => {
           const option = document.createElement('option');
           option.value = name;
           option.textContent = name;
@@ -301,27 +307,26 @@
       let lastMousePosition = { x: 0, y: 0 };
       let lastSelectedPoint = null;
 
-      function updateColors() {
-        const colors = poline.colorsCSS;
-        const colorsOklch = poline.colorsCSSoklch;
-        colorsContainer.innerHTML = "";
-        
-        for (const color of colors) {
+      function createColorSwatches(container, colors) {
+        container.innerHTML = "";
+        colors.forEach(color => {
           const swatch = document.createElement("div");
           swatch.className = "color-swatch";
           swatch.style.backgroundColor = color;
           swatch.title = color;
-          colorsContainer.appendChild(swatch);
-        }
+          container.appendChild(swatch);
+        });
+      }
 
-        colorsOklchContainer.innerHTML = "";
-        for (const color of colorsOklch) {
-          const swatch = document.createElement("div");
-          swatch.className = "color-swatch";
-          swatch.style.backgroundColor = color;
-          swatch.title = color;
-          colorsOklchContainer.appendChild(swatch);
-        }
+      function updatePolineAndColors() {
+        picker.setPoline(poline);
+        updateColors();
+      }
+
+      function updateColors() {
+        createColorSwatches(colorsContainer, poline.colorsCSS);
+        createColorSwatches(colorsOklchContainer, poline.colorsCSSoklch);
+        createColorSwatches(colorsLchContainer, poline.colorsCSSlch);
       }
 
       // Track mouse position and selected points
@@ -354,8 +359,7 @@
       // Control event listeners
       stepsInput.addEventListener("input", (e) => {
         poline.numPoints = parseInt(e.target.value);
-        picker.setPoline(poline);
-        updateColors();
+        updatePolineAndColors();
       });
 
       allowAddPointsCheckbox.addEventListener("change", (e) => {
@@ -364,33 +368,23 @@
 
       invertedLightnessCheckbox.addEventListener("change", (e) => {
         poline.invertedLightness = e.target.checked;
-        picker.setPoline(poline);
-        updateColors();
+        updatePolineAndColors();
       });
 
       closedLoopCheckbox.addEventListener("change", (e) => {
         poline.closedLoop = e.target.checked;
-        picker.setPoline(poline);
-        updateColors();
+        updatePolineAndColors();
       });
 
-      positionFunctionXSelect.addEventListener("change", (e) => {
-        poline.positionFunctionX = positionFunctions[e.target.value];
-        picker.setPoline(poline);
-        updateColors();
-      });
+      // Position function handlers with shared logic
+      const createPositionFunctionHandler = (property) => (e) => {
+        poline[property] = positionFunctions[e.target.value];
+        updatePolineAndColors();
+      };
 
-      positionFunctionYSelect.addEventListener("change", (e) => {
-        poline.positionFunctionY = positionFunctions[e.target.value];
-        picker.setPoline(poline);
-        updateColors();
-      });
-
-      positionFunctionZSelect.addEventListener("change", (e) => {
-        poline.positionFunctionZ = positionFunctions[e.target.value];
-        picker.setPoline(poline);
-        updateColors();
-      });
+      positionFunctionXSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionX'));
+      positionFunctionYSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionY'));
+      positionFunctionZSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionZ'));
 
       randomizeButton.addEventListener("click", () => {
         poline.anchorPoints.forEach(anchor => {
@@ -401,8 +395,7 @@
           ];
         });
         poline.updateAnchorPairs();
-        picker.setPoline(poline);
-        updateColors();
+        updatePolineAndColors();
       });
 
       // Keyboard shortcuts
@@ -420,25 +413,21 @@
             try {
               poline.removeAnchorPoint({ point: lastSelectedPoint });
               lastSelectedPoint = null;
-              picker.setPoline(poline);
-              updateColors();
+              updatePolineAndColors();
             } catch (error) {
               console.log("Cannot remove anchor point:", error.message);
             }
           }
         }
         
-        
         if (e.key === "ArrowLeft") {
           poline.shiftHue(-4);
-          picker.setPoline(poline);
-          updateColors();
+          updatePolineAndColors();
         }
         
         if (e.key === "ArrowRight") {
           poline.shiftHue(4);
-          picker.setPoline(poline);
-          updateColors();
+          updatePolineAndColors();
         }
       });
 
