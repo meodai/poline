@@ -17,6 +17,11 @@ export class PolinePicker extends HTMLElement {
   private currentPoint: ColorPoint | null = null;
   private allowAddPoints = false;
 
+  // Store bound event handlers for cleanup
+  private boundPointerDown = this.handlePointerDown.bind(this);
+  private boundPointerMove = this.handlePointerMove.bind(this);
+  private boundPointerUp = this.handlePointerUp.bind(this);
+
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -29,6 +34,11 @@ export class PolinePicker extends HTMLElement {
     if (this.interactive) {
       this.addEventListeners();
     }
+  }
+
+  disconnectedCallback() {
+    // Clean up event listeners when component is removed from DOM
+    this.removeEventListeners();
   }
 
   setPoline(poline: Poline) {
@@ -212,44 +222,57 @@ export class PolinePicker extends HTMLElement {
   }
 
   private addEventListeners() {
-    this.svg.addEventListener("pointerdown", (e) => {
-      e.stopPropagation();
+    if (!this.svg) return;
+
+    this.svg.addEventListener("pointerdown", this.boundPointerDown);
+    this.svg.addEventListener("pointermove", this.boundPointerMove);
+    this.svg.addEventListener("pointerup", this.boundPointerUp);
+  }
+
+  private removeEventListeners() {
+    if (!this.svg) return;
+
+    this.svg.removeEventListener("pointerdown", this.boundPointerDown);
+    this.svg.removeEventListener("pointermove", this.boundPointerMove);
+    this.svg.removeEventListener("pointerup", this.boundPointerUp);
+  }
+
+  private handlePointerDown(e: PointerEvent) {
+    e.stopPropagation();
+    const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+
+    const closestAnchor = this.poline.getClosestAnchorPoint({
+      xyz: [normalizedX, normalizedY, null],
+      maxDistance: 0.1,
+    });
+
+    if (closestAnchor) {
+      this.currentPoint = closestAnchor;
+    } else if (this.allowAddPoints) {
+      this.currentPoint = this.poline.addAnchorPoint({
+        xyz: [normalizedX, normalizedY, normalizedY],
+      });
+      this.updateSVG();
+      this.dispatchPolineChange();
+    }
+  }
+
+  private handlePointerMove(e: PointerEvent) {
+    if (this.currentPoint) {
       const { normalizedX, normalizedY } =
         this.pointerToNormalizedCoordinates(e);
 
-      const closestAnchor = this.poline.getClosestAnchorPoint({
-        xyz: [normalizedX, normalizedY, null],
-        maxDistance: 0.1,
+      this.poline.updateAnchorPoint({
+        point: this.currentPoint,
+        xyz: [normalizedX, normalizedY, this.currentPoint.z],
       });
+      this.updateSVG();
+      this.dispatchPolineChange();
+    }
+  }
 
-      if (closestAnchor) {
-        this.currentPoint = closestAnchor;
-      } else if (this.allowAddPoints) {
-        this.currentPoint = this.poline.addAnchorPoint({
-          xyz: [normalizedX, normalizedY, normalizedY],
-        });
-        this.updateSVG();
-        this.dispatchPolineChange();
-      }
-    });
-
-    this.svg.addEventListener("pointermove", (e) => {
-      if (this.currentPoint) {
-        const { normalizedX, normalizedY } =
-          this.pointerToNormalizedCoordinates(e);
-
-        this.poline.updateAnchorPoint({
-          point: this.currentPoint,
-          xyz: [normalizedX, normalizedY, this.currentPoint.z],
-        });
-        this.updateSVG();
-        this.dispatchPolineChange();
-      }
-    });
-
-    this.svg.addEventListener("pointerup", () => {
-      this.currentPoint = null;
-    });
+  private handlePointerUp() {
+    this.currentPoint = null;
   }
 
   private getPointerPosition(e: PointerEvent) {

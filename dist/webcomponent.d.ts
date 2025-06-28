@@ -10,8 +10,12 @@ export declare class PolinePicker extends HTMLElement {
     private points;
     private currentPoint;
     private allowAddPoints;
+    private boundPointerDown;
+    private boundPointerMove;
+    private boundPointerUp;
     constructor();
     connectedCallback(): void;
+    disconnectedCallback(): void;
     setPoline(poline: Poline): void;
     setAllowAddPoints(allow: boolean): void;
     addPointAtPosition(x: number, y: number): ColorPoint | null;
@@ -21,6 +25,10 @@ export declare class PolinePicker extends HTMLElement {
     updateSVG(): void;
     private pointToCartesian;
     private addEventListeners;
+    private removeEventListeners;
+    private handlePointerDown;
+    private handlePointerMove;
+    private handlePointerUp;
     private getPointerPosition;
     private pointerToNormalizedCoordinates;
     private createCircleElement;

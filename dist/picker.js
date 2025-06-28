@@ -536,6 +536,10 @@ var polinePicker = (() => {
       super();
       this.currentPoint = null;
       this.allowAddPoints = false;
+      // Store bound event handlers for cleanup
+      this.boundPointerDown = this.handlePointerDown.bind(this);
+      this.boundPointerMove = this.handlePointerMove.bind(this);
+      this.boundPointerUp = this.handlePointerUp.bind(this);
       this.attachShadow({ mode: "open" });
       this.interactive = this.hasAttribute("interactive");
       this.allowAddPoints = this.hasAttribute("allow-add-points");
@@ -545,6 +549,9 @@ var polinePicker = (() => {
       if (this.interactive) {
         this.addEventListeners();
       }
+    }
+    disconnectedCallback() {
+      this.removeEventListeners();
     }
     setPoline(poline) {
       this.poline = poline;
@@ -702,37 +709,49 @@ var polinePicker = (() => {
       return [x, y];
     }
     addEventListeners() {
-      this.svg.addEventListener("pointerdown", (e) => {
-        e.stopPropagation();
-        const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
-        const closestAnchor = this.poline.getClosestAnchorPoint({
-          xyz: [normalizedX, normalizedY, null],
-          maxDistance: 0.1
+      if (!this.svg)
+        return;
+      this.svg.addEventListener("pointerdown", this.boundPointerDown);
+      this.svg.addEventListener("pointermove", this.boundPointerMove);
+      this.svg.addEventListener("pointerup", this.boundPointerUp);
+    }
+    removeEventListeners() {
+      if (!this.svg)
+        return;
+      this.svg.removeEventListener("pointerdown", this.boundPointerDown);
+      this.svg.removeEventListener("pointermove", this.boundPointerMove);
+      this.svg.removeEventListener("pointerup", this.boundPointerUp);
+    }
+    handlePointerDown(e) {
+      e.stopPropagation();
+      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+      const closestAnchor = this.poline.getClosestAnchorPoint({
+        xyz: [normalizedX, normalizedY, null],
+        maxDistance: 0.1
+      });
+      if (closestAnchor) {
+        this.currentPoint = closestAnchor;
+      } else if (this.allowAddPoints) {
+        this.currentPoint = this.poline.addAnchorPoint({
+          xyz: [normalizedX, normalizedY, normalizedY]
         });
-        if (closestAnchor) {
-          this.currentPoint = closestAnchor;
-        } else if (this.allowAddPoints) {
-          this.currentPoint = this.poline.addAnchorPoint({
-            xyz: [normalizedX, normalizedY, normalizedY]
-          });
-          this.updateSVG();
-          this.dispatchPolineChange();
-        }
-      });
-      this.svg.addEventListener("pointermove", (e) => {
-        if (this.currentPoint) {
-          const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
-          this.poline.updateAnchorPoint({
-            point: this.currentPoint,
-            xyz: [normalizedX, normalizedY, this.currentPoint.z]
-          });
-          this.updateSVG();
-          this.dispatchPolineChange();
-        }
-      });
-      this.svg.addEventListener("pointerup", () => {
-        this.currentPoint = null;
-      });
+        this.updateSVG();
+        this.dispatchPolineChange();
+      }
+    }
+    handlePointerMove(e) {
+      if (this.currentPoint) {
+        const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+        this.poline.updateAnchorPoint({
+          point: this.currentPoint,
+          xyz: [normalizedX, normalizedY, this.currentPoint.z]
+        });
+        this.updateSVG();
+        this.dispatchPolineChange();
+      }
+    }
+    handlePointerUp() {
+      this.currentPoint = null;
     }
     getPointerPosition(e) {
       const rect = this.svg.getBoundingClientRect();
