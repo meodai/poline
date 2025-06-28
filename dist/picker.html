@@ -7,10 +7,8 @@
     <style>
       body {
         font-family: sans-serif;
-        display: grid;
-        place-items: center;
-        min-height: 100vh;
         margin: 0;
+        padding: 2rem;
         background: #f0f0f0;
       }
       .container {
@@ -49,7 +47,6 @@
         color: #333;
       }
       .instructions {
-        text-align: center;
         color: #666;
         max-width: 400px;
         line-height: 1.5;
@@ -60,7 +57,7 @@
     <div class="container">
       <h1>Poline Picker</h1>
       <p class="instructions">
-        Drag existing anchor points to adjust colors. Press 'C' to add a new point at cursor position,
+        Drag existing anchor points to adjust colors. Press 'P' to add a new point at cursor position,
         or use the "Add Points" checkbox to enable click-to-add mode.
       </p>
       <div class="controls">
@@ -92,7 +89,7 @@
           [0, 1, 0.5],
           [180, 1, 0.5],
         ],
-        numPoints: 9,
+        numPoints: 5,
         positionFunctionX: positionFunctions.smoothStepPosition,
         positionFunctionY: positionFunctions.smoothStepPosition,
         positionFunctionZ: positionFunctions.linearPosition,
@@ -148,9 +145,9 @@
         updateColors();
       });
 
-      // Handle 'C' key to add points like in the demo
+      // Handle 'P' key to add points like in the demo
       document.addEventListener("keydown", (e) => {
-        if (e.key === "c" || e.key === "C") {
+        if (e.key === "p" || e.key === "P") {
           picker.addPointAtPosition(lastMousePosition.x, lastMousePosition.y);
           updateColors();
         }

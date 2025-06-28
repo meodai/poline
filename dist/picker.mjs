@@ -574,7 +574,7 @@ var PolinePicker = class extends HTMLElement {
           --l: .5;
           --minL: #000;
           --maxL: #fff;
-          --grad: #ff0000 0deg, #ffff00 60deg, #00ff00 120deg, #00ffff 180deg, #0000ff 240deg, #ff00ff 300deg, #ff0000 360deg;
+          --grad: hsl(0deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 0deg, hsl(60deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 60deg, hsl(120deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 120deg, hsl(180deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 180deg, hsl(240deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 240deg, hsl(300deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 300deg, hsl(360deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 360deg;
         }
         .picker::before {
           content: '';
@@ -679,8 +679,6 @@ var PolinePicker = class extends HTMLElement {
       const isAnchorPoint = this.poline.anchorPoints.some(
         (anchor) => anchor.x === point.x && anchor.y === point.y && anchor.z === point.z
       );
-      if (isAnchorPoint)
-        return;
       const cartesian = this.pointToCartesian(point);
       if (!cartesian)
         return;

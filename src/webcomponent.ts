@@ -94,7 +94,7 @@ export class PolinePicker extends HTMLElement {
           --l: .5;
           --minL: #000;
           --maxL: #fff;
-          --grad: #ff0000 0deg, #ffff00 60deg, #00ff00 120deg, #00ffff 180deg, #0000ff 240deg, #ff00ff 300deg, #ff0000 360deg;
+          --grad: hsl(0deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 0deg, hsl(60deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 60deg, hsl(120deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 120deg, hsl(180deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 180deg, hsl(240deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 240deg, hsl(300deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 300deg, hsl(360deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 360deg;
         }
         .picker::before {
           content: '';
@@ -178,7 +178,7 @@ export class PolinePicker extends HTMLElement {
       return;
     }
 
-    // Draw the line path
+    // 1) Draw line paths
     const pathPoints = this.poline.flattenedPoints
       .map((p) => {
         const cartesian = this.pointToCartesian(p);
@@ -195,9 +195,7 @@ export class PolinePicker extends HTMLElement {
     this.anchors.innerHTML = "";
     this.points.innerHTML = "";
 
-    // 1) Lines are already drawn above
-
-    // 2) Draw anchor points (white dots at the ends) - MIDDLE layer
+    // 2) Draw anchor points (white dots at the ends)
     this.poline.anchorPoints.forEach((point) => {
       const cartesian = this.pointToCartesian(point);
       if (!cartesian) return;
@@ -219,7 +217,7 @@ export class PolinePicker extends HTMLElement {
           anchor.x === point.x && anchor.y === point.y && anchor.z === point.z
       );
 
-      if (isAnchorPoint) return;
+      // if (isAnchorPoint) return;
 
       const cartesian = this.pointToCartesian(point);
       if (!cartesian) return;
