@@ -496,7 +496,7 @@ Available functions:
 
 ## Web Component
 
-"**poline**" also provides a web component called `<poline-picker>` that creates an interactive color wheel for visualizing and manipulating your color palettes. This interface allows users to drag anchor points and see real-time updates to their palette.
+"**poline**" also provides a web component called `<poline-picker>` that creates an interactive color wheel for visualizing and manipulating your color palettes. This interface allows users to drag anchor points and see real-time updates to their palette. A simple demo is available at [poline-picker demo](https://meodai.github.io/poline/picker.html).
 
 ### Basic Usage and Setup
 
