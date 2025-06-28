@@ -664,8 +664,9 @@
     }
 
     .color-at-sample {
-      height: 1.75rem;
+      height: .75rem;
       background: var(--color-at);
+      margin-top: 
     }
     .l-sec__controls {
       margin-top: 2rem;
@@ -1077,28 +1078,6 @@
         </div>
       </article>
 
-
-      <!--article class="l-sec">
-        <div class="l-sec__inner" data-section="colorAt">
-          <h2 id="colorAt">Color at Point</h2>
-          <p>
-            You can also use "<strong class="t">Poline</strong>" to generate a single color at a specific point along the line. 
-            The <strong>colorAt</strong> method takes a value between 0 and 1 as an argument, 
-            it refers to the position of the point along the sum of all lines.
-          </p>
-          <pre class="code-ex"><code class="language-js" data-code="points">poline.getColorAt(.4)</code></pre>
-          <div class="color-at-sample">
-
-          </div>
-          <div class="l-sec__controls">
-            <label>
-              <span class="t">Color at Point</span>
-              <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
-            </label>
-          </div>
-        </div>
-      </article-->
-
       <article class="l-sec">
         <div class="l-sec__inner" data-section="anchors">
           <h2 id="anchors">Anchors</h2>
@@ -1309,7 +1288,9 @@ poline.colorsCSSoklch</code></pre>
               <span class="t">Position</span>
               <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
             </label>
-            <div class="color-at-sample"></div>
+            <div class="l-sec__controls">
+              <div class="color-at-sample"></div>
+            </div>
           </div>
         </div>
       </article>
