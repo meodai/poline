@@ -576,7 +576,7 @@ var PolinePicker = class extends HTMLElement {
     const picker = (_a = this.shadowRoot) == null ? void 0 : _a.querySelector(".picker");
     if (picker && this.poline) {
       if (this.poline.invertedLightness) {
-        picker.style.setProperty("--maxL", "#202125");
+        picker.style.setProperty("--maxL", "#000");
         picker.style.setProperty("--minL", "#fff");
       } else {
         picker.style.setProperty("--maxL", "#fff");
@@ -591,10 +591,8 @@ var PolinePicker = class extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          display: inline-block;
-          width: 200px;
-          height: 200px;
-          position: relative;
+          display: block;
+          width: 100%;
         }
         .picker {
           position: relative;
@@ -618,7 +616,7 @@ var PolinePicker = class extends HTMLElement {
         svg {
           position: relative;
           z-index: 2;
-          overflow: visible !important;
+          overflow: visible;
           width: 100%;
         }
         .wheel__line {
@@ -634,10 +632,6 @@ var PolinePicker = class extends HTMLElement {
         }
         .wheel__anchor:hover {
           cursor: grabbing;
-        }
-        .wheel__bg {
-          stroke-width: 10;
-          fill: transparent;
         }
         .wheel__point {
           stroke: var(--poline-picker-line-color, #000);
@@ -706,9 +700,6 @@ var PolinePicker = class extends HTMLElement {
       this.anchors.appendChild(anchor);
     });
     this.poline.flattenedPoints.forEach((point) => {
-      const isAnchorPoint = this.poline.anchorPoints.some(
-        (anchor) => anchor.x === point.x && anchor.y === point.y && anchor.z === point.z
-      );
       const cartesian = this.pointToCartesian(point);
       if (!cartesian)
         return;
@@ -732,11 +723,7 @@ var PolinePicker = class extends HTMLElement {
   addEventListeners() {
     this.svg.addEventListener("pointerdown", (e) => {
       e.stopPropagation();
-      const svgRect = this.svg.getBoundingClientRect();
-      const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
-      const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
-      const normalizedX = svgX / svgscale;
-      const normalizedY = svgY / svgscale;
+      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
       const closestAnchor = this.poline.getClosestAnchorPoint({
         xyz: [normalizedX, normalizedY, null],
         maxDistance: 0.1
@@ -757,11 +744,7 @@ var PolinePicker = class extends HTMLElement {
     });
     this.svg.addEventListener("pointermove", (e) => {
       if (this.currentPoint) {
-        const svgRect = this.svg.getBoundingClientRect();
-        const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
-        const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
-        const normalizedX = svgX / svgscale;
-        const normalizedY = svgY / svgscale;
+        const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
         this.poline.updateAnchorPoint({
           point: this.currentPoint,
           xyz: [normalizedX, normalizedY, this.currentPoint.z]
@@ -783,6 +766,15 @@ var PolinePicker = class extends HTMLElement {
     return {
       x: e.clientX - rect.left,
       y: e.clientY - rect.top
+    };
+  }
+  pointerToNormalizedCoordinates(e) {
+    const svgRect = this.svg.getBoundingClientRect();
+    const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
+    const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
+    return {
+      normalizedX: svgX / svgscale,
+      normalizedY: svgY / svgscale
     };
   }
 };

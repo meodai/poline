@@ -22,4 +22,5 @@ export declare class PolinePicker extends HTMLElement {
     private pointToCartesian;
     private addEventListeners;
     private getPointerPosition;
+    private pointerToNormalizedCoordinates;
 }
