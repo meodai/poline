@@ -538,11 +538,19 @@ export class Poline {
       const p1position = pair[0] ? pair[0].position : ([0, 0, 0] as Vector3);
       const p2position = pair[1] ? pair[1].position : ([0, 0, 0] as Vector3);
 
+      // Special handling for closed loop with exactly 2 anchors
+      // we want to invert the ease for the first segment
+      const shouldInvertEase =
+        i % 2 ||
+        (this.connectLastAndFirstAnchor &&
+          this.anchorPoints.length === 2 &&
+          i === 0);
+
       return vectorsOnLine(
         p1position,
         p2position,
         this._numPoints,
-        i % 2 ? true : false,
+        shouldInvertEase ? true : false,
         this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
@@ -709,7 +717,7 @@ export class Poline {
 
   public get colors() {
     const colors = this.flattenedPoints.map((p) => p.color);
-    if (this.connectLastAndFirstAnchor) {
+    if (this.connectLastAndFirstAnchor && this._anchorPoints.length !== 2) {
       colors.pop();
     }
     return colors;

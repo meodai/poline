@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (xyz, invertedLightness) => {
   const [x, y, z] = xyz;
@@ -67,27 +65,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 4);
+    return 1 - (1 - t) ** 4;
   }
-  return __pow(t, 4);
+  return t ** 4;
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 5);
+    return 1 - (1 - t) ** 5;
   }
-  return __pow(t, 5);
+  return t ** 5;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -103,12 +101,12 @@ var asinusoidalPosition = (t, reverse = false) => {
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(t, 2));
+    return 1 - Math.sqrt(1 - t ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
 var smoothStepPosition = (t) => {
-  return __pow(t, 2) * (3 - 2 * t);
+  return t ** 2 * (3 - 2 * t);
 };
 var positionFunctions = {
   linearPosition,
@@ -331,11 +329,12 @@ var Poline = class {
     this.points = this._anchorPairs.map((pair, i) => {
       const p1position = pair[0] ? pair[0].position : [0, 0, 0];
       const p2position = pair[1] ? pair[1].position : [0, 0, 0];
+      const shouldInvertEase = i % 2 || this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 && i === 0;
       return vectorsOnLine(
         p1position,
         p2position,
         this._numPoints,
-        i % 2 ? true : false,
+        shouldInvertEase ? true : false,
         this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
@@ -466,7 +465,7 @@ var Poline = class {
   }
   get colors() {
     const colors = this.flattenedPoints.map((p) => p.color);
-    if (this.connectLastAndFirstAnchor) {
+    if (this.connectLastAndFirstAnchor && this._anchorPoints.length !== 2) {
       colors.pop();
     }
     return colors;
@@ -519,4 +518,3 @@ export {
   randomHSLPair,
   randomHSLTriple
 };
-//# sourceMappingURL=index.mjs.map
