@@ -752,6 +752,83 @@ export class Poline {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
     this.updateAnchorPairs();
   }
+
+  /**
+   * Returns a color at a specific position along the entire color line (0-1)
+   * Treats all segments as one continuous path, respecting easing functions
+   * @param t Position along the line (0-1), where 0 is start and 1 is end
+   * @returns ColorPoint at the specified position
+   * @example
+   * getColorAt(0) // Returns color at the very beginning
+   * getColorAt(0.5) // Returns color at the middle of the entire journey
+   * getColorAt(1) // Returns color at the very end
+   */
+  public getColorAt(t: number): ColorPoint {
+    if (t < 0 || t > 1) {
+      throw new Error("Position must be between 0 and 1");
+    }
+
+    if (this.anchorPoints.length === 0) {
+      throw new Error("No anchor points available");
+    }
+
+    // For closed loops, we need to handle the full circle
+    const totalSegments = this.connectLastAndFirstAnchor
+      ? this.anchorPoints.length
+      : this.anchorPoints.length - 1;
+
+    // Special case: if we only have 2 anchors in a closed loop,
+    // we actually have 2 segments going different ways
+    const effectiveSegments =
+      this.connectLastAndFirstAnchor && this.anchorPoints.length === 2
+        ? 2
+        : totalSegments;
+
+    // Calculate which segment we're in and the position within that segment
+    const segmentPosition = t * effectiveSegments;
+    const segmentIndex = Math.floor(segmentPosition);
+    const localT = segmentPosition - segmentIndex;
+
+    // Handle edge case where t = 1 (end of line)
+    const actualSegmentIndex =
+      segmentIndex >= effectiveSegments ? effectiveSegments - 1 : segmentIndex;
+    const actualLocalT = segmentIndex >= effectiveSegments ? 1 : localT;
+
+    // Get the anchor pair for this segment
+    const pair = this._anchorPairs[actualSegmentIndex];
+    if (!pair || pair.length < 2 || !pair[0] || !pair[1]) {
+      // Fallback to first anchor if something goes wrong
+      return new ColorPoint({
+        color: this.anchorPoints[0]?.color || [0, 0, 0],
+        invertedLightness: this._invertedLightness,
+      });
+    }
+
+    const p1position = pair[0].position;
+    const p2position = pair[1].position;
+
+    // Apply the same easing logic as in updateAnchorPairs
+    const shouldInvertEase = !!(
+      actualSegmentIndex % 2 ||
+      (this.connectLastAndFirstAnchor &&
+        this.anchorPoints.length === 2 &&
+        actualSegmentIndex === 0)
+    );
+
+    // Calculate the position using the same easing functions
+    const tModifiedX = this._positionFunctionX(actualLocalT, shouldInvertEase);
+    const tModifiedY = this._positionFunctionY(actualLocalT, shouldInvertEase);
+    const tModifiedZ = this._positionFunctionZ(actualLocalT, shouldInvertEase);
+
+    const x = (1 - tModifiedX) * p1position[0] + tModifiedX * p2position[0];
+    const y = (1 - tModifiedY) * p1position[1] + tModifiedY * p2position[1];
+    const z = (1 - tModifiedZ) * p1position[2] + tModifiedZ * p2position[2];
+
+    return new ColorPoint({
+      xyz: [x, y, z],
+      invertedLightness: this._invertedLightness,
+    });
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

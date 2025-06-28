@@ -1,5 +1,3 @@
-var __pow = Math.pow;
-
 // src/index.ts
 var pointToHSL = (xyz, invertedLightness) => {
   const [x, y, z] = xyz;
@@ -67,27 +65,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 2);
+    return 1 - (1 - t) ** 2;
   }
-  return __pow(t, 2);
+  return t ** 2;
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 3);
+    return 1 - (1 - t) ** 3;
   }
-  return __pow(t, 3);
+  return t ** 3;
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 4);
+    return 1 - (1 - t) ** 4;
   }
-  return __pow(t, 4);
+  return t ** 4;
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - __pow(1 - t, 5);
+    return 1 - (1 - t) ** 5;
   }
-  return __pow(t, 5);
+  return t ** 5;
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -103,12 +101,12 @@ var asinusoidalPosition = (t, reverse = false) => {
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - __pow(t, 2));
+    return 1 - Math.sqrt(1 - t ** 2);
   }
   return 1 - Math.sqrt(1 - t);
 };
 var smoothStepPosition = (t) => {
-  return __pow(t, 2) * (3 - 2 * t);
+  return t ** 2 * (3 - 2 * t);
 };
 var positionFunctions = {
   linearPosition,
@@ -497,6 +495,51 @@ var Poline = class {
     this.anchorPoints.forEach((p) => p.shiftHue(hShift));
     this.updateAnchorPairs();
   }
+  /**
+   * Returns a color at a specific position along the entire color line (0-1)
+   * Treats all segments as one continuous path, respecting easing functions
+   * @param t Position along the line (0-1), where 0 is start and 1 is end
+   * @returns ColorPoint at the specified position
+   * @example
+   * getColorAt(0) // Returns color at the very beginning
+   * getColorAt(0.5) // Returns color at the middle of the entire journey
+   * getColorAt(1) // Returns color at the very end
+   */
+  getColorAt(t) {
+    if (t < 0 || t > 1) {
+      throw new Error("Position must be between 0 and 1");
+    }
+    if (this.anchorPoints.length === 0) {
+      throw new Error("No anchor points available");
+    }
+    const totalSegments = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
+    const effectiveSegments = this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 ? 2 : totalSegments;
+    const segmentPosition = t * effectiveSegments;
+    const segmentIndex = Math.floor(segmentPosition);
+    const localT = segmentPosition - segmentIndex;
+    const actualSegmentIndex = segmentIndex >= effectiveSegments ? effectiveSegments - 1 : segmentIndex;
+    const actualLocalT = segmentIndex >= effectiveSegments ? 1 : localT;
+    const pair = this._anchorPairs[actualSegmentIndex];
+    if (!pair || pair.length < 2 || !pair[0] || !pair[1]) {
+      return new ColorPoint({
+        color: this.anchorPoints[0]?.color || [0, 0, 0],
+        invertedLightness: this._invertedLightness
+      });
+    }
+    const p1position = pair[0].position;
+    const p2position = pair[1].position;
+    const shouldInvertEase = !!(actualSegmentIndex % 2 || this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 && actualSegmentIndex === 0);
+    const tModifiedX = this._positionFunctionX(actualLocalT, shouldInvertEase);
+    const tModifiedY = this._positionFunctionY(actualLocalT, shouldInvertEase);
+    const tModifiedZ = this._positionFunctionZ(actualLocalT, shouldInvertEase);
+    const x = (1 - tModifiedX) * p1position[0] + tModifiedX * p2position[0];
+    const y = (1 - tModifiedY) * p1position[1] + tModifiedY * p2position[1];
+    const z = (1 - tModifiedZ) * p1position[2] + tModifiedZ * p2position[2];
+    return new ColorPoint({
+      xyz: [x, y, z],
+      invertedLightness: this._invertedLightness
+    });
+  }
 };
 var { p5 } = globalThis;
 if (p5) {
@@ -520,4 +563,3 @@ export {
   randomHSLPair,
   randomHSLTriple
 };
-//# sourceMappingURL=index.mjs.map

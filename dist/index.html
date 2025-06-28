@@ -1255,6 +1255,27 @@
         </div>
       </article>
       <article class="l-sec">
+        <div class="l-sec__inner" data-section="getColorAt">
+          <h2 id="getColorAt">Color At Position</h2>
+          <p>
+            The <strong>getColorAt</strong> method allows you to sample any color along the entire color journey by providing a position between 0 and 1.
+            This treats all segments as one continuous path, respecting the easing functions for each axis.
+          </p>
+          <p>
+            Position <strong>0</strong> returns the color at the very beginning, <strong>0.5</strong> returns the color at the middle of the entire journey,
+            and <strong>1</strong> returns the color at the very end. The method accounts for all easing functions and segment transitions.
+          </p>
+          <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
+          <div class="l-sec__controls">
+            <label>
+              <span class="t">Position</span>
+              <i><input type="range" min="0" max="1" value=".5" step="0.001" data-colorat></i>
+            </label>
+            <div class="color-at-sample"></div>
+          </div>
+        </div>
+      </article>
+      <article class="l-sec">
         <div class="l-sec__inner" data-section="closestAnchor">
           <h2 id="closestAnchor">Closest Anchor</h2>
           <p>
@@ -1599,7 +1620,7 @@ poline.colorsCSSoklch</code></pre>
     ).join();
 
     const $steps = document.querySelectorAll('[data-steps]');
-    //const $colorAt = document.querySelector('[data-colorat]');
+    const $colorAt = document.querySelector('[data-colorat]');
     const $selects = document.querySelectorAll('[data-select]');
     const $xSelect = document.querySelectorAll('[data-select="x"]');
     const $ySelect = document.querySelectorAll('[data-select="y"]');
@@ -2069,12 +2090,15 @@ poline.colorsCSSoklch</code></pre>
   $picker.addEventListener('pointerup', (e) => {
     currentPoint = null;
   });
-  /*
-  $colorAt.addEventListener('input', (e) => {
-    const val = Math.max(0, Math.min(1, e.target.value));
-    const color = poline.getColorAt(val);
-    document.documentElement.style.setProperty('--color-at', color.hslCSS);
-  });*/
+
+  // Color At functionality for sections that don't have their own handler
+  if ($colorAt) {
+    $colorAt.addEventListener('input', (e) => {
+      const val = Math.max(0, Math.min(1, parseFloat(e.target.value)));
+      const color = poline.getColorAt(val);
+      document.documentElement.style.setProperty('--color-at', color.hslCSS);
+    });
+  }
 
   // listen for keypresses
   document.addEventListener('keydown', (e) => {
@@ -2466,6 +2490,37 @@ const LCHColors = [...poline.colors].map(
         updateSVG();
         updateFullCode();
       }, 16.66);
+    }
+  },
+  {
+    section: 'getColorAt',
+    fn: (section) => {
+      console.log('getColorAt');
+      const $code = section.target.querySelector('[data-code]');
+      const $colorAt = section.target.querySelector('[data-colorat]');
+      const $colorSample = section.target.querySelector('.color-at-sample');
+      
+      $code.innerHTML = `const color = poline.getColorAt(0.5);
+console.log(color.hslCSS); // hsl(180.00, 100.00%, 50.00%)`;
+      hljs.highlightElement($code);
+      
+      // Initialize the color sample
+      const updateColorSample = () => {
+        const val = parseFloat($colorAt.value);
+        const color = poline.getColorAt(val);
+        $colorSample.style.background = color.hslCSS;
+        $code.innerHTML = `const color = poline.getColorAt(${val.toFixed(3)});
+console.log(color.hslCSS); // ${color.hslCSS}`;
+        hljs.highlightElement($code);
+        document.documentElement.style.setProperty('--color-at', color.hslCSS);
+      };
+      
+      updateColorSample();
+      
+      $colorAt.addEventListener('input', updateColorSample);
+      
+      updateSVG();
+      updateFullCode();
     }
   },
   {

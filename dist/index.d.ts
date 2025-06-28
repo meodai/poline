@@ -142,4 +142,15 @@ export declare class Poline {
     get colorsCSSlch(): string[];
     get colorsCSSoklch(): string[];
     shiftHue(hShift?: number): void;
+    /**
+     * Returns a color at a specific position along the entire color line (0-1)
+     * Treats all segments as one continuous path, respecting easing functions
+     * @param t Position along the line (0-1), where 0 is start and 1 is end
+     * @returns ColorPoint at the specified position
+     * @example
+     * getColorAt(0) // Returns color at the very beginning
+     * getColorAt(0.5) // Returns color at the middle of the entire journey
+     * getColorAt(1) // Returns color at the very end
+     */
+    getColorAt(t: number): ColorPoint;
 }
