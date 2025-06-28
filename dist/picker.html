@@ -25,13 +25,20 @@
         display: block;
         margin-top: 0.5rem;
       }
+
+      button {
+        display: block; 
+        width: 100%;
+        margin-top: 1rem;
+      }
       poline-picker {
         width: 300px;
         height: 300px;
         --poline-picker-line-color: #333;
         --poline-picker-bg-color: #fff;
       }
-      #colors {
+      #colors,
+      #colors-oklch {
         display: flex;
         margin-top: 20px;
         width: 300px;
@@ -75,9 +82,20 @@
         <label>
           <input type="checkbox" id="closedLoop"> Closed Loop
         </label>
+        <button id="random">Randomize Positions</button>
       </div>
       <poline-picker interactive></poline-picker>
-      <div id="colors"></div>
+
+      <article aria-label="Color Swatches">
+        <aside>
+          <h2>HSL</h2>
+          <div id="colors"></div>
+        </aside>
+        <aside>
+          <h2>OKLch</h2>
+          <div id="colors-oklch"></div>
+        </aside>
+      </article>
     </div>
 
     <script type="module">
@@ -85,9 +103,11 @@
 
       const picker = document.querySelector("poline-picker");
       const colorsContainer = document.getElementById("colors");
+      const colorsOklchContainer = document.getElementById("colors-oklch");
       const allowAddPointsCheckbox = document.getElementById("allowAddPoints");
       const invertedLightnessCheckbox = document.getElementById("invertedLightness");
       const closedLoopCheckbox = document.getElementById("closedLoop");
+      const randomButton = document.getElementById("random");
 
       const poline = new Poline({
         anchorColors: [
@@ -100,14 +120,29 @@
         positionFunctionZ: positionFunctions.linearPosition,
         closedLoop: false,
         invertedLightness: false,
-      });
+      });;
 
       picker.setPoline(poline);
-      
+
+
+    randomButton.addEventListener("click", () => {
+      poline.anchorPoints.forEach(anchor => {
+        anchor.hsl = [
+          (anchor.color[0] + (-90 + Math.random() * 90)) % 360,
+          Math.random(),
+          anchor.color[2] + (-.05 + Math.random() * .1),
+        ];
+      });
+      poline.updateAnchorPairs();
+      picker.setPoline(poline);
+      updateColors();
+    });
+
       let lastMousePosition = { x: 0, y: 0 };
 
       function updateColors() {
         const colors = poline.colorsCSS;
+        const colorsOklch = poline.colorsCSSoklch;
         colorsContainer.innerHTML = "";
         
         for (const color of colors) {
@@ -116,6 +151,15 @@
           swatch.style.backgroundColor = color;
           swatch.title = color;
           colorsContainer.appendChild(swatch);
+        }
+
+        colorsOklchContainer.innerHTML = "";
+        for (const color of colorsOklch) {
+          const swatch = document.createElement("div");
+          swatch.className = "color-swatch";
+          swatch.style.backgroundColor = color;
+          swatch.title = color;
+          colorsOklchContainer.appendChild(swatch);
         }
       }
 
