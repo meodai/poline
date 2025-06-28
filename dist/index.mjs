@@ -1,3 +1,5 @@
+var __pow = Math.pow;
+
 // src/index.ts
 var pointToHSL = (xyz, invertedLightness) => {
   const [x, y, z] = xyz;
@@ -65,27 +67,27 @@ var linearPosition = (t) => {
 };
 var exponentialPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 2;
+    return 1 - __pow(1 - t, 2);
   }
-  return t ** 2;
+  return __pow(t, 2);
 };
 var quadraticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 3;
+    return 1 - __pow(1 - t, 3);
   }
-  return t ** 3;
+  return __pow(t, 3);
 };
 var cubicPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 4;
+    return 1 - __pow(1 - t, 4);
   }
-  return t ** 4;
+  return __pow(t, 4);
 };
 var quarticPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - (1 - t) ** 5;
+    return 1 - __pow(1 - t, 5);
   }
-  return t ** 5;
+  return __pow(t, 5);
 };
 var sinusoidalPosition = (t, reverse = false) => {
   if (reverse) {
@@ -101,12 +103,12 @@ var asinusoidalPosition = (t, reverse = false) => {
 };
 var arcPosition = (t, reverse = false) => {
   if (reverse) {
-    return 1 - Math.sqrt(1 - t ** 2);
+    return 1 - Math.sqrt(1 - __pow(t, 2));
   }
   return 1 - Math.sqrt(1 - t);
 };
 var smoothStepPosition = (t) => {
-  return t ** 2 * (3 - 2 * t);
+  return __pow(t, 2) * (3 - 2 * t);
 };
 var positionFunctions = {
   linearPosition,
@@ -517,3 +519,4 @@ export {
   randomHSLPair,
   randomHSLTriple
 };
+//# sourceMappingURL=index.mjs.map
