@@ -535,11 +535,7 @@ var PolinePicker = class extends HTMLElement {
       xyz: [normalizedX, normalizedY, normalizedY]
     });
     this.updateSVG();
-    this.dispatchEvent(
-      new CustomEvent("poline-change", {
-        detail: { poline: this.poline }
-      })
-    );
+    this.dispatchPolineChange();
     return newPoint;
   }
   updateLightnessBackground() {
@@ -657,31 +653,17 @@ var PolinePicker = class extends HTMLElement {
     this.anchors.innerHTML = "";
     this.points.innerHTML = "";
     this.poline.anchorPoints.forEach((point) => {
-      const cartesian = this.pointToCartesian(point);
-      if (!cartesian)
-        return;
-      const [x = 0, y = 0] = cartesian;
-      const anchor = document.createElementNS(namespaceURI, "circle");
-      anchor.setAttribute("class", "wheel__anchor");
-      anchor.setAttribute("cx", x.toString());
-      anchor.setAttribute("cy", y.toString());
-      anchor.setAttribute("r", "2");
-      anchor.setAttribute("fill", point.hslCSS);
-      this.anchors.appendChild(anchor);
+      const anchor = this.createCircleElement(point, "wheel__anchor", "2");
+      if (anchor) {
+        this.anchors.appendChild(anchor);
+      }
     });
     this.poline.flattenedPoints.forEach((point) => {
-      const cartesian = this.pointToCartesian(point);
-      if (!cartesian)
-        return;
-      const [x = 0, y = 0] = cartesian;
-      const circle = document.createElementNS(namespaceURI, "circle");
-      circle.setAttribute("class", "wheel__point");
-      circle.setAttribute("cx", x.toString());
-      circle.setAttribute("cy", y.toString());
       const radius = 0.5 + point.color[1];
-      circle.setAttribute("r", radius.toString());
-      circle.setAttribute("fill", point.hslCSS);
-      this.points.appendChild(circle);
+      const circle = this.createCircleElement(point, "wheel__point", radius);
+      if (circle) {
+        this.points.appendChild(circle);
+      }
     });
   }
   pointToCartesian(point) {
@@ -705,11 +687,7 @@ var PolinePicker = class extends HTMLElement {
           xyz: [normalizedX, normalizedY, normalizedY]
         });
         this.updateSVG();
-        this.dispatchEvent(
-          new CustomEvent("poline-change", {
-            detail: { poline: this.poline }
-          })
-        );
+        this.dispatchPolineChange();
       }
     });
     this.svg.addEventListener("pointermove", (e) => {
@@ -720,11 +698,7 @@ var PolinePicker = class extends HTMLElement {
           xyz: [normalizedX, normalizedY, this.currentPoint.z]
         });
         this.updateSVG();
-        this.dispatchEvent(
-          new CustomEvent("poline-change", {
-            detail: { poline: this.poline }
-          })
-        );
+        this.dispatchPolineChange();
       }
     });
     this.svg.addEventListener("pointerup", () => {
@@ -746,6 +720,26 @@ var PolinePicker = class extends HTMLElement {
       normalizedX: svgX / svgscale,
       normalizedY: svgY / svgscale
     };
+  }
+  createCircleElement(point, className, radius) {
+    const cartesian = this.pointToCartesian(point);
+    if (!cartesian)
+      return null;
+    const [x = 0, y = 0] = cartesian;
+    const circle = document.createElementNS(namespaceURI, "circle");
+    circle.setAttribute("class", className);
+    circle.setAttribute("cx", x.toString());
+    circle.setAttribute("cy", y.toString());
+    circle.setAttribute("r", radius.toString());
+    circle.setAttribute("fill", point.hslCSS);
+    return circle;
+  }
+  dispatchPolineChange() {
+    this.dispatchEvent(
+      new CustomEvent("poline-change", {
+        detail: { poline: this.poline }
+      })
+    );
   }
 };
 customElements.define("poline-picker", PolinePicker);

@@ -23,4 +23,6 @@ export declare class PolinePicker extends HTMLElement {
     private addEventListeners;
     private getPointerPosition;
     private pointerToNormalizedCoordinates;
+    private createCircleElement;
+    private dispatchPolineChange;
 }
