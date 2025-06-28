@@ -10,7 +10,6 @@ export class PolinePicker extends HTMLElement {
   private poline: Poline;
   private svg: SVGElement;
   private interactive: boolean;
-  private wheel: SVGGElement;
   private line: SVGPolylineElement;
   private anchors: SVGGElement;
   private points: SVGGElement;

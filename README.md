@@ -6,6 +6,25 @@
 
 ![Poline DEMO UI](./dist/poline-wheel.png)
 
+## Installation
+
+"**poline**" is available as an [npm package](https://www.npmjs.com/package/poline). Alternatively you can clone it on [GitHub](https://github.com/meodai/poline).
+
+```bash
+npm install poline
+```
+
+You can also use the [unpkg CDN](https://unpkg.com/poline) to include the library in your project.
+I recommend using the **mjs** version of the library. This will allow you to use the **import** syntax. But you can also use the **umd** version if you prefer to use the **script** tag.
+
+```html
+<script type="module">
+  import { 
+    Poline 
+  } from 'https://unpkg.com/poline?module'
+</script>
+```
+
 ## Getting Started
 
 Begin your journey with **poline** by following this simple incantation:
@@ -25,6 +44,7 @@ console.log(poline.colorsCSS);
 ```
 
 ## Summoning
+
 The use of "**Poline**" begins with the invocation of its command, which can be performed with or without arguments. If called without, the tool will generate a mesmerizing palette featuring two randomly selected **anchors.**
 On the other hand, one can choose to provide their own **anchor** points, represented as a list of **hsl** values, for a more personal touch. The power to shape and mold the colors lies in your hands."
 
@@ -39,6 +59,7 @@ new Poline({
 ```
 
 ## Points
+
 The magic of "**Poline**" is revealed through its technique of drawing lines between anchor points. The richness of the palette is determined by the number of **points**, with each connection producing a unique color.
 
 Increasing the number of **points** will yield an even greater array of colors. By default, four points are used, but this can easily be adjusted through the 'numPoints' property on your Poline instance, as demonstrated in the code example.
@@ -140,6 +161,7 @@ Here's a visual representation of how these functions affect the distribution:
 | arcPosition | Colors follow an arc-like distribution |
 
 ## Arcs
+
 By defining **different position functions for each axis**, you can control the distribution of colors along each axis (**positionFunctionX**, **positionFunctionY**, **positionFunctionZ**). This will draw different arcs and create a diverse range of color palettes.
 
 ```js
@@ -394,25 +416,6 @@ type ColorPointCollection = {
 };
 ```
 
-## Installation
-
-"**poline**" is available as an [npm package](https://www.npmjs.com/package/poline). Alternatively you can clone it on [GitHub](https://github.com/meodai/poline).
-
-```bash
-npm install poline
-```
-
-You can also use the [unpkg CDN](https://unpkg.com/poline) to include the library in your project.
-I recommend using the **mjs** version of the library. This will allow you to use the **import** syntax. But you can also use the **umd** version if you prefer to use the **script** tag.
-
-```html
-<script type="module">
-  import { 
-    Poline 
-  } from 'https://unpkg.com/poline?module'
-</script>
-```
-
 ## API Reference
 
 Behold the arcane interface of "**poline**", detailed in full for your enlightenment:
@@ -490,6 +493,127 @@ Available functions:
 - `asinusoidalPosition`
 - `arcPosition`
 - `smoothStepPosition`
+
+## Web Component
+
+"**poline**" also provides a web component called `<poline-picker>` that creates an interactive color wheel for visualizing and manipulating your color palettes. This interface allows users to drag anchor points and see real-time updates to their palette.
+
+### Basic Usage and Setup
+
+```html
+<script type="module">
+  import { Poline, PolinePicker } from 'https://unpkg.com/poline/dist/picker.mjs';
+</script>
+
+<poline-picker id="picker" interactive allow-add-points></poline-picker>
+
+<script>
+  const picker = document.getElementById('picker');
+  
+  // Create and set a palette
+  const poline = new Poline({
+    anchorColors: [[300, 0.8, 0.7], [60, 0.9, 0.5]],
+    numPoints: 6
+  });
+  picker.setPoline(poline);
+  
+  // Listen for changes
+  picker.addEventListener('poline-change', (event) => {
+    console.log('New colors:', event.detail.poline.colorsCSS);
+  });
+</script>
+```
+
+### Attributes
+
+The `<poline-picker>` component supports the following attributes:
+
+- `interactive` - Enables dragging of anchor points
+- `allow-add-points` - Allows adding new anchor points by clicking on empty areas
+
+### Styling the Component
+
+The picker can be styled using CSS custom properties:
+
+```css
+poline-picker {
+  width: 300px;
+  height: 300px;
+  
+  /* Customize the appearance */
+  --poline-picker-line-color: #333;
+  --poline-picker-bg-color: #fff;
+}
+```
+
+### API Methods
+
+The `<poline-picker>` element provides several methods for programmatic control:
+
+```javascript
+const picker = document.querySelector('poline-picker');
+
+// Set a new palette
+picker.setPoline(myPoline);
+
+// Enable/disable adding points
+picker.setAllowAddPoints(true);
+
+// Add a point at specific coordinates (x, y in pixels)
+const newPoint = picker.addPointAtPosition(150, 100);
+```
+
+### Events
+
+The component dispatches a `poline-change` event whenever the palette is modified:
+
+```javascript
+picker.addEventListener('poline-change', (event) => {
+  const { poline } = event.detail;
+  // Access the updated palette
+  console.log('Updated palette:', poline.colorsCSS);
+});
+```
+
+## Web Component Installation
+
+"**poline**" is available as an [npm package](https://www.npmjs.com/package/poline). Alternatively you can clone it on [GitHub](https://github.com/meodai/poline).
+
+```bash
+npm install poline
+```
+
+```html
+<script type="module">
+  import { 
+    Poline, 
+    PolinePicker 
+  } from 'https://unpkg.com/poline/dist/picker.mjs'
+</script>
+```
+
+```html
+<poline-picker id="picker" interactive allow-add-points></poline-picker>
+```
+
+### Using the Web Component
+
+For the interactive `<poline-picker>` web component, use the picker build:
+
+```html
+<script type="module">
+  import { 
+    Poline, 
+    PolinePicker 
+  } from 'https://unpkg.com/poline/dist/picker.mjs'
+</script>
+```
+
+Or install via npm and import:
+
+```javascript
+import { Poline, PolinePicker } from 'poline/dist/picker.mjs';
+```
 
 ## License
 
