@@ -4,8 +4,8 @@ export declare class PolinePicker extends HTMLElement {
     private poline;
     private svg;
     private interactive;
-    private wheel;
     private line;
+    private wheel;
     private anchors;
     private points;
     private currentPoint;

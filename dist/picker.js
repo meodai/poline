@@ -623,13 +623,13 @@ var polinePicker = (() => {
         }
         .wheel__line {
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.15;
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
           fill: none;
         }
         .wheel__anchor {
           cursor: grab;
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.2;
+          stroke-width: var(--poline-picker-line-width, 0.2);
           fill: var(--poline-picker-bg-color, #fff);
         }
         .wheel__anchor:hover {
@@ -637,7 +637,7 @@ var polinePicker = (() => {
         }
         .wheel__point {
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.15;
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
           pointer-events: none;
         }
       </style>

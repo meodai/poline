@@ -11,6 +11,7 @@ export class PolinePicker extends HTMLElement {
   private svg: SVGElement;
   private interactive: boolean;
   private line: SVGPolylineElement;
+  private wheel: SVGGElement;
   private anchors: SVGGElement;
   private points: SVGGElement;
   private currentPoint: ColorPoint | null = null;
@@ -117,13 +118,13 @@ export class PolinePicker extends HTMLElement {
         }
         .wheel__line {
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.15;
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
           fill: none;
         }
         .wheel__anchor {
           cursor: grab;
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.2;
+          stroke-width: var(--poline-picker-line-width, 0.2);
           fill: var(--poline-picker-bg-color, #fff);
         }
         .wheel__anchor:hover {
@@ -131,7 +132,7 @@ export class PolinePicker extends HTMLElement {
         }
         .wheel__point {
           stroke: var(--poline-picker-line-color, #000);
-          stroke-width: 0.15;
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
           pointer-events: none;
         }
       </style>
