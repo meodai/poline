@@ -600,11 +600,11 @@ var polinePicker = (() => {
           position: relative;
           width: 100%;
           aspect-ratio: 1;
-          --s: .4;
-          --l: .5;
+          --wheelS: var(--poline-picker-wheel-saturation, .4);
+          --wheelL: var(--poline-picker-wheel-lightness, .5);
           --minL: #000;
           --maxL: #fff;
-          --grad: hsl(0deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 0deg, hsl(60deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 60deg, hsl(120deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 120deg, hsl(180deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 180deg, hsl(240deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 240deg, hsl(300deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 300deg, hsl(360deg calc(var(--s) * 100%) calc(var(--l) * 100%)) 360deg;
+          --grad: hsl(0deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 0deg, hsl(60deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 60deg, hsl(120deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 120deg, hsl(180deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 180deg, hsl(240deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 240deg, hsl(300deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 300deg, hsl(360deg calc(var(--wheelS) * 100%) calc(var(--wheelL) * 100%)) 360deg;
         }
         .picker::before {
           content: '';
