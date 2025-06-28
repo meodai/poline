@@ -196,6 +196,37 @@ poline.shiftHue(1);
 ```
 The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
 
+## Color At Position
+
+The **getColorAt** method allows you to sample any color along the entire color journey by providing a position between 0 and 1. This treats all segments as one continuous path, respecting the easing functions for each axis.
+
+Position **0** returns the color at the very beginning, **0.5** returns the color at the middle of the entire journey, and **1** returns the color at the very end. The method accounts for all easing functions and segment transitions.
+
+```js
+// Get color at the start of the palette
+const startColor = poline.getColorAt(0);
+
+// Get color at the middle of the palette
+const middleColor = poline.getColorAt(0.5);
+
+// Get color at the end of the palette
+const endColor = poline.getColorAt(1);
+
+// Get color at any position (e.g., 25% through)
+const quarterColor = poline.getColorAt(0.25);
+
+// Access the color values
+console.log(middleColor.hsl);     // HSL array [h, s, l]
+console.log(middleColor.hslCSS);  // CSS string "hsl(120, 80%, 60%)"
+```
+
+This method is particularly useful for:
+
+- Creating smooth animations by incrementing the position value
+- Generating gradients with precise color sampling
+- Building color pickers with continuous color selection
+- Creating custom interpolation between palette extremes
+
 ## Closest Anchor
 
 In some situations, you might want to know which anchor is closest to a certain position or color. This method is used in the visualizer to highlight to select the closest anchor on click.
@@ -211,7 +242,7 @@ Any of the **xyz** or **hsl** components can be null. If they are **null**, they
 
 ## Color List
 
-The '**poline**' instance returns all colors as an array of **hsl**, **lch** or 
+The '**poline**' instance returns all colors as an array of **hsl**, **lch** or
 **oklch** arrays or alternatively as an array of **CSS** strings.
 
 ```js
@@ -451,6 +482,7 @@ constructor(options?: PolineOptions)
 - `removeAnchorPoint(options: { point?: ColorPoint; index?: number }): void` - Remove an anchor point
 - `updateAnchorPoint(options: { point?: ColorPoint; pointIndex?: number } & ColorPointCollection): ColorPoint` - Update an anchor point
 - `getClosestAnchorPoint(options: { xyz?: PartialVector3; hsl?: PartialVector3; maxDistance?: number }): ColorPoint | null` - Find closest anchor point
+- `getColorAt(t: number): ColorPoint` - Get color at a specific position (0-1) along the entire palette
 - `shiftHue(hShift?: number): void` - Shift the hue of all colors
 
 ### ColorPoint Class
