@@ -574,15 +574,14 @@ var Poline = class {
   }
 };
 var { p5 } = globalThis;
-if (p5) {
-  console.info("p5 detected, adding poline to p5 prototype");
+if (p5 && p5.VERSION && p5.VERSION.startsWith("1.")) {
+  console.info("p5 < 1.x detected, adding poline to p5 prototype");
   const poline = new Poline();
   p5.prototype.poline = poline;
   const polineColors = () => poline.colors.map(
     (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
   );
-  p5.prototype.polineColors = polineColors;
-  p5.prototype.registerMethod("polineColors", p5.prototype.polineColors);
+  p5.prototype.registerMethod("polineColors", polineColors);
   globalThis.poline = poline;
   globalThis.polineColors = polineColors;
 }
