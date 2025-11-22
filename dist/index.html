@@ -1837,6 +1837,38 @@ poline.colorsCSSoklch</code></pre>
     }
 
     let untilDrawTimer = null;
+    
+    function updateUI() {
+      $steps.forEach(el => el.value = poline.numPoints);
+      $invertLightness.forEach(el => el.checked = poline.invertedLightness);
+      $loop.forEach(el => el.checked = poline.closedLoop);
+
+      const findFnName = (fn) => Object.keys(positionFunctions).find(key => positionFunctions[key] === fn);
+      
+      const currentFnx = findFnName(poline.positionFunctionX);
+      if (currentFnx) {
+          fnx = currentFnx;
+          $xSelect.forEach(el => el.value = fnx);
+      }
+      
+      const currentFny = findFnName(poline.positionFunctionY);
+      if (currentFny) {
+          fny = currentFny;
+          $ySelect.forEach(el => el.value = fny);
+      }
+      
+      const currentFnz = findFnName(poline.positionFunctionZ);
+      if (currentFnz) {
+          fnz = currentFnz;
+          $zSelect.forEach(el => el.value = fnz);
+      }
+
+      if (currentFnx && currentFnx === currentFny && currentFny === currentFnz) {
+        fnAll = currentFnx;
+        if ($allSelect) $allSelect.value = fnAll;
+      }
+    }
+
     function updateSVG () {
       if (untilDrawTimer) clearTimeout(untilDrawTimer);
       untilDrawTimer = setTimeout(() => {
@@ -1868,42 +1900,65 @@ poline.colorsCSSoklch</code></pre>
         });
       });
 
-      $svg.innerHTML = '';
-
-      poline.anchorPoints.forEach(anchor => {
-        const $circle = document.createElementNS(namespaceURI, 'circle');
+      // 1. Update Anchors
+      const anchors = poline.anchorPoints;
+      let anchorCircles = Array.from($svg.querySelectorAll('.wheel__anchor'));
+      
+      // Remove excess
+      while (anchorCircles.length > anchors.length) {
+        anchorCircles.pop().remove();
+      }
+      
+      anchors.forEach((anchor, i) => {
+        let $circle = anchorCircles[i];
+        if (!$circle) {
+            $circle = document.createElementNS(namespaceURI, 'circle');
+            $circle.classList.add('wheel__anchor');
+            $circle.setAttribute('r', 2);
+            $svg.appendChild($circle);
+        }
         $circle.setAttribute('cx', anchor.x * svgscale);
         $circle.setAttribute('cy', anchor.y * svgscale);
-        $circle.setAttribute('r', 2)
-        //anchor.hslCSS
-        $circle.classList.add('wheel__anchor');
         $circle.style.setProperty('--s', anchor.color[1]);
-        $svg.appendChild($circle);
       });
 
-      const $polylines = document.createElementNS(namespaceURI, 'polyline');
-      $polylines.classList.add('wheel__line');
-      $polylines.setAttribute('points', poline.flattenedPoints.map(point => `${point.x * svgscale},${point.y * svgscale}`).join(' '));
-      $svg.appendChild($polylines);
-
-      // calculate the length of the polyline
-      // set the stroke-dasharray and stroke-dashoffset to the length of the polyline
+      // 2. Update Polyline
+      let $polylines = $svg.querySelector('.wheel__line');
+      if (!$polylines) {
+          $polylines = document.createElementNS(namespaceURI, 'polyline');
+          $polylines.classList.add('wheel__line');
+          $svg.appendChild($polylines);
+      }
+      const pointsStr = poline.flattenedPoints.map(point => `${point.x * svgscale},${point.y * svgscale}`).join(' ');
+      $polylines.setAttribute('points', pointsStr);
       const length = $polylines.getTotalLength();
       $polylines.style.setProperty('--length', length);
-    
-      poline.flattenedPoints.forEach((point, i) => {
-        const $circle = document.createElementNS(namespaceURI, 'circle');
+
+      // 3. Update Points
+      const points = poline.flattenedPoints;
+      let pointCircles = Array.from($svg.querySelectorAll('.wheel__point'));
+      
+      // Remove excess
+      while (pointCircles.length > points.length) {
+        pointCircles.pop().remove();
+      }
+
+      points.forEach((point, i) => {
+        let $circle = pointCircles[i];
+        if (!$circle) {
+            $circle = document.createElementNS(namespaceURI, 'circle');
+            $circle.classList.add('wheel__point');
+            $svg.appendChild($circle);
+        }
         $circle.setAttribute('cx', point.x * svgscale);
         $circle.setAttribute('cy', point.y * svgscale);
-        const radius = .5 + point.color[1]
+        const radius = .5 + point.color[1];
         $circle.setAttribute('r', radius);
-        $circle.classList.add('wheel__point');
         $circle.style.setProperty('--i', i);
         $circle.style.setProperty('--circ', 2 * Math.PI * radius);
         $circle.style.setProperty('--s', point.color[1]);
         const c = formatHex({ mode: currentHueModel, ...currentModelFn(point.color) });
         $circle.style.setProperty('--c', c);
-        $svg.appendChild($circle);
       });
       
       let cssColors = [...poline.colorsCSS];
@@ -1934,6 +1989,8 @@ poline.colorsCSSoklch</code></pre>
         paintFavicon();
         updateExport()
       }, 100);
+
+      updateUI();
     }
 
     updateSVG();
@@ -2266,8 +2323,11 @@ poline.closedLoop = true;`;
         });
       }
       poline.closedLoop = false;
-      poline.positionFunction = positionFunctions.linearPosition;
+      
+      const fnName = 'sinusoidalPosition';
+      poline.positionFunction = positionFunctions[fnName];
       poline.updateAnchorPairs();
+      
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `import {
 Poline, positionFunctions
@@ -2275,7 +2335,7 @@ Poline, positionFunctions
 
 new Poline({
   positionFunction: 
-    positionFunctions.linearPosition,
+    positionFunctions.${fnName},
 });`;
       hljs.highlightElement($code);
       updateSVG();
@@ -2292,6 +2352,12 @@ new Poline({
         });
       }
       poline.closedLoop = false;
+
+      // Reset to arc defaults
+      fnx = 'sinusoidalPosition';
+      fny = 'quadraticPosition';
+      fnz = 'linearPosition';
+
       poline.positionFunctionX = positionFunctions[fnx];
       poline.positionFunctionY = positionFunctions[fny];
       poline.positionFunctionZ = positionFunctions[fnz];
