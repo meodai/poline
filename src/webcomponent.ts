@@ -30,6 +30,10 @@ export class PolinePicker extends HTMLElement {
   }
 
   connectedCallback() {
+    // Re-check attributes in case they were set after constructor
+    this.interactive = this.hasAttribute("interactive");
+    this.allowAddPoints = this.hasAttribute("allow-add-points");
+
     this.render();
     if (this.interactive) {
       this.addEventListeners();
@@ -151,6 +155,7 @@ export class PolinePicker extends HTMLElement {
 
     if (this.poline) {
       this.updateSVG();
+      this.updateLightnessBackground();
     }
   }
 
@@ -180,7 +185,8 @@ export class PolinePicker extends HTMLElement {
     }
 
     // 1) Draw line paths
-    const pathPoints = this.poline.flattenedPoints
+    const flattenedPoints = this.poline.flattenedPoints;
+    const pathPoints = flattenedPoints
       .map((p) => {
         const cartesian = this.pointToCartesian(p);
         if (!cartesian) return "";
@@ -192,26 +198,60 @@ export class PolinePicker extends HTMLElement {
 
     this.line.setAttribute("points", pathPoints);
 
-    // Clear existing elements
-    this.anchors.innerHTML = "";
-    this.points.innerHTML = "";
+    // Helper to update or create circles efficiently
+    const updateCircles = (
+      container: SVGGElement,
+      points: ColorPoint[],
+      className: string,
+      radiusFn: (p: ColorPoint) => number
+    ) => {
+      const existing = container.children;
+
+      // Remove excess elements if we have fewer points than before
+      while (existing.length > points.length) {
+        const last = existing[existing.length - 1];
+        if (last) container.removeChild(last);
+      }
+
+      points.forEach((point, i) => {
+        let circle = existing[i] as SVGCircleElement;
+        const cartesian = this.pointToCartesian(point);
+        if (!cartesian) return;
+
+        const [x = 0, y = 0] = cartesian;
+        const r = radiusFn(point);
+        const fill = point.hslCSS;
+
+        // Create if doesn't exist
+        if (!circle) {
+          circle = document.createElementNS(namespaceURI, "circle");
+          circle.setAttribute("class", className);
+          container.appendChild(circle);
+        }
+
+        // Update attributes
+        circle.setAttribute("cx", x.toString());
+        circle.setAttribute("cy", y.toString());
+        circle.setAttribute("r", r.toString());
+        circle.setAttribute("fill", fill);
+      });
+    };
 
     // 2) Draw anchor points (white dots at the ends)
-    this.poline.anchorPoints.forEach((point) => {
-      const anchor = this.createCircleElement(point, "wheel__anchor", "2");
-      if (anchor) {
-        this.anchors.appendChild(anchor);
-      }
-    });
+    updateCircles(
+      this.anchors,
+      this.poline.anchorPoints,
+      "wheel__anchor",
+      () => 2
+    );
 
     // 3) Draw intermediate points (sample dots along the lines) - TOP layer
-    this.poline.flattenedPoints.forEach((point) => {
-      const radius = 0.5 + point.color[1];
-      const circle = this.createCircleElement(point, "wheel__point", radius);
-      if (circle) {
-        this.points.appendChild(circle);
-      }
-    });
+    updateCircles(
+      this.points,
+      flattenedPoints,
+      "wheel__point",
+      (p) => 0.5 + p.color[1]
+    );
   }
 
   private pointToCartesian(point: ColorPoint) {
