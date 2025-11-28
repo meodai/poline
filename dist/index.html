@@ -683,6 +683,80 @@
       border: 1px solid #e0e0e0;
       background-color: var(--bg);
     }
+    .code-example {
+      position: relative;
+      margin-top: 1em;
+      margin-bottom: 1em;
+      & > button {
+        opacity: 0;
+        position: absolute;
+        top: 0em;
+        right: 1em;
+        z-index: 2;
+        font-size: 0.75em;
+        padding: 0.5em 2ch;
+        background: var(--bg);
+        box-shadow: inset 0 0 0 1px rgba(0,0,0,.1),
+                    0 0 0 1px var(--bg);
+        transition: box-shadow 0.1s linear;
+        border-radius: 2px;
+        
+
+        transform: translateY(-250%);
+        transition: opacity 0.1s linear, 
+                    transform 0.5s cubic-bezier(.3,.7,0,1), 
+                    color 0.15s linear, 
+                    box-shadow 0.2s ease-out,
+                    padding-right 0.2s cubic-bezier(.3,.7,0,1);
+        transition-delay: 0s, 0.15s, 0s, 0s, .1s;
+        
+       
+        line-height: 1;
+        font-family: inherit;
+        color: transparent;
+        border: none;
+        overflow: hidden;
+
+        &.copied {
+          color: var(--onBg);
+          padding-right: 2.25em;
+          transition-delay: 0s, 0.15s, 0s, 0s, 0s;
+          &::after {
+            transform: translateY(-50%) scaleY(.6);
+            opacity: 1;
+
+            transition: transform 0.3s cubic-bezier(.3, .7, 0, 1), opacity 0.2s linear;
+          }
+        }
+
+        &::after {
+          position: absolute;
+          top: 50%;
+          right: 1em;
+          content: '√';
+          display: inline-block;
+          transform: translateY(100%) scaleY(.3);
+          transition: transform 0.08s cubic-bezier(.3, .7, 0, 1), opacity 0.2s linear;
+          opacity: 0;
+        }
+        &:hover {
+          box-shadow: inset 0 0 0 1px rgba(0,0,0,.2),
+                      0 0 0 2px var(--bg);
+        }
+
+        &:active {
+          box-shadow: inset 0 0 0 1px var(--onBg),
+                      0 0 0 1px var(--bg);
+        }
+      }
+    }
+
+    .code-example:hover > button {
+      opacity: 1;
+      transform: translateY(-50%);
+      transition-delay: 0.05s, 0s, 0.1s;
+      color: var(--onBg);
+    }
     .code-ex {
       position: relative;
     }
@@ -695,6 +769,7 @@
       z-index: -1;
       opacity: 0;
       transform: translateX(0);
+      margin: 0;
     }
 
     .l-sec--active .code-ex::before {
@@ -1074,7 +1149,10 @@
             represented as a list of <strong>hsl</strong> values, for a more personal touch. 
             The power to shape and mold the colors lies in your hands.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
+          </div>
           <p>
             To create a palette, "<strong class="t">Poline</strong>" requires at least two anchor points, but the number of anchors you can provide is limitless.
             The key to remember is that the more anchors you provide, the more challenging it becomes to generate a harmonious color
@@ -1101,7 +1179,10 @@
             determines the number of colors generated between each pair of anchors. 
             The more <strong>points</strong> you have, the more colors you will get.
           </p-->
-          <pre class="code-ex"><code class="language-js" data-code="points"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="points"></code></pre>
+          </div>
           <p>
             The resulting palette is a product of points multiplied by the number of anchor pairs.
             It can be changed after initialization by setting the <strong>numPoints</strong> property on your "<strong class="t">Poline</strong>" instance.
@@ -1130,7 +1211,10 @@
             the '<strong>addAnchorPoint</strong>' method. This method accepts either a <strong>color</strong> as HSL array values or an array of <strong>X, Y, Z</strong> coordinates, 
             further expanding the possibilities of your color creation.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="anchors"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="anchors"></code></pre>
+          </div>  
         </div>
       </article>
       <article class="l-sec">
@@ -1147,7 +1231,10 @@
             This method accepts the <strong>reference to the anchor</strong> you wish to modify and either a color in the form of <strong>HSL</strong> 
             representation or an <strong>XYZ</strong> position array.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
+          </div>
           <div class="l-sec__controls">
             <button data-randomize>Randomize Positions</button>
           </div>
@@ -1165,7 +1252,10 @@
             By definition the same position function for all axes "<strong class="t">Poline</strong>" will draw a straight line between the anchors.
             The chosen function will determine the distribution of colors between the anchors.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="positionFunction"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="positionFunction"></code></pre>
+          </div>
           <p>
             If none is provided, "<strong class="t">Poline</strong>" will use the default function, which is a sinusoidal function.
           </p>
@@ -1201,7 +1291,10 @@
             (<strong>positionFunctionX</strong>, <strong>positionFunctionY</strong>, <strong>positionFunctionZ</strong>). 
             This will draw different arcs and create a diverse range of color palettes.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
+          </div>
           <!--p>
             The <strong>position functions</strong> are used to determine the position of the 
             <strong>points</strong> between the <strong>anchors</strong>. The <strong>position functions</strong> 
@@ -1240,7 +1333,10 @@
             By default, the palette is not a closed loop. This means that the last color generated is not the same as the first color.
             If you want the palette to be a closed loop, you can set the <strong>closedLoop</strong> argument to true.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="closedLoop"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="closedLoop"></code></pre>
+          </div>
           <p>
             It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
           </p>
@@ -1264,7 +1360,10 @@
             "<strong class="t">poline</strong>" supports hue shifting. This means that the hue of the colors will be shifted by a certain amount.
             This can be useful if you want to animate the palette or generate a palette that looks similar to your current palette but using different hues.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="hueShift"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="hueShift"></code></pre>
+          </div>
           <p>
             The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
           </p>
@@ -1278,9 +1377,12 @@
             In some situations, you might want to know which anchor is closest to a certain position or color.
             This method is used in the visualizer to select the closest anchor on click.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="closestAnchor">poline.getClosestAnchorPoint(
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="closestAnchor">poline.getClosestAnchorPoint(
   {xyz: [x, y, null], maxDistance: .1}
 )</code></pre>
+          
           <p>
             The <strong>maxDistance</strong> argument is optional and will return null if the closest anchor is further away
             than the maxDistance.
@@ -1296,10 +1398,12 @@
           <p>
             The '<strong class="t">poline</strong>' instance returns all colors as an array of <strong>hsl</strong> arrays or alternatively as an array of <strong>CSS</strong> strings, either formatted in <strong>HSL</strong> or stretched to <strong>OKlch</strong> or <strong>lch</strong>.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="getColors">poline.colors
 poline.colorsCSS
 poline.colorsCSSlch
-poline.colorsCSSoklch</code></pre>
+poline.colorsCSSoklch</code></pre></div>
           <div class="l-sec__controls">
             <figure class="l-sec__preview">
               <figcaption>Colors as HSL</figcaption>
@@ -1319,7 +1423,10 @@ poline.colorsCSSoklch</code></pre>
             Position <strong>0</strong> returns the color at the very beginning, <strong>0.5</strong> returns the color at the middle of the entire journey,
             and <strong>1</strong> returns the color at the very end. The method accounts for all easing functions and segment transitions.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
+          </div>
           <div class="l-sec__controls">
             <label>
               <span class="t">Position</span>
@@ -1339,7 +1446,10 @@ poline.colorsCSSoklch</code></pre>
             To remove an anchor, you can use the <strong>removeAnchorPoint</strong> method. 
             It either takes an <strong>anchor</strong> reference or an <strong>index</strong> as an argument.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="removeAnchor"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="removeAnchor"></code></pre>
+          </div>
         </div>
       </article>
 
@@ -1354,7 +1464,10 @@ poline.colorsCSSoklch</code></pre>
             Like the turning of night into day, or the unfolding of a magical spell, "<strong class="t">Poline</strong>"'s inverted lightness feature imbues your
             palettes with a mystical quality that will unleash your inner wizard. 
           </p> 
-          <pre class="code-ex"><code class="language-js" data-code="invertedLightness"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="invertedLightness"></code></pre>
+          </div>
           <div class="l-sec__controls">
             <label>
               <span class="t">Invert Lightness</span>
@@ -1370,7 +1483,10 @@ poline.colorsCSSoklch</code></pre>
           <p>
             To keep the library as lightweight as possible, "<strong class="t">poline</strong>" only supports the <strong>hsl</strong> color model out of the box.
             However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
-          <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
+          </div>
           <div class="l-sec__controls">
             <label>
               <span class="t">Current Model</span>
@@ -1388,7 +1504,10 @@ poline.colorsCSSoklch</code></pre>
             "<strong class="t">poline</strong>" is available as an <a href="https://www.npmjs.com/package/poline" target="_blank" rel="noopener noreferrer">npm package</a>. 
             Alternatively you can clone it on <a href="https://github.com/meodai/poline" target="_blank" rel="noopener noreferrer">GitHub</a>.
           </p>
-          <pre class="code-ex"><code class="language-js" data-code="installation">npm install poline</code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="installation">npm install poline</code></pre>
+          </div>
           <p>
             You can also use the <a href="https://unpkg.com/poline" target="_blank" rel="noopener noreferrer">unpkg CDN</a> to include the library in your project.
           </p>
@@ -1396,9 +1515,11 @@ poline.colorsCSSoklch</code></pre>
             I recommend using the <strong>mjs</strong> version of the library. This will allow you to use the <strong>import</strong> syntax.
             But you can also use the <strong>umd</strong> version if you prefer to use the <strong>script</strong> tag.
           </p>
-          <pre class="code-ex"><code class="language-html" data-code="cdn">import { 
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-html" data-code="cdn">import { 
   Poline 
-} from 'https://unpkg.com/poline?module'</code></pre>
+} from 'https://unpkg.com/poline?module'</code></pre></div>
         </div>
       </article>
 
@@ -1459,7 +1580,10 @@ poline.colorsCSSoklch</code></pre>
       <article class="l-sec">
         <div class="l-sec__inner" data-section="examples">
           <h2 id="examples">Playground Code</h2>
-          <pre class="code-ex"><code class="language-js" data-code="playground"></code></pre>
+          <div class="code-example">
+            <button data-copy-code>Copy Code</button>
+            <pre class="code-ex"><code class="language-js" data-code="playground"></code></pre>
+          </div>
           <p>
             The code above mimics the current state of the playground.
           </p>
@@ -2200,6 +2324,20 @@ poline.colorsCSSoklch</code></pre>
     });
   }
 
+  // copy code to clipboard
+  document.addEventListener('click', (e) => {
+    const $target = e.target.closest('[data-copy-code]');
+    if ($target) {
+      const code = $target.parentElement.querySelector('[data-code]').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        $target.classList.add('copied');
+        setTimeout(() => {
+          $target.classList.remove('copied');
+        }, 1000);
+      });
+    }
+  });
+
   // listen for keypresses
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -2521,7 +2659,7 @@ new Poline({
     poline.anchorPoints.length - 1
   ]
 });
-  // or
+// or
 poline.removeAnchorPoint({
   index: poline.anchorPoints.length - 1
 });`;
@@ -2610,7 +2748,8 @@ const LCHColors = [...poline.colors].map(
       const $colorSample = section.target.querySelector('.color-at-sample');
       
       $code.innerHTML = `const color = poline.getColorAt(0.5);
-console.log(color.hslCSS); // hsl(180.00, 100.00%, 50.00%)`;
+console.log(color.hslCSS);
+//→ hsl(180.00, 100.00%, 50.00%)`;
       hljs.highlightElement($code);
       
       // Initialize the color sample
@@ -2619,7 +2758,8 @@ console.log(color.hslCSS); // hsl(180.00, 100.00%, 50.00%)`;
         const color = poline.getColorAt(val);
         $colorSample.style.background = color.hslCSS;
         $code.innerHTML = `const color = poline.getColorAt(${val.toFixed(3)});
-console.log(color.hslCSS); // ${color.hslCSS}`;
+console.log(color.hslCSS); 
+//→ ${color.hslCSS}`;
         hljs.highlightElement($code);
         document.documentElement.style.setProperty('--color-at', color.hslCSS);
       };
