@@ -1793,8 +1793,15 @@ poline.colorsCSSoklch</code></pre>
     $picker.style.setProperty('--grad', createCSSRainbowGradient(hueSteps));
 
     let timer = null;
+    let exportAbortController = null;
 
     function updateExport () {
+      // Cancel previous fetch if still pending
+      if (exportAbortController) {
+        exportAbortController.abort();
+      }
+      exportAbortController = new AbortController();
+
       $export.style.height = `${$export.scrollHeight}px`;
       $export.classList.add('export--loading');
 
@@ -1821,7 +1828,8 @@ poline.colorsCSSoklch</code></pre>
       {
         headers: {
           'X-Referrer': 'https://meodai.github.io/poline/',
-        }
+        },
+        signal: exportAbortController.signal
       }
     ).then(res => res.json())
       .then(data => {
@@ -1853,6 +1861,14 @@ poline.colorsCSSoklch</code></pre>
           </ol>
         `;
         $export.style.height = 'auto';
+        $export.classList.remove('export--loading');
+      })
+      .catch(err => {
+        if (err.name === 'AbortError') {
+          // Ignore abort errors - this is expected behavior
+          return;
+        }
+        console.error('Export fetch error:', err);
         $export.classList.remove('export--loading');
       });
     }
