@@ -758,13 +758,14 @@
       margin-right: 1em;
       box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
     }
-    .export__sample::after {
+    .export__sample::before {
       content: '';
       position: absolute;
       inset: 50% 2px 2px;
       border-radius: 0.2em;
       background: var(--cHex);
     }
+
     .export__name,
     .export__hex {
       display: block;
@@ -1836,7 +1837,8 @@ poline.colorsCSSoklch</code></pre>
               const exportValue = isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`;
               return `
               <li data-copy="${exportValue}" class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}; --i: ${index / colorsHEX.length};">
-                <div class="export__sample"></div>
+                <div class="export__sample">
+                </div>
                 <div class="export__label">
                   <strong class="export__name">
                     <span class="wrap">${name}</span>
