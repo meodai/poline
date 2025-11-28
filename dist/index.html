@@ -511,6 +511,7 @@
       background: transparent;
       text-align: right;
       color: var(--onBg);
+      
     }
 
     button {
@@ -738,6 +739,7 @@
       padding: 0;
       font-size: 1.4em;
     }
+
     .export__item {
       display: flex;
       align-items: center;
@@ -767,12 +769,49 @@
     .export__hex {
       display: block;
       font-size: .7em;
+      overflow: hidden;
+
+      .wrap {
+        --delay: calc((1 - var(--i)) * 150ms);
+        opacity: 0;
+        display: block;
+        animation: slidein 0.2s cubic-bezier(.3,.7,0,1);
+        animation-fill-mode: forwards;
+      }
     }
+
     .export__name {
       font-size: 1em;
-
       font-family: 'Aboreto', cursive;
     }
+
+    .export__hex .wrap {
+      --offset: -70%;
+      transform: translateY(var(--offset));
+      animation-delay: calc(var(--delay) + 0.1s);
+    }
+
+    .export__name .wrap {
+      --offset: 250%;
+      transform: translateY(var(--offset));
+      animation-delay: var(--delay);
+      animation-duration: 0.4s;
+    }
+
+    @keyframes slidein {
+      0% {
+        opacity: 0;
+        transform: translateY(var(--offset));
+      }
+      20% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
     .ellogo {
       display: block;
       width: 100%;
@@ -786,9 +825,6 @@
       height: 0;
     }
 
-    [data-export] {
-      transition: opacity 0.1s ease;
-    }
     .support {
       font-size: 1.4em;
       margin-top: 10vmin;
@@ -1758,10 +1794,11 @@ poline.colorsCSSoklch</code></pre>
 
     function updateExport () {
       $export.style.height = `${$export.scrollHeight}px`;
-      $export.style.opacity = .5;
+      $export.classList.add('export--loading');
 
       const $list = document.createElement('ol');
       $list.classList.add('export__list');
+  
 
 
       const colorsOKlab = poline.colors.map(color => toOKlab(
@@ -1796,19 +1833,24 @@ poline.colorsCSSoklch</code></pre>
               const oklabcss = colorCSSOKlab[index];
               const {l, a, b} = colorsOKlab[index];
               const isInSrgb = colorsInGamut[index];
+              const exportValue = isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`;
               return `
-              <li class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}">
+              <li data-copy="${exportValue}" class="export__item ${isInSrgb ? ' export__item--notSrgb' : ''}" style="--c: ${oklabcss}; --cHex: ${requestedHex}; --i: ${index / colorsHEX.length};">
                 <div class="export__sample"></div>
                 <div class="export__label">
-                  <strong class="export__name">${name}</strong>
-                  <span class="export__hex">${isInSrgb ? requestedHex : `oklab(${l.toFixed(2)} ${a.toFixed(2)} ${b.toFixed(2)})`}</span>
+                  <strong class="export__name">
+                    <span class="wrap">${name}</span>
+                  </strong>
+                  <span class="export__hex">
+                    <span class="wrap">${exportValue}</span>
+                  </span>
                 </div>
               </li>
             `}).join('')}
           </ol>
         `;
         $export.style.height = 'auto';
-        $export.style.opacity = 1;
+        $export.classList.remove('export--loading');
       });
     }
 
