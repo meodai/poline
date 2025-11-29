@@ -38,10 +38,13 @@
     :root {
       --light: #fff;
       --dark: #18191b;
+      --grey-light: color-mix(in oklab, var(--light) 98%, var(--dark) 2%);
+      --grey: color-mix(in oklab, var(--light) 95%, var(--dark) 15%);
 
       --bg: var(--light);
       --onBg: var(--dark);
-      --cbgc: color-mix(in oklab, var(--light) 98%, var(--dark) 2%);
+      --cbgc: var(--grey-light);
+      --line: var(--grey);
 
       background: var(--bg);
       color: var(--onBg);
@@ -197,7 +200,7 @@
       position: absolute;
       inset: 0;
       border-radius: 50%;
-      background: radial-gradient(closest-side, var(--minL), rgba(255, 255, 255, 0), var(--maxL)), 
+      background: radial-gradient(closest-side, var(--minL), rgb(from var(--minL) r g b / 0), var(--maxL)), 
                   conic-gradient(from 90deg, var(--grad));
       z-index: 2;
     }
@@ -487,7 +490,7 @@
       margin: 1.5rem 0 0;
       font-size: .8rem;
       justify-content: space-between;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--grey);
       padding: 1.5rem;
     }
 
@@ -528,7 +531,8 @@
       font-family: 'Aboreto', cursive;
       background-color: var(--onBg);
       color: var(--bg);
-      padding: 1em 1.75em;
+      padding: 1.1em 1.8em;
+      border: none;
     }
 
     .l-wrap {
@@ -548,7 +552,7 @@
       width: 60%;
       height: 100%;
       right: 0;
-      border-left: 1px solid #e0e0e0;
+      border-left: 1px solid var(--line);
     }
     
     .drawer {
@@ -687,10 +691,10 @@
       display: block;
       font-size: .85rem;
       color: var(--onBg);
-      background: #fafafa;
+      background: var(--cbgc);
       padding: 1.5em 1.2em;
       border-radius: 0.2em;
-      border: 1px solid #e0e0e0;
+      border: 1px solid var(--line);
       background-color: var(--bg);
     }
     .code-example {
@@ -705,8 +709,8 @@
         z-index: 2;
         font-size: 0.75em;
         padding: 0.5em 2ch;
-        background: var(--bg);
-        box-shadow: inset 0 0 0 1px rgba(0,0,0,.1),
+        background: var(--cbgc);
+        box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.1),
                     0 0 0 1px var(--bg);
         transition: box-shadow 0.1s linear;
         border-radius: 2px;
@@ -750,7 +754,7 @@
           opacity: 0;
         }
         &:hover {
-          box-shadow: inset 0 0 0 1px rgba(0,0,0,.2),
+          box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.2),
                       0 0 0 2px var(--bg);
         }
 
@@ -765,7 +769,7 @@
       opacity: 1;
       transform: translateY(-50%);
       transition-delay: 0.05s, 0s, 0.1s;
-      color: var(--onBg);
+      color: var(--dark);
     }
     .code-ex {
       position: relative;
@@ -804,12 +808,14 @@
       margin: 0.5em 0 0;
     }
     .key {
+      --keyline: color-mix(in oklab, var(--line) 95%, var(--onBg) 5%);
+
       display: inline-block;
       width: 1.5em;
       height: 1.5em;
       border-radius: 0.2em;
-      border: 1px solid rgba(0,0,0,.2);
-      box-shadow: 0 2px 0 rgba(0,0,0,.2);
+      border: 1px solid var(--keyline);
+      box-shadow: 0 2px 0 var(--keyline);
       background: var(--bg);
       text-align: center;
     }
@@ -841,7 +847,6 @@
       border: 1px solid var(--onBg);
       background: var(--c);
       margin-right: 1em;
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.25);
       box-shadow: inset 0 0 0 2px color-mix(in oklab, var(--c) 75%, var(--light));
     }
     .export__sample::before {
@@ -977,7 +982,6 @@
         position: absolute;
         width: 100%;
         height: 40vh;
-        border-left: none;
         z-index: 10;
         border-left: none;
       }
@@ -986,9 +990,8 @@
         position: absolute;
         inset: 0;
 
-        background: rgba(255,255,255,.5);
+        background: rgb(from var(--bg) r g b / 0.5);
         backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
 
         margin-top: -1vh;
         clip-path: circle(19vh at 50% 50%);
@@ -1073,18 +1076,12 @@
       :root {
         --bg: var(--dark);
         --onBg: var(--light);
-      }
 
-      .l-demo {
-        border-left: 1px solid rgba(255, 255, 255, .1);
+        --line: color-mix(in oklab, var(--light) 12%, var(--dark) 88%);
       }
 
       label {
-        border-color: rgba(255, 255, 255, .1);
-      }
-
-      .l-demo::before {
-        background: rgba(13,13,14,.05);
+        border-color: var(--line);
       }
 
       .wheel__line {
@@ -1892,7 +1889,7 @@ poline.colorsCSSoklch</code></pre></div>
       context.beginPath();
       context.arc(x, y, radius, 0, 2 * Math.PI);
       context.closePath();
-      context.fillStyle = `rgba(255,255,255,.5)`;
+      context.fillStyle = `rgb(255 255 255 / 0.5)`;
       context.fill();
 
       for (let angle = 0; angle < 360; angle += fraction) {
@@ -2073,7 +2070,7 @@ poline.colorsCSSoklch</code></pre></div>
 
       if (invertedLightness) {
         $picker.style.setProperty('--minL', '#fff');
-        $picker.style.setProperty('--maxL', '#202125');
+        $picker.style.setProperty('--maxL', '#18191b');
       } else {
         $picker.style.setProperty('--minL', '#000');
         $picker.style.setProperty('--maxL', '#fff');
