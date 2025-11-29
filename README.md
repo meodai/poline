@@ -429,8 +429,8 @@ type PositionFunction = (t: number, reverse?: boolean) => number;
 
 // Options for creating a Poline instance
 type PolineOptions = {
-  anchorColors: Vector3[];
-  numPoints: number;
+  anchorColors?: Vector3[];  // Optional: defaults to random pair
+  numPoints?: number;        // Optional: defaults to 4
   positionFunction?: PositionFunction;
   positionFunctionX?: PositionFunction;
   positionFunctionY?: PositionFunction;

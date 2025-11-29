@@ -10,7 +10,8 @@
     "emitDeclarationOnly": true,
     "noUncheckedIndexedAccess": true,
     "strict": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "skipLibCheck": true
   },
   "include": ["src/**/*", "demo-src"]
 }

@@ -372,8 +372,8 @@ export class ColorPoint {
 }
 
 export type PolineOptions = {
-  anchorColors: Vector3[];
-  numPoints: number;
+  anchorColors?: Vector3[];
+  numPoints?: number;
   positionFunction?: (t: number, invert?: boolean) => number;
   positionFunctionX?: (t: number, invert?: boolean) => number;
   positionFunctionY?: (t: number, invert?: boolean) => number;
