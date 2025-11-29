@@ -41,6 +41,7 @@
 
       --bg: var(--light);
       --onBg: var(--dark);
+      --cbgc: color-mix(in oklab, var(--light) 98%, var(--dark) 2%);
 
       background: var(--bg);
       color: var(--onBg);
@@ -53,6 +54,10 @@
       font-size: calc(0.4rem + 0.5vw);
 
       accent-color: var(--c0);
+
+
+      scrollbar-width: thin;
+      scrollbar-color: var(--onBg) var(--bg);
     }
 
     .l-wrap::after {
@@ -102,6 +107,12 @@
 
     strong.t {
       font-weight: 300;
+    }
+
+    pre code.hljs {
+      background: var(--cbgc);
+      scrollbar-width: thin;
+      scrollbar-color: var(--onBg) var(--cbgc);
     }
 
     h1, h2, h3, .t, .wheel__huelabel {
