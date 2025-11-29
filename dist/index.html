@@ -1053,10 +1053,17 @@
         animation-delay: calc(1.8s + var(--i) * .4s);
         animation-fill-mode: forwards;
         transform-origin: 0% 0%;
+        &::after {
+          transform: translateY(25%);
+          animation: drawAfter 1s cubic-bezier(.3,.7,0,1);
+        }
       }
       .is-loaded .draw__item {
         animation-duration: .5s;
         animation-delay: calc(var(--i) * .5s);
+        &::after {
+          transform: translateY(0);
+        }
       }
       
       @keyframes draw {
@@ -1068,6 +1075,15 @@
         }
         100% {
           transform: translateY(0) scaleY(1) scaleX(1.01);
+        }
+      }
+
+      @keyframes drawAfter {
+        0%, 100% {
+          transform: translateY(0);
+        }
+        60% {
+          transform: translateY(25%);
         }
       }
 
