@@ -2714,7 +2714,18 @@ poline.colorsCSSoklch</code></pre></div>
     }
 
     if (e.key === 'p') {
-      lastSelectedPoint = poline.addAnchorPoint({xyz: [lastX, lastY, lastY]});
+      // Clamp position to be within the hue wheel (circle with radius 0.5 centered at 0.5, 0.5)
+      let px = lastX;
+      let py = lastY;
+      const dx = px - 0.5;
+      const dy = py - 0.5;
+      const dist = Math.hypot(dx, dy);
+      if (dist > 0.5) {
+        // Project to edge of circle
+        px = 0.5 + (dx / dist) * 0.5;
+        py = 0.5 + (dy / dist) * 0.5;
+      }
+      lastSelectedPoint = poline.addAnchorPoint({xyz: [px, py, py]});
       updateSVG();
       updateFullCode();
     }
