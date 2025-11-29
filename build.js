@@ -58,7 +58,7 @@ build({
   bundle: true,
   minify: true,
   format: "iife",
-  target: "es6",
+  target: "es2016",
   globalName: "poline",
   outfile: "dist/index.min.js",
 });
@@ -70,7 +70,7 @@ build({
   logLevel: "info",
   bundle: true,
   format: "iife",
-  target: "es6",
+  target: "es2016",
   globalName: "poline",
   banner: {
     js: `(function(root, factory) {

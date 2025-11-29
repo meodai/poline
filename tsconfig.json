@@ -4,7 +4,7 @@
     "noEmitOnError": true,
     "removeComments": false,
     "sourceMap": true,
-    "target": "es2015",
+    "target": "es2016",
     "outDir": "dist",
     "declaration": true,
     "emitDeclarationOnly": true,
