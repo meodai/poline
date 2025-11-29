@@ -280,6 +280,72 @@
       stroke: var(--onBg);
     }
 
+    .wheel__saturation-ring {
+      fill: none;
+      stroke: var(--onBg);
+      stroke-width: 0.15;
+      stroke-linecap: round;
+      pointer-events: none;
+    }
+    .wheel__ring-tick {
+      fill: none;
+      stroke: var(--onBg);
+      stroke-width: 0.15;
+      stroke-linecap: round;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .wheel__ring-bg {
+      fill: none;
+      stroke: var(--bg);
+      stroke-width: 0.15;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .wheel__ring-group--hover .wheel__ring-tick {
+      opacity: 1;
+    }
+    .wheel__ring-group--hover .wheel__ring-bg {
+      opacity: 1;
+    }
+    .wheel__ring-group {
+      opacity: 0;
+      transform: scale(0);
+      transform-origin: center;
+      transform-box: fill-box;
+      display: none;
+    }
+    .picker.rings-enabled .wheel__ring-group {
+      display: block;
+      animation: ringScaleIn .2s cubic-bezier(0.3, 0.7, 0, 1) forwards;
+      animation-delay: 3.1s;
+    }
+    .is-loaded .picker.rings-enabled .wheel__ring-group {
+      animation: ringScaleIn .2s cubic-bezier(0.3, 0.7, 0, 1) forwards;
+      animation-delay: 0s;
+    }
+    @media (pointer: coarse) {
+      .picker.rings-enabled .wheel__ring-group {
+        display: none;
+      }
+    }
+    @keyframes ringScaleIn {
+      0% {
+        opacity: 0;
+        transform: scale(0);
+      }
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .picker.rings-enabled.ring-hover {
+      cursor: col-resize;
+    }
+    .picker.rings-enabled.ring-adjusting {
+      cursor: grabbing;
+    }
+
     .is-loaded .wheel__anchor {
       animation: none;
       opacity: 1;
@@ -1156,8 +1222,9 @@
         stroke: var(--dark);
       }*/
       .key {
-        background: var(--light);
-        color: var(--dark);
+        background: transparent;
+        box-shadow: 0 2px 0 var(--light);
+        border-color: var(--light);
       }
     }
   </style>
@@ -1610,6 +1677,7 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <p>
             Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key">C</strong>, or use the <strong class="key" aria-label="left arrow">←</strong> and <strong class="key" aria-label="right arrow">→</strong> keys to change the hue of all colors.
+            Toggle the <strong>saturation rings</strong> with <strong class="key">S</strong>.
           </p>
           <div class="l-sec__controls">
             <label>
@@ -2128,6 +2196,49 @@ poline.colorsCSSoklch</code></pre></div>
       }
     }
 
+    const ROTARY_TURNS_TO_FULL = 1.0;
+    const ROTARY_TURNS_TO_FULL_SHIFT = 2.5;
+
+    let ringAdjust = null;
+    let ringHoverIndex = null;
+
+    // Helper to pick ring from coordinates
+    function pickRing(normalizedX, normalizedY) {
+      if (!poline) return null;
+      const svgX = normalizedX * svgscale;
+      const svgY = normalizedY * svgscale;
+      for (let i = 0; i < poline.anchorPoints.length; i++) {
+        const anchor = poline.anchorPoints[i];
+        const cx = anchor.x * svgscale;
+        const cy = anchor.y * svgscale;
+        const dist = Math.hypot(svgX - cx, svgY - cy);
+        if (dist > 2 && dist <= 5) {
+          return i;
+        }
+      }
+      return null;
+    }
+
+    // Helper to describe SVG arc
+    function describeArc(cx, cy, r, startAngle, endAngle) {
+      const angleDiff = endAngle - startAngle;
+      if (Math.abs(angleDiff) < 0.001) return "";
+      if (Math.abs(angleDiff) > Math.PI * 2 - 0.01) {
+        const midAngle = startAngle + Math.PI;
+        const startX = cx + r * Math.cos(startAngle);
+        const startY = cy + r * Math.sin(startAngle);
+        const midX = cx + r * Math.cos(midAngle);
+        const midY = cy + r * Math.sin(midAngle);
+        return `M ${startX} ${startY} A ${r} ${r} 0 1 1 ${midX} ${midY} A ${r} ${r} 0 1 1 ${startX} ${startY}`;
+      }
+      const startX = cx + r * Math.cos(startAngle);
+      const startY = cy + r * Math.sin(startAngle);
+      const endX = cx + r * Math.cos(endAngle);
+      const endY = cy + r * Math.sin(endAngle);
+      const largeArc = angleDiff > Math.PI ? 1 : 0;
+      return `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} 1 ${endX} ${endY}`;
+    }
+
     function updateSVG () {
       if (untilDrawTimer) clearTimeout(untilDrawTimer);
       untilDrawTimer = setTimeout(() => {
@@ -2159,8 +2270,75 @@ poline.colorsCSSoklch</code></pre></div>
         });
       });
 
-      // 1. Update Anchors
+      // 0. Update Saturation Ring Groups (before anchors so they render behind)
       const anchors = poline.anchorPoints;
+      let ringGroups = Array.from($svg.querySelectorAll('.wheel__ring-group'));
+
+      // Remove excess
+      while (ringGroups.length > anchors.length) ringGroups.pop().remove();
+
+      anchors.forEach((anchor, i) => {
+        const cx = anchor.x * svgscale;
+        const cy = anchor.y * svgscale;
+        const saturation = anchor.z;
+        const ringRadius = 2.5;
+        const isHovered = ringHoverIndex === i || (ringAdjust && ringAdjust.anchorIndex === i);
+
+        // Get or create the group for this anchor's ring elements
+        let group = ringGroups[i];
+        if (!group) {
+          group = document.createElementNS(namespaceURI, 'g');
+          group.classList.add('wheel__ring-group');
+          // Create elements inside the group: bg first, then arc, then tick
+          const bgRing = document.createElementNS(namespaceURI, 'circle');
+          bgRing.classList.add('wheel__ring-bg');
+          group.appendChild(bgRing);
+          const satArc = document.createElementNS(namespaceURI, 'path');
+          satArc.classList.add('wheel__saturation-ring');
+          group.appendChild(satArc);
+          const tick = document.createElementNS(namespaceURI, 'line');
+          tick.classList.add('wheel__ring-tick');
+          group.appendChild(tick);
+          // Insert before anchors
+          const firstAnchor = $svg.querySelector('.wheel__anchor');
+          if (firstAnchor) {
+            $svg.insertBefore(group, firstAnchor);
+          } else {
+            $svg.appendChild(group);
+          }
+          ringGroups = Array.from($svg.querySelectorAll('.wheel__ring-group'));
+        }
+
+        // Toggle hover on the group
+        group.classList.toggle('wheel__ring-group--hover', !!isHovered);
+
+        // Update bg ring
+        const bgRing = group.querySelector('.wheel__ring-bg');
+        bgRing.setAttribute('cx', cx);
+        bgRing.setAttribute('cy', cy);
+        bgRing.setAttribute('r', ringRadius);
+
+        // Update saturation arc
+        const satArc = group.querySelector('.wheel__saturation-ring');
+        const startAngle = -Math.PI / 2;
+        const endAngle = startAngle + saturation * Math.PI * 2;
+        satArc.setAttribute('d', describeArc(cx, cy, ringRadius, startAngle, endAngle));
+
+        // Update tick
+        const tick = group.querySelector('.wheel__ring-tick');
+        const tickGap = 0.5;
+        const tickLength = 1.5;
+        const tickStartX = cx + (ringRadius + tickGap) * Math.cos(endAngle);
+        const tickStartY = cy + (ringRadius + tickGap) * Math.sin(endAngle);
+        const tickEndX = tickStartX + Math.cos(endAngle) * tickLength;
+        const tickEndY = tickStartY + Math.sin(endAngle) * tickLength;
+        tick.setAttribute('x1', tickStartX);
+        tick.setAttribute('y1', tickStartY);
+        tick.setAttribute('x2', tickEndX);
+        tick.setAttribute('y2', tickEndY);
+      });
+
+      // 1. Update Anchors
       let anchorCircles = Array.from($svg.querySelectorAll('.wheel__anchor'));
       
       // Remove excess
@@ -2367,10 +2545,38 @@ poline.colorsCSSoklch</code></pre></div>
       const x = lastX = e.offsetX / $picker.offsetWidth;
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
+      // Check for ring hit first (skip on touch devices and if rings not enabled)
+      const isTouch = window.matchMedia('(pointer: coarse)').matches;
+      const ringsEnabled = $picker.classList.contains('rings-enabled');
+      const ringHit = (isTouch || !ringsEnabled) ? null : pickRing(x, y);
+      if (ringHit !== null) {
+        const anchor = poline.anchorPoints[ringHit];
+        if (!anchor) return;
+        const cx = anchor.x * svgscale;
+        const cy = anchor.y * svgscale;
+        const svgX = x * svgscale;
+        const svgY = y * svgscale;
+        const startAngle = Math.atan2(svgY - cy, svgX - cx);
+        ringAdjust = {
+          anchorIndex: ringHit,
+          startSaturation: anchor.color[1],
+          startAngle,
+          prevAngle: startAngle,
+          accumulatedAngle: 0,
+        };
+        ringHoverIndex = ringHit;
+        $picker.classList.add('ring-adjusting');
+        updateSVG();
+        try { $picker.setPointerCapture(e.pointerId); } catch {}
+        return;
+      }
+
       if (!currentPoint) {
+        // Larger grab distance when rings aren't enabled
+        const grabDistance = ringsEnabled ? 0.05 : 0.1;
         currentPoint = poline.getClosestAnchorPoint({ 
           xyz: [x, y, null], 
-          maxDistance: .1 
+          maxDistance: grabDistance
         });
         lastSelectedPoint = currentPoint;
       } else {
@@ -2382,16 +2588,87 @@ poline.colorsCSSoklch</code></pre></div>
       const x = lastX = e.offsetX / $picker.offsetWidth;
       const y = lastY = e.offsetY / $picker.offsetHeight;
 
+      // Handle ring adjustment (rotary drag)
+      if (ringAdjust) {
+        const anchor = poline.anchorPoints[ringAdjust.anchorIndex];
+        if (!anchor) return;
+        const cx = anchor.x * svgscale;
+        const cy = anchor.y * svgscale;
+        const svgX = x * svgscale;
+        const svgY = y * svgscale;
+        const curAngle = Math.atan2(svgY - cy, svgX - cx);
+        let dA = curAngle - ringAdjust.prevAngle;
+        if (dA > Math.PI) dA -= Math.PI * 2;
+        else if (dA < -Math.PI) dA += Math.PI * 2;
+        ringAdjust.accumulatedAngle += dA;
+        ringAdjust.prevAngle = curAngle;
+        const turns = ringAdjust.accumulatedAngle / (Math.PI * 2);
+        const turnsToFull = e.shiftKey ? ROTARY_TURNS_TO_FULL_SHIFT : ROTARY_TURNS_TO_FULL;
+        const deltaSat = turns / turnsToFull;
+        let newSaturation = Math.max(0, Math.min(1, ringAdjust.startSaturation + deltaSat));
+        if (newSaturation > 0.99) newSaturation = 1;
+        if (newSaturation < 0.01) newSaturation = 0;
+        const atBound = newSaturation === 0 || newSaturation === 1;
+        const movingPastBound = (newSaturation === 1 && deltaSat > 0) || (newSaturation === 0 && deltaSat < 0);
+        if (atBound && movingPastBound) {
+          ringAdjust.startSaturation = newSaturation;
+          ringAdjust.accumulatedAngle = 0;
+          ringAdjust.prevAngle = curAngle;
+        }
+        poline.updateAnchorPoint({
+          point: anchor,
+          color: [anchor.color[0], newSaturation, anchor.color[2]]
+        });
+        updateSVG();
+        updateFullCode();
+        return;
+      }
+
       if (currentPoint) {
         e.stopPropagation();
         poline.updateAnchorPoint({point: currentPoint, xyz: [x, y, currentPoint.z]});
         updateSVG();
         updateFullCode();
-      } 
+        return;
+      }
+
+      // Handle ring hover detection (skip on touch devices and if rings not enabled)
+      if (!window.matchMedia('(pointer: coarse)').matches && $picker.classList.contains('rings-enabled')) {
+        const ringHover = pickRing(x, y);
+        if (ringHover !== ringHoverIndex) {
+          ringHoverIndex = ringHover;
+          $picker.classList.toggle('ring-hover', ringHover !== null);
+          // Just update hover classes, don't call full updateSVG
+          const ringGroups = $svg.querySelectorAll('.wheel__ring-group');
+          ringGroups.forEach((group, i) => {
+            group.classList.toggle('wheel__ring-group--hover', i === ringHoverIndex);
+          });
+        }
+      }
     });
 
   $picker.addEventListener('pointerup', (e) => {
+    if (ringAdjust) {
+      try { $picker.releasePointerCapture(e.pointerId); } catch {}
+      $picker.classList.remove('ring-adjusting');
+    }
+    ringAdjust = null;
     currentPoint = null;
+    // Re-check hover state (only if rings enabled)
+    if ($picker.classList.contains('rings-enabled') && !window.matchMedia('(pointer: coarse)').matches) {
+      const x = e.offsetX / $picker.offsetWidth;
+      const y = e.offsetY / $picker.offsetHeight;
+      const ringHover = pickRing(x, y);
+      if (ringHover !== ringHoverIndex) {
+        ringHoverIndex = ringHover;
+        $picker.classList.toggle('ring-hover', ringHover !== null);
+        // Just update hover classes, don't call full updateSVG
+        const ringGroups = $svg.querySelectorAll('.wheel__ring-group');
+        ringGroups.forEach((group, i) => {
+          group.classList.toggle('wheel__ring-group--hover', i === ringHoverIndex);
+        });
+      }
+    }
   });
 
   // Color At functionality for sections that don't have their own handler
@@ -2466,6 +2743,10 @@ poline.colorsCSSoklch</code></pre></div>
       updateSVG();
       updateFullCode();
     }
+
+    if (e.key === 's' || e.key === 'S') {
+      $picker.classList.toggle('rings-enabled');
+    }
   });
 
   let exStartHue = Math.random() * 360;
@@ -2476,6 +2757,8 @@ poline.colorsCSSoklch</code></pre></div>
     section: 'intro',
     fn: () => {
       console.log('intro');
+      // Disable saturation rings when scrolling back to intro
+      $picker.classList.remove('rings-enabled');
       poline = new Poline({
         numPoints: steps,
         invertedLightness: false,
@@ -2881,6 +3164,9 @@ console.log(color.hslCSS);
     section: 'playground',
     fn: (section) => {
       console.log('Playground');
+
+      // Enable saturation rings
+      $picker.classList.add('rings-enabled');
 
       currentHueModel = 'okhsl';
       currentModelFn = hueBasedModels.find(m => m.key === currentHueModel).fn;
