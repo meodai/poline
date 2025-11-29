@@ -599,11 +599,32 @@ if (p5 && p5.VERSION && p5.VERSION.startsWith("1.")) {
 // src/webcomponent.ts
 var namespaceURI = "http://www.w3.org/2000/svg";
 var svgscale = 100;
+var UI_METRICS = {
+  anchorRadius: 2,
+  // Core anchor point radius
+  ringOuterRadius: 5,
+  // Outer radius of the ring interaction zone
+  ringThickness: 1,
+  // Visual thickness of the saturation arc
+  ringThicknessHover: 2,
+  // Thickness when hovered
+  ringGap: 0.5,
+  // Gap between anchor and ring
+  tickLength: 1.5,
+  // Length of the tick at end of arc (pointing outward)
+  tickGap: 0.5
+  // Gap between ring and tick
+};
+var ROTARY_TURNS_TO_FULL = 1;
+var ROTARY_TURNS_TO_FULL_SHIFT = 2.5;
 var PolinePicker = class extends HTMLElement {
   constructor() {
     super();
     this.currentPoint = null;
     this.allowAddPoints = false;
+    // Ring adjustment state
+    this.ringAdjust = null;
+    this.ringHoverIndex = null;
     // Store bound event handlers for cleanup
     this.boundPointerDown = this.handlePointerDown.bind(this);
     this.boundPointerMove = this.handlePointerMove.bind(this);
@@ -710,6 +731,41 @@ var PolinePicker = class extends HTMLElement {
           stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
           pointer-events: none;
         }
+        .wheel__saturation-ring {
+          fill: none;
+          stroke: var(--poline-picker-line-color, #000);
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
+          stroke-linecap: round;
+          pointer-events: none;
+        }
+        .wheel__ring-tick {
+          fill: none;
+          stroke: var(--poline-picker-line-color, #000);
+          stroke-width: calc(0.75 * var(--poline-picker-line-width, 0.2));
+          stroke-linecap: round;
+          pointer-events: none;
+          opacity: 0;
+        }
+        .wheel__ring-tick--hover {
+          opacity: 1;
+        }
+        .wheel__ring-bg {
+          fill: none;
+          stroke: var(--poline-picker-bg-color, #fff);
+          stroke-width: var(--poline-picker-ring-width, 0.5);
+          pointer-events: none;
+          vector-effect: non-scaling-stroke;
+          opacity: 0;
+        }
+        .wheel__ring-bg--hover {
+          opacity: 0.3;
+        }
+        :host(.ring-hover) svg {
+          cursor: ew-resize;
+        }
+        :host(.ring-adjusting) svg {
+          cursor: grabbing;
+        }
       </style>
     `;
     this.svg = this.createSVG();
@@ -719,6 +775,9 @@ var PolinePicker = class extends HTMLElement {
     this.shadowRoot.appendChild(pickerDiv);
     this.wheel = this.svg.querySelector(".wheel");
     this.line = this.svg.querySelector(".wheel__line");
+    this.saturationRings = this.svg.querySelector(
+      ".wheel__saturation-rings"
+    );
     this.anchors = this.svg.querySelector(".wheel__anchors");
     this.points = this.svg.querySelector(".wheel__points");
     if (this.poline) {
@@ -730,15 +789,9 @@ var PolinePicker = class extends HTMLElement {
     const svg = document.createElementNS(namespaceURI, "svg");
     svg.setAttribute("viewBox", `0 0 ${svgscale} ${svgscale}`);
     svg.innerHTML = `
-      <defs>
-        <filter id="goo">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="1" result="blur" />
-          <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
-          <feBlend in="SourceGraphic" in2="goo" />
-        </filter>
-      </defs>
-      <g class="wheel" filter="url(#goo)">
+      <g class="wheel">
         <polyline class="wheel__line" points="" />
+        <g class="wheel__saturation-rings"></g>
         <g class="wheel__anchors"></g>
         <g class="wheel__points"></g>
       </g>
@@ -784,11 +837,12 @@ var PolinePicker = class extends HTMLElement {
         circle.setAttribute("fill", fill);
       });
     };
+    this.updateSaturationRings();
     updateCircles(
       this.anchors,
       this.poline.anchorPoints,
       "wheel__anchor",
-      () => 2
+      () => UI_METRICS.anchorRadius
     );
     updateCircles(
       this.points,
@@ -796,6 +850,104 @@ var PolinePicker = class extends HTMLElement {
       "wheel__point",
       (p) => 0.5 + p.color[1]
     );
+  }
+  updateSaturationRings() {
+    if (!this.poline || !this.saturationRings)
+      return;
+    const anchors = this.poline.anchorPoints;
+    const existing = this.saturationRings.children;
+    const elementsPerAnchor = 3;
+    while (existing.length > anchors.length * elementsPerAnchor) {
+      const last = existing[existing.length - 1];
+      if (last)
+        this.saturationRings.removeChild(last);
+    }
+    anchors.forEach((anchor, i) => {
+      const cartesian = this.pointToCartesian(anchor);
+      if (!cartesian)
+        return;
+      const [cx, cy] = cartesian;
+      const saturation = anchor.z;
+      const ringRadius = UI_METRICS.anchorRadius + UI_METRICS.ringGap + 1;
+      const isHovered = this.ringHoverIndex === i || this.ringAdjust && this.ringAdjust.anchorIndex === i;
+      let bgRing = existing[i * elementsPerAnchor];
+      if (!bgRing) {
+        bgRing = document.createElementNS(namespaceURI, "circle");
+        bgRing.setAttribute("class", "wheel__ring-bg");
+        this.saturationRings.appendChild(bgRing);
+      }
+      bgRing.setAttribute("cx", cx.toString());
+      bgRing.setAttribute("cy", cy.toString());
+      bgRing.setAttribute("r", ringRadius.toString());
+      bgRing.setAttribute(
+        "stroke-width",
+        (isHovered ? UI_METRICS.ringThicknessHover : UI_METRICS.ringThickness).toString()
+      );
+      bgRing.classList.toggle("wheel__ring-bg--hover", !!isHovered);
+      let satArc = existing[i * elementsPerAnchor + 1];
+      if (!satArc) {
+        satArc = document.createElementNS(namespaceURI, "path");
+        satArc.setAttribute("class", "wheel__saturation-ring");
+        this.saturationRings.appendChild(satArc);
+      }
+      const startAngle = -Math.PI / 2;
+      const endAngle = startAngle + saturation * Math.PI * 2;
+      const arcPath = this.describeArc(
+        cx,
+        cy,
+        ringRadius,
+        startAngle,
+        endAngle
+      );
+      satArc.setAttribute("d", arcPath);
+      satArc.setAttribute(
+        "stroke-width",
+        (isHovered ? UI_METRICS.ringThicknessHover : UI_METRICS.ringThickness).toString()
+      );
+      satArc.classList.toggle("wheel__saturation-ring--hover", !!isHovered);
+      let tick = existing[i * elementsPerAnchor + 2];
+      if (!tick) {
+        tick = document.createElementNS(namespaceURI, "line");
+        tick.setAttribute("class", "wheel__ring-tick");
+        this.saturationRings.appendChild(tick);
+      }
+      const dirX = Math.cos(endAngle);
+      const dirY = Math.sin(endAngle);
+      const tickStartX = cx + (ringRadius + UI_METRICS.tickGap) * Math.cos(endAngle);
+      const tickStartY = cy + (ringRadius + UI_METRICS.tickGap) * Math.sin(endAngle);
+      const tickEndX = tickStartX + dirX * UI_METRICS.tickLength;
+      const tickEndY = tickStartY + dirY * UI_METRICS.tickLength;
+      tick.setAttribute("x1", tickStartX.toString());
+      tick.setAttribute("y1", tickStartY.toString());
+      tick.setAttribute("x2", tickEndX.toString());
+      tick.setAttribute("y2", tickEndY.toString());
+      tick.setAttribute(
+        "stroke-width",
+        (isHovered ? UI_METRICS.ringThicknessHover : UI_METRICS.ringThickness).toString()
+      );
+      tick.classList.toggle("wheel__ring-tick--hover", !!isHovered);
+    });
+  }
+  describeArc(cx, cy, r, startAngle, endAngle) {
+    const angleDiff = endAngle - startAngle;
+    if (Math.abs(angleDiff) < 1e-3) {
+      return "";
+    }
+    if (Math.abs(angleDiff) > Math.PI * 2 - 0.01) {
+      const midAngle = startAngle + Math.PI;
+      const startX2 = cx + r * Math.cos(startAngle);
+      const startY2 = cy + r * Math.sin(startAngle);
+      const midX = cx + r * Math.cos(midAngle);
+      const midY = cy + r * Math.sin(midAngle);
+      return `M ${startX2} ${startY2} A ${r} ${r} 0 1 1 ${midX} ${midY} A ${r} ${r} 0 1 1 ${startX2} ${startY2}`;
+    }
+    const startX = cx + r * Math.cos(startAngle);
+    const startY = cy + r * Math.sin(startAngle);
+    const endX = cx + r * Math.cos(endAngle);
+    const endY = cy + r * Math.sin(endAngle);
+    const largeArc = angleDiff > Math.PI ? 1 : 0;
+    const sweep = 1;
+    return `M ${startX} ${startY} A ${r} ${r} 0 ${largeArc} ${sweep} ${endX} ${endY}`;
   }
   pointToCartesian(point) {
     const half = svgscale / 2;
@@ -820,9 +972,38 @@ var PolinePicker = class extends HTMLElement {
   handlePointerDown(e) {
     e.stopPropagation();
     const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+    const ringHit = this.pickRing(normalizedX, normalizedY);
+    if (ringHit !== null) {
+      const anchor = this.poline.anchorPoints[ringHit];
+      if (!anchor)
+        return;
+      const cartesian = this.pointToCartesian(anchor);
+      if (!cartesian)
+        return;
+      const [anchorX, anchorY] = cartesian;
+      const svgX = normalizedX * svgscale;
+      const svgY = normalizedY * svgscale;
+      const startAngle = Math.atan2(svgY - anchorY, svgX - anchorX);
+      this.ringAdjust = {
+        anchorIndex: ringHit,
+        startSaturation: anchor.color[1],
+        startAngle,
+        prevAngle: startAngle,
+        accumulatedAngle: 0
+      };
+      this.ringHoverIndex = ringHit;
+      this.classList.add("ring-adjusting");
+      this.updateSaturationRings();
+      try {
+        this.svg.setPointerCapture(e.pointerId);
+      } catch (e2) {
+      }
+      return;
+    }
     const closestAnchor = this.poline.getClosestAnchorPoint({
       xyz: [normalizedX, normalizedY, null],
-      maxDistance: 0.1
+      maxDistance: 0.05
+      // Smaller hit area for core
     });
     if (closestAnchor) {
       this.currentPoint = closestAnchor;
@@ -835,25 +1016,106 @@ var PolinePicker = class extends HTMLElement {
     }
   }
   handlePointerMove(e) {
+    const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+    if (this.ringAdjust) {
+      const anchor = this.poline.anchorPoints[this.ringAdjust.anchorIndex];
+      if (!anchor)
+        return;
+      const cartesian = this.pointToCartesian(anchor);
+      if (!cartesian)
+        return;
+      const [anchorX, anchorY] = cartesian;
+      const svgX = normalizedX * svgscale;
+      const svgY = normalizedY * svgscale;
+      const curAngle = Math.atan2(svgY - anchorY, svgX - anchorX);
+      let dA = curAngle - this.ringAdjust.prevAngle;
+      if (dA > Math.PI)
+        dA -= Math.PI * 2;
+      else if (dA < -Math.PI)
+        dA += Math.PI * 2;
+      this.ringAdjust.accumulatedAngle += dA;
+      this.ringAdjust.prevAngle = curAngle;
+      const turns = this.ringAdjust.accumulatedAngle / (Math.PI * 2);
+      const turnsToFull = e.shiftKey ? ROTARY_TURNS_TO_FULL_SHIFT : ROTARY_TURNS_TO_FULL;
+      const deltaSat = turns / turnsToFull;
+      let newSaturation = this.clamp01(
+        this.ringAdjust.startSaturation + deltaSat
+      );
+      if (newSaturation > 0.99)
+        newSaturation = 1;
+      if (newSaturation < 0.01)
+        newSaturation = 0;
+      const atBound = newSaturation === 0 || newSaturation === 1;
+      const movingPastBound = newSaturation === 1 && deltaSat > 0 || newSaturation === 0 && deltaSat < 0;
+      if (atBound && movingPastBound) {
+        this.ringAdjust.startSaturation = newSaturation;
+        this.ringAdjust.accumulatedAngle = 0;
+        this.ringAdjust.prevAngle = curAngle;
+      }
+      this.poline.updateAnchorPoint({
+        point: anchor,
+        color: [anchor.color[0], newSaturation, anchor.color[2]]
+      });
+      this.updateSVG();
+      this.dispatchPolineChange();
+      return;
+    }
     if (this.currentPoint) {
-      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
       this.poline.updateAnchorPoint({
         point: this.currentPoint,
         xyz: [normalizedX, normalizedY, this.currentPoint.z]
       });
       this.updateSVG();
       this.dispatchPolineChange();
+      return;
+    }
+    const ringHover = this.pickRing(normalizedX, normalizedY);
+    if (ringHover !== this.ringHoverIndex) {
+      this.ringHoverIndex = ringHover;
+      this.classList.toggle("ring-hover", ringHover !== null);
+      this.updateSaturationRings();
     }
   }
-  handlePointerUp() {
+  handlePointerUp(e) {
+    if (this.ringAdjust) {
+      try {
+        this.svg.releasePointerCapture(e.pointerId);
+      } catch (e2) {
+      }
+      this.classList.remove("ring-adjusting");
+    }
+    this.ringAdjust = null;
     this.currentPoint = null;
+    const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+    const ringHover = this.pickRing(normalizedX, normalizedY);
+    if (ringHover !== this.ringHoverIndex) {
+      this.ringHoverIndex = ringHover;
+      this.classList.toggle("ring-hover", ringHover !== null);
+      this.updateSaturationRings();
+    }
   }
-  getPointerPosition(e) {
-    const rect = this.svg.getBoundingClientRect();
-    return {
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    };
+  pickRing(normalizedX, normalizedY) {
+    if (!this.poline)
+      return null;
+    const svgX = normalizedX * svgscale;
+    const svgY = normalizedY * svgscale;
+    for (let i = 0; i < this.poline.anchorPoints.length; i++) {
+      const anchor = this.poline.anchorPoints[i];
+      if (!anchor)
+        continue;
+      const cartesian = this.pointToCartesian(anchor);
+      if (!cartesian)
+        continue;
+      const [cx, cy] = cartesian;
+      const dist = Math.hypot(svgX - cx, svgY - cy);
+      if (dist > UI_METRICS.anchorRadius && dist <= UI_METRICS.ringOuterRadius) {
+        return i;
+      }
+    }
+    return null;
+  }
+  clamp01(value) {
+    return Math.max(0, Math.min(1, value));
   }
   pointerToNormalizedCoordinates(e) {
     const svgRect = this.svg.getBoundingClientRect();
@@ -863,19 +1125,6 @@ var PolinePicker = class extends HTMLElement {
       normalizedX: svgX / svgscale,
       normalizedY: svgY / svgscale
     };
-  }
-  createCircleElement(point, className, radius) {
-    const cartesian = this.pointToCartesian(point);
-    if (!cartesian)
-      return null;
-    const [x = 0, y = 0] = cartesian;
-    const circle = document.createElementNS(namespaceURI, "circle");
-    circle.setAttribute("class", className);
-    circle.setAttribute("cx", x.toString());
-    circle.setAttribute("cy", y.toString());
-    circle.setAttribute("r", radius.toString());
-    circle.setAttribute("fill", point.hslCSS);
-    return circle;
   }
   dispatchPolineChange() {
     this.dispatchEvent(

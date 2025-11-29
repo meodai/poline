@@ -8,8 +8,11 @@ export declare class PolinePicker extends HTMLElement {
     private wheel;
     private anchors;
     private points;
+    private saturationRings;
     private currentPoint;
     private allowAddPoints;
+    private ringAdjust;
+    private ringHoverIndex;
     private boundPointerDown;
     private boundPointerMove;
     private boundPointerUp;
@@ -23,14 +26,16 @@ export declare class PolinePicker extends HTMLElement {
     private render;
     private createSVG;
     updateSVG(): void;
+    private updateSaturationRings;
+    private describeArc;
     private pointToCartesian;
     private addEventListeners;
     private removeEventListeners;
     private handlePointerDown;
     private handlePointerMove;
     private handlePointerUp;
-    private getPointerPosition;
+    private pickRing;
+    private clamp01;
     private pointerToNormalizedCoordinates;
-    private createCircleElement;
     private dispatchPolineChange;
 }
