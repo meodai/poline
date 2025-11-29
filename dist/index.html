@@ -583,16 +583,31 @@
     }
     .draw__item {
       background-color: var(--c);
+      background: color-mix(in oklab, var(--c) 75%, var(--bg) 25%);
       flex: 1 0 auto;
       transform: translateX(-100%) scaleX(1) scale(1.01);
       animation: draw 1s cubic-bezier(.3,.7,0,1);
       animation-delay: calc(1.8s + var(--i) * .4s);
       animation-fill-mode: forwards;
       transform-origin: 100% 0;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--c);
+        transform: translateX(-25%);
+        transition: 400ms transform cubic-bezier(.3, .7, 0, 1);
+        animation: drawAfter 1s cubic-bezier(.3,.7,0,1);
+      }
     }
+
     .is-loaded .draw__item {
       animation-duration: .5s;
       animation-delay: calc(var(--i) * .5s);
+      &::after {
+        transform: translateX(0);
+      }
     }
 
     @keyframes draw {
@@ -604,6 +619,15 @@
       }
       100% {
         transform: translateX(0) scaleX(1) scale(1.01);
+      }
+    }
+
+    @keyframes drawAfter {
+      0%, 100% {
+        transform: translateX(0);
+      }
+      60% {
+        transform: translateX(-25%);
       }
     }
 
