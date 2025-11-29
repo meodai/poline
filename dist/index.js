@@ -183,6 +183,7 @@ var poline = (() => {
       color,
       invertedLightness = false
     }) {
+      this._invertedLightness = invertedLightness;
       if (xyz && color || !xyz && !color) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
       } else if (xyz) {

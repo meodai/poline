@@ -144,6 +144,7 @@ var ColorPoint = class {
     color,
     invertedLightness = false
   }) {
+    this._invertedLightness = invertedLightness;
     if (xyz && color || !xyz && !color) {
       throw new Error("Point must be initialized with either x,y,z or hsl");
     } else if (xyz) {
@@ -573,6 +574,8 @@ var PolinePicker = class extends HTMLElement {
     this.allowAddPoints = this.hasAttribute("allow-add-points");
   }
   connectedCallback() {
+    this.interactive = this.hasAttribute("interactive");
+    this.allowAddPoints = this.hasAttribute("allow-add-points");
     this.render();
     if (this.interactive) {
       this.addEventListeners();
@@ -680,6 +683,7 @@ var PolinePicker = class extends HTMLElement {
     this.points = this.svg.querySelector(".wheel__points");
     if (this.poline) {
       this.updateSVG();
+      this.updateLightnessBackground();
     }
   }
   createSVG() {
@@ -705,7 +709,8 @@ var PolinePicker = class extends HTMLElement {
     if (!this.poline || !this.svg) {
       return;
     }
-    const pathPoints = this.poline.flattenedPoints.map((p) => {
+    const flattenedPoints = this.poline.flattenedPoints;
+    const pathPoints = flattenedPoints.map((p) => {
       const cartesian = this.pointToCartesian(p);
       if (!cartesian)
         return "";
@@ -713,21 +718,44 @@ var PolinePicker = class extends HTMLElement {
       return `${x},${y}`;
     }).filter((point) => point !== "").join(" ");
     this.line.setAttribute("points", pathPoints);
-    this.anchors.innerHTML = "";
-    this.points.innerHTML = "";
-    this.poline.anchorPoints.forEach((point) => {
-      const anchor = this.createCircleElement(point, "wheel__anchor", "2");
-      if (anchor) {
-        this.anchors.appendChild(anchor);
+    const updateCircles = (container, points, className, radiusFn) => {
+      const existing = container.children;
+      while (existing.length > points.length) {
+        const last = existing[existing.length - 1];
+        if (last)
+          container.removeChild(last);
       }
-    });
-    this.poline.flattenedPoints.forEach((point) => {
-      const radius = 0.5 + point.color[1];
-      const circle = this.createCircleElement(point, "wheel__point", radius);
-      if (circle) {
-        this.points.appendChild(circle);
-      }
-    });
+      points.forEach((point, i) => {
+        let circle = existing[i];
+        const cartesian = this.pointToCartesian(point);
+        if (!cartesian)
+          return;
+        const [x = 0, y = 0] = cartesian;
+        const r = radiusFn(point);
+        const fill = point.hslCSS;
+        if (!circle) {
+          circle = document.createElementNS(namespaceURI, "circle");
+          circle.setAttribute("class", className);
+          container.appendChild(circle);
+        }
+        circle.setAttribute("cx", x.toString());
+        circle.setAttribute("cy", y.toString());
+        circle.setAttribute("r", r.toString());
+        circle.setAttribute("fill", fill);
+      });
+    };
+    updateCircles(
+      this.anchors,
+      this.poline.anchorPoints,
+      "wheel__anchor",
+      () => 2
+    );
+    updateCircles(
+      this.points,
+      flattenedPoints,
+      "wheel__point",
+      (p) => 0.5 + p.color[1]
+    );
   }
   pointToCartesian(point) {
     const half = svgscale / 2;
