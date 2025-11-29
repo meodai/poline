@@ -928,6 +928,11 @@
       box-shadow: 0 2px 0 var(--keyline);
       background: var(--bg);
       text-align: center;
+      transition: transform 0.05s, box-shadow 0.05s;
+    }
+    .key--pressing {
+      transform: translateY(2px);
+      box-shadow: 0 0 0 var(--keyline);
     }
     .export__title {
       font-size: 2em;
@@ -1672,12 +1677,12 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <p>
             And let not your journey end here, dear sorcerer. Interactive exploration awaits you in the playground below. With a
-            simple press of the <strong class="key">P</strong> key, you may <strong>add anchor</strong> points to your whims, and with the <strong class="key" aria-label="backspace">⌫</strong> 
+            simple press of the <strong class="key" data-key="p">P</strong> key, you may <strong>add anchor</strong> points to your whims, and with the <strong class="key" data-key="Backspace" aria-label="backspace">⌫</strong> 
             key, you may <strong>remove the last selected anchor</strong> point. So go forth, and let the magic unfold.
           </p>
           <p>
-            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key">K</strong>, or use the <strong class="key" aria-label="left arrow">←</strong> and <strong class="key" aria-label="right arrow">→</strong> keys to change the hue of all colors.
-            Toggle the <strong>saturation rings</strong> with <strong class="key">S</strong>.
+            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key" data-key="k">K</strong>, or use the <strong class="key" data-key="ArrowLeft" aria-label="left arrow">←</strong> and <strong class="key" data-key="ArrowRight" aria-label="right arrow">→</strong> keys to change the hue of all colors.
+            Toggle the <strong>saturation rings</strong> with <strong class="key" data-key="s">S</strong>.
           </p>
           <div class="l-sec__controls">
             <label>
@@ -2696,6 +2701,11 @@ poline.colorsCSSoklch</code></pre></div>
 
   // listen for keypresses
   document.addEventListener('keydown', (e) => {
+    // Add pressing class to matching key elements
+    document.querySelectorAll(`[data-key="${e.key}"], [data-key="${e.key.toLowerCase()}"]`).forEach(el => {
+      el.classList.add('key--pressing');
+    });
+
     if (e.key === 'Delete' || e.key === 'Backspace') {
       if (!lastSelectedPoint) return;
       poline.removeAnchorPoint({point: lastSelectedPoint});
@@ -2730,6 +2740,10 @@ poline.colorsCSSoklch</code></pre></div>
       });
       document.body.appendChild($color);
       $color.click();
+      // Remove pressing class since focus shifts to color picker
+      document.querySelectorAll('[data-key="k"]').forEach(el => {
+        el.classList.remove('key--pressing');
+      });
     }
 
     if (e.key === 'ArrowLeft') {
@@ -2747,6 +2761,13 @@ poline.colorsCSSoklch</code></pre></div>
     if (e.key === 's' || e.key === 'S') {
       $picker.classList.toggle('rings-enabled');
     }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    // Remove pressing class from matching key elements
+    document.querySelectorAll(`[data-key="${e.key}"], [data-key="${e.key.toLowerCase()}"]`).forEach(el => {
+      el.classList.remove('key--pressing');
+    });
   });
 
   let exStartHue = Math.random() * 360;
