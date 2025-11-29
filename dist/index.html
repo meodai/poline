@@ -1869,7 +1869,8 @@ poline.colorsCSSoklch</code></pre></div>
     let fnz = 'linearPosition';
     let fnAll = 'sinusoidalPosition';
 
-    let invertedLightness = false;
+    const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let invertedLightness = systemDarkMode;
 
     $selects.forEach($select => {
       Object.keys(positionFunctions).forEach(fn => {
@@ -1887,20 +1888,21 @@ poline.colorsCSSoklch</code></pre></div>
     let steps = parseInt($steps[0].value);
 
     let startHue = Math.random() * 360;
+    let anchorColors = randomHSLPair(startHue);
 
     let poline = new Poline({
-      /*anchorColors: [
-        [startHue, Math.random(), 0.8],
-        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
-        [(startHue + 60 + Math.random() * 180) % 360, Math.random(), .8]
-      ],*/
+      anchorColors,
       numPoints: steps,
       positionFunctionX: positionFunctions[fnx],
       positionFunctionY: positionFunctions[fny],
       positionFunctionZ: positionFunctions[fnz],
       closedLoop: false,
-      invertedLightness: false,
+      invertedLightness: false, // Always init as false to establish positions
     });
+
+    if (invertedLightness) {
+      poline.invertedLightness = true;
+    }
 
     function updateFullCode () {
       let anchorColors = poline.anchorPoints.map(c => {
@@ -2476,7 +2478,11 @@ poline.colorsCSSoklch</code></pre></div>
       console.log('intro');
       poline = new Poline({
         numPoints: steps,
+        invertedLightness: false,
       });
+      if (invertedLightness) {
+        poline.invertedLightness = true;
+      }
       updateSVG();
       updateFullCode();
     },
@@ -2492,7 +2498,11 @@ poline.colorsCSSoklch</code></pre></div>
           [(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), Math.random() * .2],
           /*[(exStartHue + 60 + Math.random() * 180) % 360, Math.random(), .8]*/
         ],
+        invertedLightness: false,
       });
+      if (invertedLightness) {
+        poline.invertedLightness = true;
+      }
       updateSVG();
       updateFullCode();
       const $code = section.target.querySelector('[data-code]');
@@ -2727,8 +2737,8 @@ new Poline({
         }
       }
 
-      poline.invertedLightness = false;
-      invertedLightness = false;
+      poline.invertedLightness = systemDarkMode;
+      invertedLightness = systemDarkMode;
       poline.removeAnchorPoint({index: poline.anchorPoints.length - 1});
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `poline.removeAnchorPoint({
@@ -2749,14 +2759,14 @@ poline.removeAnchorPoint({
     section: 'invertedLightness',
     fn: (section) => {
       console.log('invertedLightness');
-      poline.invertedLightness = true;
-      invertedLightness = true;
+      poline.invertedLightness = !systemDarkMode;
+      invertedLightness = !systemDarkMode;
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `new Poline({
-  invertedLightness: true,
+  invertedLightness: ${!systemDarkMode},
 });
 // or
-poline.invertedLightness = true;`;
+poline.invertedLightness = ${!systemDarkMode};`;
       hljs.highlightElement($code);
 
       $invertLightness.forEach($l => {
@@ -2771,8 +2781,8 @@ poline.invertedLightness = true;`;
     section: 'colorSpace',
     fn: (section) => {
       console.log('colorSpace');
-      poline.invertedLightness = false;
-      invertedLightness = false;
+      poline.invertedLightness = systemDarkMode;
+      invertedLightness = systemDarkMode;
       const $code = section.target.querySelector('[data-code]');
       $code.innerHTML = `import {Poline} from "poline";
 import {formatHex} from "culori";

@@ -226,6 +226,16 @@ var ColorPoint = class {
       2
     )})`;
   }
+  set invertedLightness(val) {
+    this._invertedLightness = val;
+    this.color = pointToHSL(
+      [this.x, this.y, this.z],
+      this._invertedLightness
+    );
+  }
+  get invertedLightness() {
+    return this._invertedLightness;
+  }
   shiftHue(angle) {
     this.color[0] = (360 + (this.color[0] + angle)) % 360;
     [this.x, this.y, this.z] = hslToPoint(
@@ -460,6 +470,7 @@ var Poline = class {
   }
   set invertedLightness(newStatus) {
     this._invertedLightness = newStatus;
+    this.anchorPoints.forEach((p) => p.invertedLightness = newStatus);
     this.updateAnchorPairs();
   }
   get invertedLightness() {

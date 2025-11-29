@@ -350,6 +350,18 @@ export class ColorPoint {
     )})`;
   }
 
+  set invertedLightness(val: boolean) {
+    this._invertedLightness = val;
+    this.color = pointToHSL(
+      [this.x, this.y, this.z] as Vector3,
+      this._invertedLightness
+    );
+  }
+
+  get invertedLightness(): boolean {
+    return this._invertedLightness;
+  }
+
   shiftHue(angle: number): void {
     this.color[0] = (360 + (this.color[0] + angle)) % 360;
     [this.x, this.y, this.z] = hslToPoint(
@@ -683,6 +695,7 @@ export class Poline {
 
   public set invertedLightness(newStatus: boolean) {
     this._invertedLightness = newStatus;
+    this.anchorPoints.forEach((p) => (p.invertedLightness = newStatus));
     this.updateAnchorPairs();
   }
 

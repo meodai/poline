@@ -62,6 +62,8 @@ export declare class ColorPoint {
     get hslCSS(): string;
     get oklchCSS(): string;
     get lchCSS(): string;
+    set invertedLightness(val: boolean);
+    get invertedLightness(): boolean;
     shiftHue(angle: number): void;
 }
 export type PolineOptions = {
