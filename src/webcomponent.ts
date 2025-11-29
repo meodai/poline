@@ -182,9 +182,6 @@ export class PolinePicker extends HTMLElement {
           pointer-events: none;
           opacity: 0;
         }
-        .wheel__ring-tick--hover {
-          opacity: 1;
-        }
         .wheel__ring-bg {
           fill: none;
           stroke: var(--poline-picker-bg-color, #fff);
@@ -193,8 +190,16 @@ export class PolinePicker extends HTMLElement {
           vector-effect: non-scaling-stroke;
           opacity: 0;
         }
-        .wheel__ring-bg--hover {
-          opacity: 0.3;
+        .wheel__ring-group--hover .wheel__ring-tick {
+          opacity: 1;
+        }
+        .wheel__ring-group--hover .wheel__ring-bg {
+          opacity: 1;
+        }
+        @media (pointer: coarse) {
+          .wheel__ring-group {
+            display: none;
+          }
         }
         :host(.ring-hover) svg {
           cursor: ew-resize;
@@ -321,15 +326,14 @@ export class PolinePicker extends HTMLElement {
     if (!this.poline || !this.saturationRings) return;
 
     const anchors = this.poline.anchorPoints;
-    const existing = this.saturationRings.children;
+    const ringGroups = Array.from(
+      this.saturationRings.querySelectorAll(".wheel__ring-group")
+    ) as SVGGElement[];
 
-    // Each anchor has 3 elements: background circle + saturation arc + tick
-    const elementsPerAnchor = 3;
-
-    // Remove excess elements
-    while (existing.length > anchors.length * elementsPerAnchor) {
-      const last = existing[existing.length - 1];
-      if (last) this.saturationRings.removeChild(last);
+    // Remove excess groups
+    while (ringGroups.length > anchors.length) {
+      const last = ringGroups.pop();
+      if (last) last.remove();
     }
 
     anchors.forEach((anchor, i) => {
@@ -345,32 +349,38 @@ export class PolinePicker extends HTMLElement {
         this.ringHoverIndex === i ||
         (this.ringAdjust && this.ringAdjust.anchorIndex === i);
 
-      // Background ring (full circle, subtle)
-      let bgRing = existing[i * elementsPerAnchor] as SVGCircleElement;
-      if (!bgRing) {
-        bgRing = document.createElementNS(namespaceURI, "circle");
+      // Get or create the group for this anchor's ring elements
+      let group = ringGroups[i];
+      if (!group) {
+        group = document.createElementNS(namespaceURI, "g");
+        group.setAttribute("class", "wheel__ring-group");
+        // Create elements inside the group
+        const bgRing = document.createElementNS(namespaceURI, "circle");
         bgRing.setAttribute("class", "wheel__ring-bg");
-        this.saturationRings.appendChild(bgRing);
+        group.appendChild(bgRing);
+        const satArc = document.createElementNS(namespaceURI, "path");
+        satArc.setAttribute("class", "wheel__saturation-ring");
+        group.appendChild(satArc);
+        const tick = document.createElementNS(namespaceURI, "line");
+        tick.setAttribute("class", "wheel__ring-tick");
+        group.appendChild(tick);
+        this.saturationRings.appendChild(group);
+        ringGroups.push(group);
       }
+
+      // Toggle hover on the group
+      group.classList.toggle("wheel__ring-group--hover", !!isHovered);
+
+      // Update bg ring
+      const bgRing = group.querySelector(".wheel__ring-bg") as SVGCircleElement;
       bgRing.setAttribute("cx", cx.toString());
       bgRing.setAttribute("cy", cy.toString());
       bgRing.setAttribute("r", ringRadius.toString());
-      bgRing.setAttribute(
-        "stroke-width",
-        (isHovered
-          ? UI_METRICS.ringThicknessHover
-          : UI_METRICS.ringThickness
-        ).toString()
-      );
-      bgRing.classList.toggle("wheel__ring-bg--hover", !!isHovered);
 
       // Saturation arc (shows current value as arc length)
-      let satArc = existing[i * elementsPerAnchor + 1] as SVGPathElement;
-      if (!satArc) {
-        satArc = document.createElementNS(namespaceURI, "path");
-        satArc.setAttribute("class", "wheel__saturation-ring");
-        this.saturationRings.appendChild(satArc);
-      }
+      const satArc = group.querySelector(
+        ".wheel__saturation-ring"
+      ) as SVGPathElement;
 
       // Create arc path from top (12 o'clock) going clockwise
       const startAngle = -Math.PI / 2; // Start at top
@@ -384,48 +394,23 @@ export class PolinePicker extends HTMLElement {
       );
 
       satArc.setAttribute("d", arcPath);
-      satArc.setAttribute(
-        "stroke-width",
-        (isHovered
-          ? UI_METRICS.ringThicknessHover
-          : UI_METRICS.ringThickness
-        ).toString()
-      );
-      satArc.classList.toggle("wheel__saturation-ring--hover", !!isHovered);
 
       // Tick mark at end of arc (pointing outward from center)
-      let tick = existing[i * elementsPerAnchor + 2] as SVGLineElement;
-      if (!tick) {
-        tick = document.createElementNS(namespaceURI, "line");
-        tick.setAttribute("class", "wheel__ring-tick");
-        this.saturationRings.appendChild(tick);
-      }
+      const tick = group.querySelector(".wheel__ring-tick") as SVGLineElement;
 
       // Calculate tick position and direction (radial, pointing outward)
-      // Direction from center to end point (radial outward)
-      const dirX = Math.cos(endAngle);
-      const dirY = Math.sin(endAngle);
-      // Tick starts after a gap from the ring
       const tickStartX =
         cx + (ringRadius + UI_METRICS.tickGap) * Math.cos(endAngle);
       const tickStartY =
         cy + (ringRadius + UI_METRICS.tickGap) * Math.sin(endAngle);
       // Tick extends outward from the ring
-      const tickEndX = tickStartX + dirX * UI_METRICS.tickLength;
-      const tickEndY = tickStartY + dirY * UI_METRICS.tickLength;
+      const tickEndX = tickStartX + Math.cos(endAngle) * UI_METRICS.tickLength;
+      const tickEndY = tickStartY + Math.sin(endAngle) * UI_METRICS.tickLength;
 
       tick.setAttribute("x1", tickStartX.toString());
       tick.setAttribute("y1", tickStartY.toString());
       tick.setAttribute("x2", tickEndX.toString());
       tick.setAttribute("y2", tickEndY.toString());
-      tick.setAttribute(
-        "stroke-width",
-        (isHovered
-          ? UI_METRICS.ringThicknessHover
-          : UI_METRICS.ringThickness
-        ).toString()
-      );
-      tick.classList.toggle("wheel__ring-tick--hover", !!isHovered);
     });
   }
 
@@ -496,7 +481,9 @@ export class PolinePicker extends HTMLElement {
     const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
 
     // Check if we're clicking on a ring (outer band of an anchor)
-    const ringHit = this.pickRing(normalizedX, normalizedY);
+    // Skip on touch devices
+    const isTouch = window.matchMedia("(pointer: coarse)").matches;
+    const ringHit = isTouch ? null : this.pickRing(normalizedX, normalizedY);
     if (ringHit !== null) {
       const anchor = this.poline.anchorPoints[ringHit];
       if (!anchor) return;
@@ -622,12 +609,14 @@ export class PolinePicker extends HTMLElement {
       return;
     }
 
-    // Handle ring hover detection
-    const ringHover = this.pickRing(normalizedX, normalizedY);
-    if (ringHover !== this.ringHoverIndex) {
-      this.ringHoverIndex = ringHover;
-      this.classList.toggle("ring-hover", ringHover !== null);
-      this.updateSaturationRings();
+    // Handle ring hover detection (skip on touch devices)
+    if (!window.matchMedia("(pointer: coarse)").matches) {
+      const ringHover = this.pickRing(normalizedX, normalizedY);
+      if (ringHover !== this.ringHoverIndex) {
+        this.ringHoverIndex = ringHover;
+        this.classList.toggle("ring-hover", ringHover !== null);
+        this.updateSaturationRings();
+      }
     }
   }
 
