@@ -47,6 +47,9 @@
       --cbgc: var(--grey-light);
       --line: var(--grey);
 
+
+      --singleColorSlice: calc(360deg / var(--c-length, 1) / 2 * -1);
+
       background: var(--bg);
       color: var(--onBg);
 
@@ -166,7 +169,7 @@
     .poline-picker__circprev {
       width: 12vmin;
       height: 12vmin;
-      background: conic-gradient(var(--prev));
+      background: conic-gradient(from var(--singleColorSlice) at 50% 50%, var(--prev));
       border-radius: 50%;
       position: absolute;
       top: 100%;
@@ -176,6 +179,20 @@
       box-shadow: 0 0 0 0.7vmin var(--bg);
       pointer-events: none;
       transform: translate(-50%, -50%) scale(0.4);
+
+      &::after {
+        content: '';
+        background: var(--bg);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 30%;
+        height: 30%;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        box-shadow: 0 0 0 1px var(--onBg);
+        
+      }
     }
 
     .picker {
@@ -1006,11 +1023,15 @@
         padding-top: 0;
       }
       .l-demo {
+        --diameter: 27vh;
         position: absolute;
         width: 100%;
         height: 40vh;
         z-index: 10;
         border-left: none;
+        transform: translateY(max(calc(var(--scroll-y, 0px) * -1), -20vh));
+        transform: none;
+        pointer-events: none;
       }
       .l-demo::before {
         content: '';
@@ -1026,6 +1047,7 @@
       .poline-picker {
         --diameter: 27vh;
         margin-top: -1vh;
+        pointer-events: all;
       }
       .drawer {
         position: absolute;
@@ -2217,6 +2239,11 @@ poline.colorsCSSoklch</code></pre></div>
       document.documentElement.style.setProperty(
         '--c1',
         colors[0]
+      );
+
+      document.documentElement.style.setProperty(
+        '--c-length',
+        colors.length
       );
 
       clearTimeout(timer);
