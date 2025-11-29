@@ -250,7 +250,6 @@ var Poline = class {
     positionFunction: sinusoidalPosition,
     closedLoop: false
   }) {
-    this._needsUpdate = true;
     this._positionFunctionX = sinusoidalPosition;
     this._positionFunctionY = sinusoidalPosition;
     this._positionFunctionZ = sinusoidalPosition;

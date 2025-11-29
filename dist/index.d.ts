@@ -75,7 +75,6 @@ export type PolineOptions = {
     closedLoop?: boolean;
 };
 export declare class Poline {
-    private _needsUpdate;
     private _anchorPoints;
     private _numPoints;
     private points;

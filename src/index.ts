@@ -370,7 +370,6 @@ export type PolineOptions = {
   closedLoop?: boolean;
 };
 export class Poline {
-  private _needsUpdate = true;
   private _anchorPoints: ColorPoint[];
 
   private _numPoints: number;
