@@ -21,7 +21,7 @@
   },
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "npm run lint && tsc --build && node ./build.js",
+    "build": "npm test && npm run lint && tsc --build && node ./build.js",
     "test": "vitest run",
     "lint": "eslint . --ext .ts && npx prettier --check ./src/",
     "prettier": "npx prettier --write ./src/",

@@ -647,6 +647,41 @@ Or install via npm and import:
 import { Poline, PolinePicker } from 'poline/dist/picker.mjs';
 ```
 
+## Development
+
+### Testing
+
+"**poline**" includes a comprehensive test suite to ensure reliability and correctness. Tests are written using [Vitest](https://vitest.dev/) and cover all major functionality including:
+
+- ColorPoint class operations
+- HSL/XYZ coordinate conversions
+- Position functions and easing
+- Palette generation and manipulation
+- Anchor point management
+- Edge cases and error handling
+
+To run the tests:
+
+```bash
+npm test
+```
+
+Tests are automatically run before building to ensure code quality.
+
+### Building
+
+To build the project:
+
+```bash
+npm run build
+```
+
+This will:
+1. Run the test suite
+2. Lint and format check the code
+3. Compile TypeScript to JavaScript
+4. Generate all distribution bundles (ESM, CommonJS, UMD, minified versions)
+
 ## License
 
 And thus, the tome of "**poline**" has been written. Its mystical powers, steeped in the arcane knowledge of the ancients, now reside within these pages. May this compendium serve you in your quest for the ultimate color palette.
