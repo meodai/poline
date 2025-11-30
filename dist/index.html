@@ -615,12 +615,46 @@
       }
     }
 
-    button {
+    button:not([data-copy-code]) {
       font-family: 'Aboreto', cursive;
-      background-color: var(--onBg);
       color: var(--bg);
+      background: transparent;
       padding: 1.1em 1.8em;
       border: none;
+      position: relative;
+
+      &::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: var(--onBg);
+        z-index: -1;
+        transition: inset 200ms cubic-bezier(.3, .7, 0, 1) 200ms;
+        box-shadow: 0 0 0 1px var(--bg);
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        inset: 8px;
+        z-index: -1;
+        background: var(--c1);
+        box-shadow: inset 0 0 0 0 var(--onBg);
+        
+        transition: inset 400ms cubic-bezier(.3, .7, 0, 1),
+                    box-shadow 200ms cubic-bezier(.3, .7, 0, 1) 0ms;
+      }
+
+      &:hover::after {
+        inset: 5px;
+        transition-delay: 0ms;
+      }
+
+      &:hover::before {
+        inset: 0;
+        transition-delay: 50ms, 200ms;
+        /*box-shadow: inset 0 0 0 1px var(--onBg);*/
+      }
     }
 
     .l-wrap {
