@@ -517,6 +517,7 @@ var Poline = class {
    * getColorAt(1) // Returns color at the very end
    */
   getColorAt(t) {
+    var _a;
     if (t < 0 || t > 1) {
       throw new Error("Position must be between 0 and 1");
     }
@@ -533,7 +534,7 @@ var Poline = class {
     const pair = this._anchorPairs[actualSegmentIndex];
     if (!pair || pair.length < 2 || !pair[0] || !pair[1]) {
       return new ColorPoint({
-        color: this.anchorPoints[0]?.color || [0, 0, 0],
+        color: ((_a = this.anchorPoints[0]) == null ? void 0 : _a.color) || [0, 0, 0],
         invertedLightness: this._invertedLightness
       });
     }
@@ -584,3 +585,4 @@ export {
   randomHSLPair,
   randomHSLTriple
 };
+//# sourceMappingURL=index.mjs.map
