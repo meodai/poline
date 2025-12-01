@@ -1950,6 +1950,18 @@ const LCHColors = [...poline.colors].map(
         //.map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%)) calc(${i / (steps - 1) * 100}% + 1px)`)
         .map((_, i) => `hsl(${i / (steps - 1) * 360}, calc(var(--s) * 100%), calc(var(--l,0) * 100%))`)
         .join(',');
+    
+    const logColors = (colors, includeValue = false) => {
+      let o = "", s = [];
+      for (const c of colors) {
+        o += `%c ${includeValue ? c : ''} `;
+        s.push(`background:${c}; color:${c}`);
+      }
+      console.log(o, ...s);
+      if (!includeValue) {
+        console.log(colors);
+      }
+    };
 
     const createSVG = (svgscale = 100) => {
       const $svg = document.createElementNS(
@@ -2146,7 +2158,9 @@ const LCHColors = [...poline.colors].map(
 
       const colorsHEX = poline.colors.map(color => formatHex(
         { mode: currentHueModel, ...currentModelFn(color) }
-      ))
+      ));
+
+      logColors(colorsHEX);
 
       fetch(`https://api.color.pizza/v1/?values=${
         colorsHEX.map(c => c.replace('#', '')).join()
