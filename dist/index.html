@@ -3,14 +3,14 @@
 <html lang="en" class="is-loading">
 
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <!-- Primary Meta Tags -->
   <title>Poline — Esoteric Color Palette Generation Library</title>
   <meta name="title" content="Poline — Esoteric Color Palette Generation Library">
   <meta name="description"
     content="Poline is lightweight, dependency free and fast JavaScript function written in TypeScript. It draws lines between anchors over polar HSL coordinates to generate pleasing color palettes.">
 
-  <link rel="icon" type="image/x-icon">
+  <link rel="icon" type="image/x-icon" href="data:image/x-icon;,">
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
@@ -37,7 +37,7 @@
   
   <style>
     :root {
-      --light: #fff;
+      --light: #ffffff;
       --dark: #18191b;
       --grey-light: color-mix(in oklab, var(--light) 98%, var(--dark) 2%);
       --grey: color-mix(in oklab, var(--light) 95%, var(--dark) 15%);
@@ -965,6 +965,8 @@
       margin: 0.5em 0 0;
     }
     .key {
+      font-family: inherit;
+      font-weight: bold;
       --keyline: color-mix(in oklab, var(--line) 95%, var(--onBg) 5%);
 
       display: inline-block;
@@ -1301,7 +1303,7 @@
       </div>
 
       <aside class="l-sec">
-        <div class="l-sec__inner" aria-label="Table of Contents">
+        <div class="l-sec__inner" role="navigation" aria-label="Table of Contents">
           <p>
             The tome of "<strong class="t">Poline</strong>" documentation is a comprehensive guide to the arcane arts of color generation, 
             you will gain an understanding of how this tool creates its mystical and captivating palettes through the following sections.
@@ -1315,7 +1317,7 @@
         <div class="l-sec__inner">
           <h2>Terminology &amp; Working Principles</h2>
           <p>
-            The name "<strong class="t">Poline</strong>" <strong aria-label="pronunciation for Poline">/ˈpoʊlaɪn/</strong> represents the essence of the library - <strong>a polar line</strong>. 
+            The name "<strong class="t">Poline</strong>" <span role="text" aria-label="pronunciation for Poline">/ˈpoʊlaɪn/</span> represents the essence of the library - <strong>a polar line</strong>. 
             The combination of these two words symbolizes the process of creating a palette by drawing lines between <strong>anchor</strong> points. 
             This unique moniker encapsulates the heart and soul of this micro-library written in TypeScript.
           <p>
@@ -1419,7 +1421,7 @@
             achieve your desired result.
           </p>
           <p>
-            The ability to update existing <string>anchors</string> is made possible through the '<strong>updateAnchorPoint</strong>' method. 
+            The ability to update existing <strong>anchors</strong> is made possible through the '<strong>updateAnchorPoint</strong>' method. 
             This method accepts the <strong>reference to the anchor</strong> you wish to modify and either a color in the form of <strong>HSL</strong> 
             representation or an <strong>XYZ</strong> position array.
           </p>
@@ -1743,12 +1745,12 @@ const LCHColors = [...poline.colors].map(
           </p>
           <p>
             And let not your journey end here, dear sorcerer. Interactive exploration awaits you in the playground below. With a
-            simple press of the <strong class="key" data-key="p">P</strong> key, you may <strong>add anchor</strong> points to your whims, and with the <strong class="key" data-key="Backspace" aria-label="backspace">⌫</strong> 
+            simple press of the <kbd class="key" data-key="p">P</kbd> key, you may <strong>add anchor</strong> points to your whims, and with the <kbd class="key" data-key="Backspace" aria-label="backspace">⌫</kbd> 
             key, you may <strong>remove the last selected anchor</strong> point. So go forth, and let the magic unfold.
           </p>
           <p>
-            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <strong class="key" data-key="k">K</strong>, or use the <strong class="key" data-key="ArrowLeft" aria-label="left arrow">←</strong> and <strong class="key" data-key="ArrowRight" aria-label="right arrow">→</strong> keys to change the hue of all colors.
-            Toggle the <strong>saturation rings</strong> with <strong class="key" data-key="s">S</strong>.
+            Use the browser's color picker to change the color of the <strong>last selected anchor</strong> <kbd class="key" data-key="k">K</kbd>, or use the <kbd class="key" data-key="ArrowLeft" aria-label="left arrow">←</kbd> and <kbd class="key" data-key="ArrowRight" aria-label="right arrow">→</kbd> keys to change the hue of all colors.
+            Toggle the <strong>saturation rings</strong> with <kbd class="key" data-key="s">S</kbd>.
           </p>
           <div class="l-sec__controls">
             <label>
@@ -1867,7 +1869,7 @@ const LCHColors = [...poline.colors].map(
                 If "<strong class="t">poline</strong>" has helped spark some color magic in your projects, consider fueling further development with a <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank">coffee</a>.
               </p>
               <a href="https://ko-fi.com/colorparrot" rel="noopener" target="_blank" class="kofi">
-                <img src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_logo_nolabel.png">
+                <img src="https://storage.ko-fi.com/cdn/brandasset/kofi_s_logo_nolabel.png" alt="Ko-fi logo">
               </a>
             </div>
           </div>
