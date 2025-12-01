@@ -99,6 +99,49 @@ poline.addAnchorPoint({
 });
 ```
 
+## Clamping to Circle
+
+When working with XYZ coordinates, you may want to ensure anchor points stay within the valid color wheel (a circle of radius 0.5 centered at 0.5, 0.5). The `clampToCircle` option constrains coordinates to remain inside this boundary.
+
+You can set a default behavior for all anchor operations:
+
+```js
+// During initialization
+const poline = new Poline({
+  anchorColors: [...],
+  clampToCircle: true  // All anchor operations will clamp by default
+});
+
+// Or change it later
+poline.clampToCircle = true;
+```
+
+You can also override the default on a per-call basis:
+
+```js
+// Clamp this specific anchor point
+poline.addAnchorPoint({
+  xyz: [0.9, 0.9, 0.5],
+  clamp: true  // Will be clamped to stay within color wheel
+});
+
+// Override the default to disable clamping for this call
+poline.updateAnchorPoint({
+  pointIndex: 0,
+  xyz: [1.0, 1.0, 0.5],
+  clamp: false  // Explicitly disable clamping
+});
+```
+
+The `clampToCircle` helper function is also exported for use in your own code:
+
+```js
+import { clampToCircle } from 'poline';
+
+const [clampedX, clampedY] = clampToCircle(0.9, 0.9);
+// Returns coordinates clamped to circle boundary
+```
+
 ## Updating Anchors
 
 With this feature, you have the power to fine-tune your palette and make adjustments as your creative vision evolves. So whether you are looking to make subtle changes or bold alterations, "**Poline**" is always ready to help you achieve your desired result.
@@ -437,6 +480,7 @@ type PolineOptions = {
   positionFunctionZ?: PositionFunction;
   invertedLightness?: boolean;
   closedLoop?: boolean;
+  clampToCircle?: boolean;   // Optional: clamp anchor points to color wheel
 };
 
 // Color point collection
@@ -469,6 +513,7 @@ constructor(options?: PolineOptions)
 - `anchorPoints: ColorPoint[]` - Get/set the anchor points
 - `closedLoop: boolean` - Get/set whether the palette forms a closed loop
 - `invertedLightness: boolean` - Get/set whether lightness calculation is inverted
+- `clampToCircle: boolean` - Get/set whether anchor point coordinates are clamped to the color wheel
 - `flattenedPoints: ColorPoint[]` - Get all points in a flat array
 - `colors: Vector3[]` - Get all colors as HSL arrays
 - `colorsCSS: string[]` - Get all colors as CSS HSL strings
@@ -478,9 +523,9 @@ constructor(options?: PolineOptions)
 #### Methods of the ColorPoint Class
 
 - `updateAnchorPairs(): void` - Update internal anchor pairs
-- `addAnchorPoint(options: ColorPointCollection & { insertAtIndex?: number }): ColorPoint` - Add a new anchor point
+- `addAnchorPoint(options: ColorPointCollection & { insertAtIndex?: number; clamp?: boolean }): ColorPoint` - Add a new anchor point
 - `removeAnchorPoint(options: { point?: ColorPoint; index?: number }): void` - Remove an anchor point
-- `updateAnchorPoint(options: { point?: ColorPoint; pointIndex?: number } & ColorPointCollection): ColorPoint` - Update an anchor point
+- `updateAnchorPoint(options: { point?: ColorPoint; pointIndex?: number; clamp?: boolean } & ColorPointCollection): ColorPoint` - Update an anchor point
 - `getClosestAnchorPoint(options: { xyz?: PartialVector3; hsl?: PartialVector3; maxDistance?: number }): ColorPoint | null` - Find closest anchor point
 - `getColorAt(t: number): ColorPoint` - Get color at a specific position (0-1) along the entire palette
 - `shiftHue(hShift?: number): void` - Shift the hue of all colors

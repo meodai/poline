@@ -29,6 +29,19 @@ export declare const pointToHSL: (xyz: [number, number, number], invertedLightne
  **/
 export declare const hslToPoint: (hsl: [number, number, number], invertedLightness: boolean) => [number, number, number];
 export declare const randomHSLPair: (startHue?: number, saturations?: Vector2, lightnesses?: Vector2) => [Vector3, Vector3];
+/**
+ * Clamps an (x, y) position to be within the color wheel circle
+ * The circle has radius 0.5 centered at (0.5, 0.5)
+ * If the point is outside the circle, it projects it to the edge
+ * @param x The x coordinate (0-1)
+ * @param y The y coordinate (0-1)
+ * @returns [x, y] clamped to be within the circle
+ * @example
+ * clampToCircle(0.5, 0.5) // [0.5, 0.5] - center, unchanged
+ * clampToCircle(1, 0.5) // [1, 0.5] - edge, unchanged
+ * clampToCircle(1.5, 0.5) // [1, 0.5] - outside, clamped to edge
+ */
+export declare const clampToCircle: (x: number, y: number) => Vector2;
 export declare const randomHSLTriple: (startHue?: number, saturations?: [number, number, number], lightnesses?: [number, number, number]) => [Vector3, Vector3, Vector3];
 export type PositionFunction = (t: number, reverse?: boolean) => number;
 export declare const positionFunctions: {
@@ -75,6 +88,7 @@ export type PolineOptions = {
     positionFunctionZ?: (t: number, invert?: boolean) => number;
     invertedLightness?: boolean;
     closedLoop?: boolean;
+    clampToCircle?: boolean;
 };
 export declare class Poline {
     private _anchorPoints;
@@ -87,7 +101,8 @@ export declare class Poline {
     private connectLastAndFirstAnchor;
     private _animationFrame;
     private _invertedLightness;
-    constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, invertedLightness, }?: PolineOptions);
+    private _clampToCircle;
+    constructor({ anchorColors, numPoints, positionFunction, positionFunctionX, positionFunctionY, positionFunctionZ, closedLoop, invertedLightness, clampToCircle, }?: PolineOptions);
     get numPoints(): number;
     set numPoints(numPoints: number);
     set positionFunction(positionFunction: PositionFunction | PositionFunction[]);
@@ -98,19 +113,23 @@ export declare class Poline {
     get positionFunctionY(): PositionFunction;
     set positionFunctionZ(positionFunctionZ: PositionFunction);
     get positionFunctionZ(): PositionFunction;
+    get clampToCircle(): boolean;
+    set clampToCircle(clamp: boolean);
     get anchorPoints(): ColorPoint[];
     set anchorPoints(anchorPoints: ColorPoint[]);
     updateAnchorPairs(): void;
-    addAnchorPoint({ xyz, color, insertAtIndex, }: ColorPointCollection & {
+    addAnchorPoint({ xyz, color, insertAtIndex, clamp, }: ColorPointCollection & {
         insertAtIndex?: number;
+        clamp?: boolean;
     }): ColorPoint;
     removeAnchorPoint({ point, index, }: {
         point?: ColorPoint;
         index?: number;
     }): void;
-    updateAnchorPoint({ point, pointIndex, xyz, color, }: {
+    updateAnchorPoint({ point, pointIndex, xyz, color, clamp, }: {
         point?: ColorPoint;
         pointIndex?: number;
+        clamp?: boolean;
     } & ColorPointCollection): ColorPoint;
     getClosestAnchorPoint({ xyz, hsl, maxDistance, }: {
         xyz?: PartialVector3;

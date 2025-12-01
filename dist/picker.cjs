@@ -54,6 +54,17 @@ var randomHSLPair = (startHue = Math.random() * 360, saturations = [Math.random(
   [startHue, saturations[0], lightnesses[0]],
   [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]]
 ];
+var clampToCircle = (x, y) => {
+  const cx = 0.5;
+  const cy = 0.5;
+  const dx = x - cx;
+  const dy = y - cy;
+  const dist = Math.hypot(dx, dy);
+  if (dist <= 0.5) {
+    return [x, y];
+  }
+  return [cx + dx / dist * 0.5, cy + dy / dist * 0.5];
+};
 var vectorOnLine = (t, p1, p2, invert = false, fx = (t2, invert2) => invert2 ? 1 - t2 : t2, fy = (t2, invert2) => invert2 ? 1 - t2 : t2, fz = (t2, invert2) => invert2 ? 1 - t2 : t2) => {
   const tModifiedX = fx(t, invert);
   const tModifiedY = fy(t, invert);
@@ -252,7 +263,8 @@ var Poline = class {
     positionFunctionY,
     positionFunctionZ,
     closedLoop,
-    invertedLightness
+    invertedLightness,
+    clampToCircle: clampToCircle2
   } = {
     anchorColors: randomHSLPair(),
     numPoints: 4,
@@ -265,6 +277,7 @@ var Poline = class {
     this.connectLastAndFirstAnchor = false;
     this._animationFrame = null;
     this._invertedLightness = false;
+    this._clampToCircle = false;
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
     }
@@ -277,6 +290,7 @@ var Poline = class {
     this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
     this.connectLastAndFirstAnchor = closedLoop || false;
     this._invertedLightness = invertedLightness || false;
+    this._clampToCircle = clampToCircle2 || false;
     this.updateAnchorPairs();
   }
   get numPoints() {
@@ -338,6 +352,12 @@ var Poline = class {
   get positionFunctionZ() {
     return this._positionFunctionZ;
   }
+  get clampToCircle() {
+    return this._clampToCircle;
+  }
+  set clampToCircle(clamp) {
+    this._clampToCircle = clamp;
+  }
   get anchorPoints() {
     return this._anchorPoints;
   }
@@ -375,10 +395,18 @@ var Poline = class {
   addAnchorPoint({
     xyz,
     color,
-    insertAtIndex
+    insertAtIndex,
+    clamp
   }) {
+    let finalXyz = xyz;
+    const shouldClamp = clamp != null ? clamp : this._clampToCircle;
+    if (shouldClamp && xyz) {
+      const [x, y, z] = xyz;
+      const [cx, cy] = clampToCircle(x, y);
+      finalXyz = [cx, cy, z];
+    }
     const newAnchor = new ColorPoint({
-      xyz,
+      xyz: finalXyz,
       color,
       invertedLightness: this._invertedLightness
     });
@@ -417,7 +445,8 @@ var Poline = class {
     point,
     pointIndex,
     xyz,
-    color
+    color,
+    clamp
   }) {
     if (pointIndex !== void 0) {
       point = this.anchorPoints[pointIndex];
@@ -428,8 +457,16 @@ var Poline = class {
     if (!xyz && !color) {
       throw new Error("Must provide a new xyz position or color");
     }
-    if (xyz)
-      point.position = xyz;
+    if (xyz) {
+      const shouldClamp = clamp != null ? clamp : this._clampToCircle;
+      if (shouldClamp) {
+        const [x, y, z] = xyz;
+        const [cx, cy] = clampToCircle(x, y);
+        point.position = [cx, cy, z];
+      } else {
+        point.position = xyz;
+      }
+    }
     if (color)
       point.hsl = color;
     this.updateAnchorPairs();

@@ -96,6 +96,33 @@ export const randomHSLPair = (
   [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
 ];
 
+/**
+ * Clamps an (x, y) position to be within the color wheel circle
+ * The circle has radius 0.5 centered at (0.5, 0.5)
+ * If the point is outside the circle, it projects it to the edge
+ * @param x The x coordinate (0-1)
+ * @param y The y coordinate (0-1)
+ * @returns [x, y] clamped to be within the circle
+ * @example
+ * clampToCircle(0.5, 0.5) // [0.5, 0.5] - center, unchanged
+ * clampToCircle(1, 0.5) // [1, 0.5] - edge, unchanged
+ * clampToCircle(1.5, 0.5) // [1, 0.5] - outside, clamped to edge
+ */
+export const clampToCircle = (x: number, y: number): Vector2 => {
+  const cx = 0.5;
+  const cy = 0.5;
+  const dx = x - cx;
+  const dy = y - cy;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist <= 0.5) {
+    return [x, y];
+  }
+
+  // Project to edge of circle
+  return [cx + (dx / dist) * 0.5, cy + (dy / dist) * 0.5];
+};
+
 export const randomHSLTriple = (
   startHue: number = Math.random() * 360,
   saturations: Vector3 = [Math.random(), Math.random(), Math.random()],
@@ -380,6 +407,7 @@ export type PolineOptions = {
   positionFunctionZ?: (t: number, invert?: boolean) => number;
   invertedLightness?: boolean;
   closedLoop?: boolean;
+  clampToCircle?: boolean;
 };
 export class Poline {
   private _anchorPoints: ColorPoint[];
@@ -399,6 +427,8 @@ export class Poline {
 
   private _invertedLightness = false;
 
+  private _clampToCircle = false;
+
   constructor(
     {
       anchorColors = randomHSLPair(),
@@ -409,6 +439,7 @@ export class Poline {
       positionFunctionZ,
       closedLoop,
       invertedLightness,
+      clampToCircle,
     }: PolineOptions = {
       anchorColors: randomHSLPair(),
       numPoints: 4,
@@ -436,6 +467,8 @@ export class Poline {
     this.connectLastAndFirstAnchor = closedLoop || false;
 
     this._invertedLightness = invertedLightness || false;
+
+    this._clampToCircle = clampToCircle || false;
 
     this.updateAnchorPairs();
   }
@@ -521,6 +554,14 @@ export class Poline {
     return this._positionFunctionZ;
   }
 
+  public get clampToCircle(): boolean {
+    return this._clampToCircle;
+  }
+
+  public set clampToCircle(clamp: boolean) {
+    this._clampToCircle = clamp;
+  }
+
   public get anchorPoints(): ColorPoint[] {
     return this._anchorPoints;
   }
@@ -573,9 +614,20 @@ export class Poline {
     xyz,
     color,
     insertAtIndex,
-  }: ColorPointCollection & { insertAtIndex?: number }): ColorPoint {
+    clamp,
+  }: ColorPointCollection & {
+    insertAtIndex?: number;
+    clamp?: boolean;
+  }): ColorPoint {
+    let finalXyz = xyz;
+    const shouldClamp = clamp ?? this._clampToCircle;
+    if (shouldClamp && xyz) {
+      const [x, y, z] = xyz;
+      const [cx, cy] = clampToCircle(x, y);
+      finalXyz = [cx, cy, z];
+    }
     const newAnchor = new ColorPoint({
-      xyz,
+      xyz: finalXyz,
       color,
       invertedLightness: this._invertedLightness,
     });
@@ -624,9 +676,11 @@ export class Poline {
     pointIndex,
     xyz,
     color,
+    clamp,
   }: {
     point?: ColorPoint;
     pointIndex?: number;
+    clamp?: boolean;
   } & ColorPointCollection): ColorPoint {
     if (pointIndex !== undefined) {
       point = this.anchorPoints[pointIndex];
@@ -640,7 +694,16 @@ export class Poline {
       throw new Error("Must provide a new xyz position or color");
     }
 
-    if (xyz) point.position = xyz;
+    if (xyz) {
+      const shouldClamp = clamp ?? this._clampToCircle;
+      if (shouldClamp) {
+        const [x, y, z] = xyz;
+        const [cx, cy] = clampToCircle(x, y);
+        point.position = [cx, cy, z];
+      } else {
+        point.position = xyz;
+      }
+    }
     if (color) point.hsl = color;
 
     this.updateAnchorPairs();
