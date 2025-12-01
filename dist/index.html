@@ -2856,6 +2856,20 @@ const LCHColors = [...poline.colors].map(
   let exStartHue = Math.random() * 360;
   let globalInterval = null;
 
+  // Helper to generate well-spaced random anchor colors
+  function generateSpacedAnchorColors(count, jitter = 20) {
+    const baseHue = Math.random() * 360; // Random starting point
+    const hueStep = 360 / count; // Even distribution
+    
+    return Array.from({ length: count }, (_, i) => {
+      // Evenly spaced hue with random jitter
+      const hue = (baseHue + i * hueStep + (Math.random() - 0.5) * jitter * 2) % 360;
+      const sat = 0.5 + Math.random() * 0.5; // 0.5 to 1
+      const light = 0.3 + Math.random() * 0.5; // 0.3 to 0.8
+      return [hue, sat, light];
+    });
+  }
+
   // Code example generators - reusable for init and section updates
   const codeExamples = {
     summoning: (anchors = poline.anchorPoints) => `new Poline({
@@ -3075,15 +3089,17 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'UpdatingAnchors',
     fn: (section) => {
+      // Generate well-spaced hues, keeping original saturation and lightness
+      const count = poline.anchorPoints.length;
+      const baseHue = Math.random() * 360;
+      const hueStep = 360 / count;
+      const jitter = 20;
+      
       poline.anchorPoints.forEach((anchor, i) => {
-        const hsl = anchor.color;
+        const newHue = (baseHue + i * hueStep + (Math.random() - 0.5) * jitter * 2) % 360;
         poline.updateAnchorPoint({
           point: anchor,
-          color: [
-            hsl[0] + Math.random() * 60 - 30,
-            hsl[1],
-            hsl[1],
-          ],
+          color: [newHue, anchor.color[1], anchor.color[2]],
         });
       });
       updateCodeBlock('UpdatingAnchors');
