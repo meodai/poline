@@ -1333,7 +1333,13 @@
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="summoning"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="summoning">new Poline({
+  anchorColors: [
+    [120, 0.71, 0.80],
+    [202, 0.03, 0.18],
+    //... more colors
+  ],
+});</code></pre>
           </div>
           <p>
             To create a palette, "<strong class="t">Poline</strong>" requires at least two anchor points, but the number of anchors you can provide is limitless.
@@ -1363,7 +1369,9 @@
           </p-->
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="points"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="points">new Poline({
+  numPoints: 6,
+});</code></pre>
           </div>
           <p>
             The resulting palette is a product of points multiplied by the number of anchor pairs.
@@ -1415,7 +1423,10 @@
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="UpdatingAnchors">poline.updateAnchorPoint({
+point: poline.anchorPoints[0],
+color: [270, 0.06, 0.06]
+            });</code></pre>
           </div>
           <div class="l-sec__controls">
             <button data-randomize>Randomize Positions</button>
@@ -1475,7 +1486,14 @@
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="positionFunctions"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="positionFunctions">new Poline({
+  positionFunctionX:
+    positionFunctions.sinusoidalPosition,
+  positionFunctionY:
+    positionFunctions.quadraticPosition,
+  positionFunctionZ:
+    positionFunctions.linearPosition,
+});</code></pre>
           </div>
           <!--p>
             The <strong>position functions</strong> are used to determine the position of the 
@@ -1517,7 +1535,11 @@
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="closedLoop"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="closedLoop">let poline = new Poline({
+  closedLoop: true,
+});
+// or
+poline.closedLoop = true;</code></pre>
           </div>
           <p>
             It is also possible to close the loop after the fact by setting <strong>poline.closedLoop = true|false</strong>.
@@ -1544,7 +1566,7 @@
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="hueShift"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="hueShift">poline.shiftHue(1);</code></pre>
           </div>
           <p>
             The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
@@ -1607,7 +1629,9 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="getColorAt"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="getColorAt">const color = poline.getColorAt(0.500);
+console.log(color.hslCSS);
+//→ hsl(67.39, 39.54%, 29.86%)</code></pre>
           </div>
           <div class="l-sec__controls">
             <label>
@@ -1630,7 +1654,15 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="removeAnchor"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="removeAnchor">poline.removeAnchorPoint({
+    point: poline.anchorPoints[
+    poline.anchorPoints.length - 1
+  ]
+});
+// or
+poline.removeAnchorPoint({
+  index: poline.anchorPoints.length - 1
+});</code></pre>
           </div>
         </div>
       </article>
@@ -1648,7 +1680,11 @@ poline.colorsCSSoklch</code></pre></div>
           </p> 
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="invertedLightness"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="invertedLightness">new Poline({
+  invertedLightness: true,
+});
+// or
+poline.invertedLightness = true;</code></pre>
           </div>
           <div class="l-sec__controls">
             <label>
@@ -1667,7 +1703,29 @@ poline.colorsCSSoklch</code></pre></div>
             However, it is easily possible to use other color models by using a library like <a href="https://culorijs.org/api/" target="_blank" rel="noopener noreferrer">culori</a>. 
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="colorSpace"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="colorSpace">import {Poline} from "poline";
+import {formatHex} from "culori";
+const poline = new Poline(/** options */);
+
+const OKHslColors = [...poline.colors].map(
+  c => formatHex({ 
+    mode: 'okhsl', 
+    {
+      h: c.hsl[0], 
+      s: c.hsl[1], 
+      l: c.hsl[2]}
+  })
+);
+const LCHColors = [...poline.colors].map(
+  c => formatHex({ 
+    mode: 'lch', 
+    { 
+      h: hsl[0],
+      c: hsl[1] * 51.484,
+      l: hsl[2] * 100,  
+    }
+  })
+);</code></pre>
           </div>
           <div class="l-sec__controls">
             <label>
@@ -1688,7 +1746,7 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="installation">npm install poline</code></pre>
+            <pre class="code-ex"><code class="language-bash" data-code="installation">npm install poline</code></pre>
           </div>
           <p>
             You can also use the <a href="https://unpkg.com/poline" target="_blank" rel="noopener noreferrer">unpkg CDN</a> to include the library in your project.
@@ -1699,7 +1757,7 @@ poline.colorsCSSoklch</code></pre></div>
           </p>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-html" data-code="cdn">import { 
+            <pre class="code-ex"><code class="language-js" data-code="cdn">import { 
   Poline 
 } from 'https://unpkg.com/poline?module'</code></pre></div>
         </div>
@@ -1765,7 +1823,19 @@ poline.colorsCSSoklch</code></pre></div>
           <h2 id="examples">Playground Code</h2>
           <div class="code-example">
             <button data-copy-code>Copy Code</button>
-            <pre class="code-ex"><code class="language-js" data-code="playground"></code></pre>
+            <pre class="code-ex"><code class="language-js" data-code="playground">new Poline({
+  anchorColors: [
+    [129, 0.01, 0.93],
+    [299, 0.12, 0.35]
+  ],
+  numPoints: 4,
+  positionFunctionX: 
+    positionFunctions['sinusoidalPosition'],
+  positionFunctionY: 
+    positionFunctions['quadraticPosition'],
+  positionFunctionZ: 
+    positionFunctions['linearPosition'], 
+});</code></pre>
           </div>
           <p>
             The code above mimics the current state of the playground.
