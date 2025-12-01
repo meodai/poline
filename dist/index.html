@@ -655,6 +655,11 @@
         transition-delay: 50ms, 200ms;
         /*box-shadow: inset 0 0 0 1px var(--onBg);*/
       }
+
+      &:focus {
+        outline: 1px solid var(--onBg);
+        outline: none;
+      }
     }
 
     .l-wrap {
@@ -901,21 +906,25 @@
         }
         &:hover {
           box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.2),
+                      0 0 0 1px var(--c1),            
                       0 0 0 2px var(--bg);
         }
 
         &:active {
-          box-shadow: inset 0 0 0 1px var(--c0),
+          box-shadow: inset 0 0 0 1px var(--onBg),
+                      0 0 0 2px var(--c1),
                       0 0 0 1px var(--bg);
         }
       }
     }
 
-    .code-example:hover > button {
+    .code-example:hover > button,
+    .code-example:focus-within > button {
       opacity: 1;
       transform: translateY(-50%);
       transition-delay: 0.05s, 0s, 0.1s;
       color: var(--onBg);
+      outline: none;
     }
     .code-ex {
       position: relative;
@@ -1089,7 +1098,8 @@
       margin-left: -0.4em;
       margin-top: -0.2em;
     }
-    .kofi:hover img {
+    .kofi:hover img,
+    .kofi:focus img {
       animation: shakeup 0.5s ease;
     }
     .kofi img {
