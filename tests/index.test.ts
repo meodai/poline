@@ -7,6 +7,7 @@ import {
   hslToPoint,
   randomHSLPair,
   randomHSLTriple,
+  clampToCircle,
 } from '../src/index';
 
 describe('ColorPoint', () => {
@@ -717,5 +718,174 @@ describe('Position Functions', () => {
     expect(p100).toBe(1);
     expect(p25).toBeLessThan(0.5);
     expect(p75).toBeGreaterThan(0.5);
+  });
+});
+
+describe('clampToCircle', () => {
+  it('should not modify points inside the circle', () => {
+    const [x, y] = clampToCircle(0.5, 0.5); // center
+    expect(x).toBe(0.5);
+    expect(y).toBe(0.5);
+
+    const [x2, y2] = clampToCircle(0.6, 0.6); // inside
+    expect(x2).toBe(0.6);
+    expect(y2).toBe(0.6);
+  });
+
+  it('should clamp points outside the circle to the boundary', () => {
+    // Point at (1, 0.5) is 0.5 units to the right of center, on the edge
+    const [x1, y1] = clampToCircle(1, 0.5);
+    expect(x1).toBeCloseTo(1);
+    expect(y1).toBeCloseTo(0.5);
+
+    // Point at (1.5, 0.5) is outside, should be clamped to edge
+    const [x2, y2] = clampToCircle(1.5, 0.5);
+    expect(x2).toBeCloseTo(1);
+    expect(y2).toBeCloseTo(0.5);
+
+    // Point at (0.9, 0.9) is outside the circle
+    const [x3, y3] = clampToCircle(0.9, 0.9);
+    const dist = Math.sqrt((x3 - 0.5) ** 2 + (y3 - 0.5) ** 2);
+    expect(dist).toBeCloseTo(0.5);
+  });
+
+  it('should preserve direction when clamping', () => {
+    // Point far to the upper right
+    const [x, y] = clampToCircle(1.5, 1.5);
+    // Should be on the edge in the same direction
+    expect(x - 0.5).toBeCloseTo(y - 0.5); // diagonal
+    expect(x).toBeGreaterThan(0.5);
+    expect(y).toBeGreaterThan(0.5);
+  });
+});
+
+describe('Poline clampToCircle option', () => {
+  it('should initialize with clampToCircle default false', () => {
+    const poline = new Poline();
+    expect(poline.clampToCircle).toBe(false);
+  });
+
+  it('should initialize with clampToCircle option', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      clampToCircle: true,
+    });
+    expect(poline.clampToCircle).toBe(true);
+  });
+
+  it('should allow setting clampToCircle after initialization', () => {
+    const poline = new Poline();
+    expect(poline.clampToCircle).toBe(false);
+    poline.clampToCircle = true;
+    expect(poline.clampToCircle).toBe(true);
+  });
+
+  it('should clamp addAnchorPoint when clamp option is true', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+    });
+
+    // Add point outside circle with clamp: true
+    const point = poline.addAnchorPoint({ xyz: [0.9, 0.9, 0.5], clamp: true });
+    const dist = Math.sqrt((point.x - 0.5) ** 2 + (point.y - 0.5) ** 2);
+    expect(dist).toBeCloseTo(0.5);
+  });
+
+  it('should not clamp addAnchorPoint when clamp option is false', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+    });
+
+    // Add point outside circle without clamping
+    const point = poline.addAnchorPoint({ xyz: [0.9, 0.9, 0.5], clamp: false });
+    expect(point.x).toBe(0.9);
+    expect(point.y).toBe(0.9);
+  });
+
+  it('should use class default clampToCircle when clamp option not specified', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      clampToCircle: true,
+    });
+
+    // Add point outside circle, should use class default (true)
+    const point = poline.addAnchorPoint({ xyz: [0.9, 0.9, 0.5] });
+    const dist = Math.sqrt((point.x - 0.5) ** 2 + (point.y - 0.5) ** 2);
+    expect(dist).toBeCloseTo(0.5);
+  });
+
+  it('should override class default with explicit clamp: false', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      clampToCircle: true,
+    });
+
+    // Add point outside circle with explicit clamp: false
+    const point = poline.addAnchorPoint({ xyz: [0.9, 0.9, 0.5], clamp: false });
+    expect(point.x).toBe(0.9);
+    expect(point.y).toBe(0.9);
+  });
+
+  it('should clamp updateAnchorPoint when clamp option is true', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+    });
+
+    // Update point to outside circle with clamp: true
+    const point = poline.updateAnchorPoint({
+      pointIndex: 0,
+      xyz: [0.9, 0.9, 0.5],
+      clamp: true,
+    });
+    const dist = Math.sqrt((point.x - 0.5) ** 2 + (point.y - 0.5) ** 2);
+    expect(dist).toBeCloseTo(0.5);
+  });
+
+  it('should use class default for updateAnchorPoint when clamp not specified', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      clampToCircle: true,
+    });
+
+    // Update point to outside circle, should use class default (true)
+    const point = poline.updateAnchorPoint({
+      pointIndex: 0,
+      xyz: [0.9, 0.9, 0.5],
+    });
+    const dist = Math.sqrt((point.x - 0.5) ** 2 + (point.y - 0.5) ** 2);
+    expect(dist).toBeCloseTo(0.5);
+  });
+
+  it('should preserve z coordinate when clamping', () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+    });
+
+    const point = poline.addAnchorPoint({ xyz: [0.9, 0.9, 0.8], clamp: true });
+    expect(point.z).toBe(0.8);
   });
 });
