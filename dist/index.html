@@ -2923,7 +2923,8 @@ poline.invertedLightness = ${isInverted};`,
   function updateCodeBlock(name, ...args) {
     const $code = document.querySelector(`[data-code="${name}"]`);
     if ($code && codeExamples[name]) {
-      $code.innerHTML = codeExamples[name](...args);
+      $code.textContent = codeExamples[name](...args);
+      $code.classList.remove('hljs');
       hljs.highlightElement($code);
     }
   }
@@ -3123,8 +3124,6 @@ poline.invertedLightness = ${isInverted};`,
       console.log('colorSpace');
       poline.invertedLightness = systemDarkMode;
       invertedLightness = systemDarkMode;
-      const $code = section.target.querySelector('[data-code]');
-      hljs.highlightElement($code);
       updateSVG();
       updateFullCode();
     },
@@ -3176,9 +3175,7 @@ poline.invertedLightness = ${isInverted};`,
     section: 'installation',
     fn: (section) => {
       console.log('Installation');
-      // Static examples, just highlight them
-      const $code = section.target.querySelectorAll('[data-code]');
-      $code.forEach($c => hljs.highlightElement($c));
+      // Static examples already highlighted in initCodeExamples
     },
   },
   {
