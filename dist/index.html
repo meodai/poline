@@ -2933,7 +2933,6 @@ poline.invertedLightness = ${isInverted};`,
   const storyScripts = [{
     section: 'intro',
     fn: () => {
-      console.log('intro');
       // Disable saturation rings when scrolling back to intro
       $picker.classList.remove('rings-enabled');
       poline = new Poline({
@@ -2950,7 +2949,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'summoning',
     fn: (section) => {
-      console.log('summoning');
       exStartHue = Math.random() * 360;
       poline = new Poline({
         anchorColors: [
@@ -2970,7 +2968,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'points',
     fn: (section) => {
-      console.log('points');
       poline.numPoints = 6;
       updateSVG();
       updateFullCode();
@@ -2980,7 +2977,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'anchors',
     fn: (section) => {
-      console.log('anchors');
       if (poline.anchorPoints.length > 2) {
         poline.anchorPoints.forEach((anchor, i) => {
           if (i > 1) poline.removeAnchorPoint({point: anchor});
@@ -2995,7 +2991,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'closedLoop',
     fn: (section) => {
-      console.log('closedLoop');
       poline.closedLoop = true;
       updateCodeBlock('closedLoop');
       updateSVG();
@@ -3005,7 +3000,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'positionFunction',
     fn: (section) => {
-      console.log('Position Function');
       if (poline.anchorPoints.length > 3) {
         poline.anchorPoints.forEach((anchor, i) => {
           if (i > 1) poline.removeAnchorPoint({ point: anchor });
@@ -3024,7 +3018,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'positionFunctions',
     fn: (section) => {
-      console.log('Position Functions');
       if (poline.anchorPoints.length > 3) {
         poline.anchorPoints.forEach((anchor, i) => {
           if (i > 1) poline.removeAnchorPoint({point: anchor});
@@ -3058,7 +3051,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'UpdatingAnchors',
     fn: (section) => {
-      console.log('Updating Anchors');
       poline.anchorPoints.forEach((anchor, i) => {
         const hsl = anchor.color;
         poline.updateAnchorPoint({
@@ -3078,14 +3070,12 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'closestAnchor',
     fn: (section) => {
-      console.log('closestAnchor');
       updateCodeBlock('closestAnchor');
     },
   },
   {
     section: 'removeAnchor',
     fn: (section) => {
-      console.log('removeAnchor');
 
       poline.closedLoop = false;
       if (poline.anchorPoints.length < 3) {
@@ -3105,7 +3095,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'invertedLightness',
     fn: (section) => {
-      console.log('invertedLightness');
       poline.invertedLightness = !systemDarkMode;
       invertedLightness = !systemDarkMode;
       updateCodeBlock('invertedLightness');
@@ -3121,7 +3110,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'colorSpace',
     fn: (section) => {
-      console.log('colorSpace');
       poline.invertedLightness = systemDarkMode;
       invertedLightness = systemDarkMode;
       updateSVG();
@@ -3131,7 +3119,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'hueShift',
     fn: (section) => {
-      console.log('hueShift');
       updateCodeBlock('hueShift');
       globalInterval = setInterval(() => {
         poline.shiftHue(1);
@@ -3143,7 +3130,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'getColorAt',
     fn: (section) => {
-      console.log('getColorAt');
       const $colorAt = section.target.querySelector('[data-colorat]');
       const $colorSample = section.target.querySelector('.color-at-sample');
       
@@ -3165,7 +3151,6 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'getColors',
     fn: (section) => {
-      console.log('getColors');
       updateCodeBlock('getColors');
       updateSVG();
       updateFullCode();
@@ -3174,15 +3159,12 @@ poline.invertedLightness = ${isInverted};`,
   {
     section: 'installation',
     fn: (section) => {
-      console.log('Installation');
       // Static examples already highlighted in initCodeExamples
     },
   },
   {
     section: 'playground',
     fn: (section) => {
-      console.log('Playground');
-
       // Enable saturation rings
       $picker.classList.add('rings-enabled');
 
