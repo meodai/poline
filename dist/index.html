@@ -2131,6 +2131,11 @@ const LCHColors = [...poline.colors].map(
         context.fill();
       }
 
+      context.beginPath();
+      context.arc(0 + centerX, 0 + centerY, radius * 0.35, 0, 2 * Math.PI);
+      context.fillStyle = `rgb(255 255 255 / 1)`;
+      context.fill();
+
 
       $favicon.href = $can.toDataURL('image/png');
     }
