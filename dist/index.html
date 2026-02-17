@@ -1088,6 +1088,40 @@
       height: 0;
     }
 
+    .token-beam {
+      margin-top: 10vmin;
+      font-size: 1.4em;
+    }
+    .token-beam p {
+      font-size: .8em;
+    }
+    .token-beam__title + .l-sec__controls{
+      margin-top: 0;
+    }
+    .token-beam__token {
+      cursor: pointer;
+      user-select: all;
+      text-decoration: underline;
+      padding-top: 0.25em;
+      font-size: .9rem;
+      display: block;
+    }
+    .token-beam__token:hover {
+      border-color: var(--c0);
+      text-decoration: none;
+    }
+    .token-beam__status {
+      font-style: normal;
+    }
+    .token-beam__status[data-state="paired"] {
+      opacity: 1;
+      color: var(--c0);
+    }
+    .token-beam__status[data-state="error"] {
+      opacity: 1;
+      color: red;
+    }
+
     .support {
       font-size: 1.4em;
       margin-top: 10vmin;
@@ -1870,6 +1904,28 @@ const LCHColors = [...poline.colors].map(
           
             </div>
 
+            <div class="token-beam">
+              <h2 class="subtitle token-beam__title">Export</h2>
+              
+              <div class="l-sec__controls">
+                <label>
+                  <span>
+                    <span class="t">Token Beam</span>
+                    <em class="token-beam__status" data-tb-status></em>
+                  </span>
+                  <i>
+                    <span class="token-beam__token" data-tb-token title="Click to copy">connecting…</span>
+                  </i>
+                </label>
+              </div>
+              <p>
+                Beam your "<strong class="t">poline</strong>" palette directly into <a
+                  href="https://github.com/meodai/token-beam/releases/" target="_blank" rel="noopener">Figma, Aseprite, Blender or
+                  Adobe&nbsp;XD</a>. Copy the session token below, paste it in your design tool's Token Beam plugin and every color
+                update syncs instantly.
+              </p>
+            </div>
+
             <div class="support">
               <h2 class="subtitle support__title">Support</h2>
               <p>
@@ -2531,6 +2587,10 @@ const LCHColors = [...poline.colors].map(
       }, 100);
 
       updateUI();
+
+      document.dispatchEvent(
+        new CustomEvent('poline:colors', { detail: { colors } })
+      );
     }
 
     updateSVG();
@@ -3302,6 +3362,82 @@ poline.invertedLightness = ${isInverted};`,
     }, 1500);
   }, 2000);
   </script>
-</body>
 
+  <script type="module">
+    import { SourceSession, createCollection } from 'https://esm.sh/token-beam@1.9.0';
+
+    const $token = document.querySelector('[data-tb-token]');
+    const $status = document.querySelector('[data-tb-status]');
+    let session = null;
+    let lastColors = [];
+
+    function setStatus(text, state = '') {
+      $status.textContent = text;
+      $status.dataset.state = state;
+    }
+
+    function syncColors(colors) {
+      if (!session || !colors.length) return;
+      const tokens = {};
+      colors.forEach((hex, i) => {
+        tokens[`${String(i + 1).padStart(2, '0')}`] = hex;
+      });
+      session.sync(createCollection(`Poline`, tokens));
+    }
+
+    async function initTokenBeam() {
+      session = new SourceSession({
+        clientType: 'web',
+        origin: 'Poline Color Palette',
+      });
+
+      session.on('paired', ({ sessionToken }) => {
+        $token.textContent = sessionToken;
+        $token.title = 'Click to copy';
+        setStatus('waiting for plugin…', '');
+      });
+
+      session.on('peer-connected', ({ clientType }) => {
+        setStatus(`connected to ${clientType}`, 'paired');
+        syncColors(lastColors);
+      });
+
+      session.on('peer-disconnected', () => {
+        setStatus('plugin disconnected', '');
+      });
+
+      session.on('error', ({ message }) => {
+        setStatus(message, 'error');
+      });
+
+      session.on('disconnected', () => {
+        setStatus('reconnecting…', '');
+      });
+
+      await session.connect();
+    }
+
+    $token.addEventListener('click', () => {
+      const text = $token.textContent;
+      if (text && text.startsWith('beam://')) {
+        navigator.clipboard.writeText(text);
+        const prev = $status.textContent;
+        const prevState = $status.dataset.state;
+        setStatus('copied!', '');
+        setTimeout(() => setStatus(prev, prevState), 1500);
+      }
+    });
+
+    document.addEventListener('poline:colors', (e) => {
+      lastColors = e.detail.colors;
+      if (!session || session.getState() !== 'paired') return;
+      syncColors(lastColors);
+    });
+
+    initTokenBeam().catch(err => {
+      console.error('[token-beam]', err);
+      setStatus('connection failed', 'error');
+    });
+  </script>
+</body>
 </html>
