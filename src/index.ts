@@ -653,15 +653,9 @@ export class Poline {
       throw new Error("Must have at least two anchor points");
     }
 
-    let apid;
+    const apid = index !== undefined ? index : this.anchorPoints.indexOf(point!);
 
-    if (index !== undefined) {
-      apid = index;
-    } else if (point) {
-      apid = this.anchorPoints.indexOf(point);
-    }
-
-    if (apid > -1 && apid < this.anchorPoints.length) {
+    if (apid >= 0 && apid < this.anchorPoints.length) {
       this.anchorPoints.splice(apid, 1);
       this.updateAnchorPairs();
     } else {
