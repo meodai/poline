@@ -642,6 +642,130 @@ describe("Poline", () => {
   });
 });
 
+describe("cssColors method", () => {
+  it("should return colors in the specified format", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      numPoints: 2,
+    });
+
+    const hsl = poline.cssColors("hsl");
+    const lch = poline.cssColors("lch");
+    const oklch = poline.cssColors("oklch");
+
+    hsl.forEach((c) => expect(c).toMatch(/^hsl\(/));
+    lch.forEach((c) => expect(c).toMatch(/^lch\(/));
+    oklch.forEach((c) => expect(c).toMatch(/^oklch\(/));
+  });
+
+  it("should default to hsl format", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      numPoints: 2,
+    });
+
+    const defaultColors = poline.cssColors();
+    const hslColors = poline.cssColors("hsl");
+    expect(defaultColors).toEqual(hslColors);
+  });
+
+  it("should match convenience getters", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      numPoints: 2,
+    });
+
+    expect(poline.cssColors("hsl")).toEqual(poline.colorsCSS);
+    expect(poline.cssColors("lch")).toEqual(poline.colorsCSSlch);
+    expect(poline.cssColors("oklch")).toEqual(poline.colorsCSSoklch);
+  });
+});
+
+describe("closed-loop color count", () => {
+  it("should not duplicate endpoint colors with 2 anchors", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      closedLoop: true,
+      numPoints: 4,
+    });
+
+    const openPoline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [180, 1, 0.5],
+      ],
+      closedLoop: false,
+      numPoints: 4,
+    });
+
+    // Closed loop with 2 anchors has 2 segments, open has 1
+    // But closed loop pops the last color to avoid duplication
+    const closedColors = poline.colors;
+    const openColors = openPoline.colors;
+    expect(closedColors.length).toBeGreaterThan(openColors.length);
+  });
+
+  it("should not duplicate endpoint colors with 3 anchors", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [120, 1, 0.5],
+        [240, 1, 0.5],
+      ],
+      closedLoop: true,
+      numPoints: 3,
+    });
+
+    const colors = poline.colors;
+    const cssColors = poline.colorsCSS;
+
+    // colors and cssColors should have the same count
+    expect(colors.length).toBe(cssColors.length);
+
+    // First and last color should NOT be the same (last is popped)
+    const first = colors[0];
+    const last = colors[colors.length - 1];
+    const isSame =
+      Math.abs(first[0] - last[0]) < 0.01 &&
+      Math.abs(first[1] - last[1]) < 0.01 &&
+      Math.abs(first[2] - last[2]) < 0.01;
+    expect(isSame).toBe(false);
+  });
+
+  it("cssColors should also remove duplicate in closed loop", () => {
+    const poline = new Poline({
+      anchorColors: [
+        [0, 1, 0.5],
+        [120, 1, 0.5],
+        [240, 1, 0.5],
+      ],
+      closedLoop: true,
+      numPoints: 3,
+    });
+
+    const colors = poline.colors;
+    const cssHsl = poline.cssColors("hsl");
+    const cssLch = poline.cssColors("lch");
+    const cssOklch = poline.cssColors("oklch");
+
+    expect(cssHsl.length).toBe(colors.length);
+    expect(cssLch.length).toBe(colors.length);
+    expect(cssOklch.length).toBe(colors.length);
+  });
+});
+
 describe("Position Functions", () => {
   it("should have all expected position functions", () => {
     expect(positionFunctions.linearPosition).toBeDefined();
