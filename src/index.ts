@@ -428,19 +428,17 @@ export class Poline {
 
   private _clampToCircle = false;
 
-  constructor(
-    {
-      anchorColors = randomHSLPair(),
-      numPoints = 4,
-      positionFunction = sinusoidalPosition,
-      positionFunctionX,
-      positionFunctionY,
-      positionFunctionZ,
-      closedLoop,
-      invertedLightness,
-      clampToCircle,
-    }: PolineOptions = {}
-  ) {
+  constructor({
+    anchorColors = randomHSLPair(),
+    numPoints = 4,
+    positionFunction = sinusoidalPosition,
+    positionFunctionX,
+    positionFunctionY,
+    positionFunctionZ,
+    closedLoop,
+    invertedLightness,
+    clampToCircle,
+  }: PolineOptions = {}) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
     }
@@ -649,7 +647,10 @@ export class Poline {
       throw new Error("Must have at least two anchor points");
     }
 
-    const apid = index !== undefined ? index : this.anchorPoints.indexOf(point!);
+    const apid =
+      index !== undefined
+        ? index
+        : this.anchorPoints.indexOf(point as ColorPoint);
 
     if (apid >= 0 && apid < this.anchorPoints.length) {
       this.anchorPoints.splice(apid, 1);
