@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 export type FuncNumberReturn = (arg0: number) => Vector2;
 export type Vector2 = [number, number];
 export type Vector3 = [number, ...Vector2];
@@ -594,7 +593,7 @@ export class Poline {
         p1position,
         p2position,
         this._numPoints,
-        shouldInvertEase ? true : false,
+        shouldInvertEase,
         this.positionFunctionX,
         this.positionFunctionY,
         this.positionFunctionZ
