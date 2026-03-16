@@ -363,6 +363,7 @@ export class ColorPoint {
     )}%)`;
   }
 
+  /** Approximate OKLCH CSS string (linearly rescaled from HSL, not a true colorimetric conversion) */
   get oklchCSS(): string {
     const [h, s, l] = this.color;
     return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
@@ -370,6 +371,7 @@ export class ColorPoint {
     )})`;
   }
 
+  /** Approximate LCH CSS string (linearly rescaled from HSL, not a true colorimetric conversion) */
   get lchCSS(): string {
     const [h, s, l] = this.color;
     return `lch(${(l * 100).toFixed(2)}% ${(s * 150).toFixed(2)} ${h.toFixed(
