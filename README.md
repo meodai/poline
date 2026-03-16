@@ -502,7 +502,7 @@ constructor(options?: PolineOptions)
 - `anchorPoints: ColorPoint[]` - Get/set the anchor points
 - `closedLoop: boolean` - Get/set whether the palette forms a closed loop
 - `invertedLightness: boolean` - Get/set whether lightness calculation is inverted
-- `clampToCircle: boolean` - Get/set whether anchor point coordinates are clamped to the color wheel
+- `clampToCircle: boolean` - Get/set whether future anchor point operations clamp coordinates to the color wheel
 - `flattenedPoints: ColorPoint[]` - Get all points in a flat array
 - `colors: Vector3[]` - Get all colors as HSL arrays
 - `colorsCSS: string[]` - Get all colors as CSS HSL strings
