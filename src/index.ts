@@ -438,12 +438,7 @@ export class Poline {
       closedLoop,
       invertedLightness,
       clampToCircle,
-    }: PolineOptions = {
-      anchorColors: randomHSLPair(),
-      numPoints: 4,
-      positionFunction: sinusoidalPosition,
-      closedLoop: false,
-    }
+    }: PolineOptions = {}
   ) {
     if (!anchorColors || anchorColors.length < 2) {
       throw new Error("Must have at least two anchor colors");
