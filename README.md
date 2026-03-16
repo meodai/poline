@@ -99,7 +99,7 @@ poline.addAnchorPoint({
 
 ## Clamping to Circle
 
-When working with XYZ coordinates, you may want to ensure anchor points stay within the valid color wheel (a circle of radius 0.5 centered at 0.5, 0.5). The `clampToCircle` option constrains coordinates to remain inside this boundary.
+When working with XYZ coordinates, you may want to ensure anchor points stay within the valid color wheel (a circle of radius 0.5 centered at 0.5, 0.5). The `clampToCircle` option constrains coordinates to remain inside this boundary. Note: this only affects future `addAnchorPoint` and `updateAnchorPoint` calls — existing anchor points are not retroactively clamped.
 
 You can set a default behavior for all anchor operations:
 
