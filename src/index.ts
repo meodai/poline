@@ -423,8 +423,6 @@ export class Poline {
 
   private connectLastAndFirstAnchor = false;
 
-  private _animationFrame: null | number = null;
-
   private _invertedLightness = false;
 
   private _clampToCircle = false;

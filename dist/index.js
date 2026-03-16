@@ -9,14 +9,19 @@ var poline = (() => {
       __defProp(target, name, { get: all[name], enumerable: true });
   };
   var __copyProps = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
+    if ((from && typeof from === "object") || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
         if (!__hasOwnProp.call(to, key) && key !== except)
-          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+          __defProp(to, key, {
+            get: () => from[key],
+            enumerable:
+              !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+          });
     }
     return to;
   };
-  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var __toCommonJS = (mod) =>
+    __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // src/index.ts
   var src_exports = {};
@@ -28,7 +33,7 @@ var poline = (() => {
     pointToHSL: () => pointToHSL,
     positionFunctions: () => positionFunctions,
     randomHSLPair: () => randomHSLPair,
-    randomHSLTriple: () => randomHSLTriple
+    randomHSLTriple: () => randomHSLTriple,
   });
   var pointToHSL = (xyz, invertedLightness) => {
     const [x, y, z] = xyz;
@@ -53,9 +58,17 @@ var poline = (() => {
     const z = s;
     return [x, y, z];
   };
-  var randomHSLPair = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random()], lightnesses = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]) => [
+  var randomHSLPair = (
+    startHue = Math.random() * 360,
+    saturations = [Math.random(), Math.random()],
+    lightnesses = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]
+  ) => [
     [startHue, saturations[0], lightnesses[0]],
-    [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]]
+    [
+      (startHue + 60 + Math.random() * 180) % 360,
+      saturations[1],
+      lightnesses[1],
+    ],
   ];
   var clampToCircle = (x, y) => {
     const cx = 0.5;
@@ -66,18 +79,38 @@ var poline = (() => {
     if (dist <= 0.5) {
       return [x, y];
     }
-    return [cx + dx / dist * 0.5, cy + dy / dist * 0.5];
+    return [cx + (dx / dist) * 0.5, cy + (dy / dist) * 0.5];
   };
-  var randomHSLTriple = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random(), Math.random()], lightnesses = [
-    0.75 + Math.random() * 0.2,
-    Math.random() * 0.2,
-    0.75 + Math.random() * 0.2
-  ]) => [
+  var randomHSLTriple = (
+    startHue = Math.random() * 360,
+    saturations = [Math.random(), Math.random(), Math.random()],
+    lightnesses = [
+      0.75 + Math.random() * 0.2,
+      Math.random() * 0.2,
+      0.75 + Math.random() * 0.2,
+    ]
+  ) => [
     [startHue, saturations[0], lightnesses[0]],
-    [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]],
-    [(startHue + 60 + Math.random() * 180) % 360, saturations[2], lightnesses[2]]
+    [
+      (startHue + 60 + Math.random() * 180) % 360,
+      saturations[1],
+      lightnesses[1],
+    ],
+    [
+      (startHue + 60 + Math.random() * 180) % 360,
+      saturations[2],
+      lightnesses[2],
+    ],
   ];
-  var vectorOnLine = (t, p1, p2, invert = false, fx = (t2, invert2) => invert2 ? 1 - t2 : t2, fy = (t2, invert2) => invert2 ? 1 - t2 : t2, fz = (t2, invert2) => invert2 ? 1 - t2 : t2) => {
+  var vectorOnLine = (
+    t,
+    p1,
+    p2,
+    invert = false,
+    fx = (t2, invert2) => (invert2 ? 1 - t2 : t2),
+    fy = (t2, invert2) => (invert2 ? 1 - t2 : t2),
+    fz = (t2, invert2) => (invert2 ? 1 - t2 : t2)
+  ) => {
     const tModifiedX = fx(t, invert);
     const tModifiedY = fy(t, invert);
     const tModifiedZ = fz(t, invert);
@@ -86,7 +119,15 @@ var poline = (() => {
     const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
     return [x, y, z];
   };
-  var vectorsOnLine = (p1, p2, numPoints = 4, invert = false, fx = (t, invert2) => invert2 ? 1 - t : t, fy = (t, invert2) => invert2 ? 1 - t : t, fz = (t, invert2) => invert2 ? 1 - t : t) => {
+  var vectorsOnLine = (
+    p1,
+    p2,
+    numPoints = 4,
+    invert = false,
+    fx = (t, invert2) => (invert2 ? 1 - t : t),
+    fy = (t, invert2) => (invert2 ? 1 - t : t),
+    fz = (t, invert2) => (invert2 ? 1 - t : t)
+  ) => {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
       const [x, y, z] = vectorOnLine(
@@ -131,9 +172,9 @@ var poline = (() => {
   };
   var sinusoidalPosition = (t, reverse = false) => {
     if (reverse) {
-      return 1 - Math.sin((1 - t) * Math.PI / 2);
+      return 1 - Math.sin(((1 - t) * Math.PI) / 2);
     }
-    return Math.sin(t * Math.PI / 2);
+    return Math.sin((t * Math.PI) / 2);
   };
   var asinusoidalPosition = (t, reverse = false) => {
     if (reverse) {
@@ -159,7 +200,7 @@ var poline = (() => {
     sinusoidalPosition,
     asinusoidalPosition,
     arcPosition,
-    smoothStepPosition
+    smoothStepPosition,
   };
   var distance = (p1, p2, hueMode = false) => {
     const a1 = p1[0];
@@ -177,11 +218,7 @@ var poline = (() => {
     return Math.sqrt(a * a + b * b + c * c);
   };
   var ColorPoint = class {
-    constructor({
-      xyz,
-      color,
-      invertedLightness = false
-    } = {}) {
+    constructor({ xyz, color, invertedLightness = false } = {}) {
       this.x = 0;
       this.y = 0;
       this.z = 0;
@@ -190,13 +227,9 @@ var poline = (() => {
       this._invertedLightness = invertedLightness;
       this.positionOrColor({ xyz, color, invertedLightness });
     }
-    positionOrColor({
-      xyz,
-      color,
-      invertedLightness = false
-    }) {
+    positionOrColor({ xyz, color, invertedLightness = false }) {
       this._invertedLightness = invertedLightness;
-      if (xyz && color || !xyz && !color) {
+      if ((xyz && color) || (!xyz && !color)) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
       } else if (xyz) {
         this.x = xyz[0];
@@ -232,15 +265,15 @@ var poline = (() => {
     }
     get hslCSS() {
       const [h, s, l] = this.color;
-      return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(l * 100).toFixed(
-        2
-      )}%)`;
+      return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(
+        l * 100
+      ).toFixed(2)}%)`;
     }
     get oklchCSS() {
       const [h, s, l] = this.color;
-      return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
-        2
-      )})`;
+      return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(
+        3
+      )} ${h.toFixed(2)})`;
     }
     get lchCSS() {
       const [h, s, l] = this.color;
@@ -267,22 +300,24 @@ var poline = (() => {
     }
   };
   var Poline = class {
-    constructor({
-      anchorColors = randomHSLPair(),
-      numPoints = 4,
-      positionFunction = sinusoidalPosition,
-      positionFunctionX,
-      positionFunctionY,
-      positionFunctionZ,
-      closedLoop,
-      invertedLightness,
-      clampToCircle: clampToCircle2
-    } = {
-      anchorColors: randomHSLPair(),
-      numPoints: 4,
-      positionFunction: sinusoidalPosition,
-      closedLoop: false
-    }) {
+    constructor(
+      {
+        anchorColors = randomHSLPair(),
+        numPoints = 4,
+        positionFunction = sinusoidalPosition,
+        positionFunctionX,
+        positionFunctionY,
+        positionFunctionZ,
+        closedLoop,
+        invertedLightness,
+        clampToCircle: clampToCircle2,
+      } = {
+        anchorColors: randomHSLPair(),
+        numPoints: 4,
+        positionFunction: sinusoidalPosition,
+        closedLoop: false,
+      }
+    ) {
       this._positionFunctionX = sinusoidalPosition;
       this._positionFunctionY = sinusoidalPosition;
       this._positionFunctionZ = sinusoidalPosition;
@@ -297,9 +332,12 @@ var poline = (() => {
         (point) => new ColorPoint({ color: point, invertedLightness })
       );
       this._numPoints = numPoints + 2;
-      this._positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
-      this._positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
-      this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
+      this._positionFunctionX =
+        positionFunctionX || positionFunction || sinusoidalPosition;
+      this._positionFunctionY =
+        positionFunctionY || positionFunction || sinusoidalPosition;
+      this._positionFunctionZ =
+        positionFunctionZ || positionFunction || sinusoidalPosition;
       this.connectLastAndFirstAnchor = closedLoop || false;
       this._invertedLightness = invertedLightness || false;
       this._clampToCircle = clampToCircle2 || false;
@@ -320,7 +358,11 @@ var poline = (() => {
         if (positionFunction.length !== 3) {
           throw new Error("Position function array must have 3 elements");
         }
-        if (typeof positionFunction[0] !== "function" || typeof positionFunction[1] !== "function" || typeof positionFunction[2] !== "function") {
+        if (
+          typeof positionFunction[0] !== "function" ||
+          typeof positionFunction[1] !== "function" ||
+          typeof positionFunction[2] !== "function"
+        ) {
           throw new Error("Position function array must have 3 functions");
         }
         this._positionFunctionX = positionFunction[0];
@@ -334,13 +376,16 @@ var poline = (() => {
       this.updateAnchorPairs();
     }
     get positionFunction() {
-      if (this._positionFunctionX === this._positionFunctionY && this._positionFunctionX === this._positionFunctionZ) {
+      if (
+        this._positionFunctionX === this._positionFunctionY &&
+        this._positionFunctionX === this._positionFunctionZ
+      ) {
         return this._positionFunctionX;
       }
       return [
         this._positionFunctionX,
         this._positionFunctionY,
-        this._positionFunctionZ
+        this._positionFunctionZ,
       ];
     }
     set positionFunctionX(positionFunctionX) {
@@ -379,11 +424,13 @@ var poline = (() => {
     }
     updateAnchorPairs() {
       this._anchorPairs = [];
-      const anchorPointsLength = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
+      const anchorPointsLength = this.connectLastAndFirstAnchor
+        ? this.anchorPoints.length
+        : this.anchorPoints.length - 1;
       for (let i = 0; i < anchorPointsLength; i++) {
         const pair = [
           this.anchorPoints[i],
-          this.anchorPoints[(i + 1) % this.anchorPoints.length]
+          this.anchorPoints[(i + 1) % this.anchorPoints.length],
         ];
         this._anchorPairs.push(pair);
       }
@@ -400,16 +447,15 @@ var poline = (() => {
           this.positionFunctionY,
           this.positionFunctionZ
         ).map(
-          (p) => new ColorPoint({ xyz: p, invertedLightness: this._invertedLightness })
+          (p) =>
+            new ColorPoint({
+              xyz: p,
+              invertedLightness: this._invertedLightness,
+            })
         );
       });
     }
-    addAnchorPoint({
-      xyz,
-      color,
-      insertAtIndex,
-      clamp
-    }) {
+    addAnchorPoint({ xyz, color, insertAtIndex, clamp }) {
       let finalXyz = xyz;
       const shouldClamp = clamp ?? this._clampToCircle;
       if (shouldClamp && xyz) {
@@ -420,7 +466,7 @@ var poline = (() => {
       const newAnchor = new ColorPoint({
         xyz: finalXyz,
         color,
-        invertedLightness: this._invertedLightness
+        invertedLightness: this._invertedLightness,
       });
       if (insertAtIndex !== void 0) {
         this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
@@ -430,10 +476,7 @@ var poline = (() => {
       this.updateAnchorPairs();
       return newAnchor;
     }
-    removeAnchorPoint({
-      point,
-      index
-    }) {
+    removeAnchorPoint({ point, index }) {
       if (!point && index === void 0) {
         throw new Error("Must provide a point or index");
       }
@@ -453,13 +496,7 @@ var poline = (() => {
         throw new Error("Point not found");
       }
     }
-    updateAnchorPoint({
-      point,
-      pointIndex,
-      xyz,
-      color,
-      clamp
-    }) {
+    updateAnchorPoint({ point, pointIndex, xyz, color, clamp }) {
       if (pointIndex !== void 0) {
         point = this.anchorPoints[pointIndex];
       }
@@ -479,27 +516,22 @@ var poline = (() => {
           point.position = xyz;
         }
       }
-      if (color)
-        point.hsl = color;
+      if (color) point.hsl = color;
       this.updateAnchorPairs();
       return point;
     }
-    getClosestAnchorPoint({
-      xyz,
-      hsl,
-      maxDistance = 1
-    }) {
+    getClosestAnchorPoint({ xyz, hsl, maxDistance = 1 }) {
       if (!xyz && !hsl) {
         throw new Error("Must provide a xyz or hsl");
       }
       let distances;
       if (xyz) {
-        distances = this.anchorPoints.map(
-          (anchor) => distance(anchor.position, xyz)
+        distances = this.anchorPoints.map((anchor) =>
+          distance(anchor.position, xyz)
         );
       } else if (hsl) {
-        distances = this.anchorPoints.map(
-          (anchor) => distance(anchor.hsl, hsl, true)
+        distances = this.anchorPoints.map((anchor) =>
+          distance(anchor.hsl, hsl, true)
         );
       }
       const minDistance = Math.min(...distances);
@@ -518,7 +550,7 @@ var poline = (() => {
     }
     set invertedLightness(newStatus) {
       this._invertedLightness = newStatus;
-      this.anchorPoints.forEach((p) => p.invertedLightness = newStatus);
+      this.anchorPoints.forEach((p) => (p.invertedLightness = newStatus));
       this.updateAnchorPairs();
     }
     get invertedLightness() {
@@ -540,7 +572,9 @@ var poline = (() => {
      * @returns {ColorPoint[]} A flat array of unique ColorPoint instances
      */
     get flattenedPoints() {
-      return this.points.flat().filter((p, i) => i != 0 ? i % this._numPoints : true);
+      return this.points
+        .flat()
+        .filter((p, i) => (i != 0 ? i % this._numPoints : true));
     }
     get colors() {
       const colors = this.flattenedPoints.map((p) => p.color);
@@ -553,7 +587,7 @@ var poline = (() => {
       const methods = {
         hsl: (p) => p.hslCSS,
         oklch: (p) => p.oklchCSS,
-        lch: (p) => p.lchCSS
+        lch: (p) => p.lchCSS,
       };
       const cssColors = this.flattenedPoints.map(methods[mode]);
       if (this.connectLastAndFirstAnchor) {
@@ -592,23 +626,34 @@ var poline = (() => {
       if (this.anchorPoints.length === 0) {
         throw new Error("No anchor points available");
       }
-      const totalSegments = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
-      const effectiveSegments = this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 ? 2 : totalSegments;
+      const totalSegments = this.connectLastAndFirstAnchor
+        ? this.anchorPoints.length
+        : this.anchorPoints.length - 1;
+      const effectiveSegments =
+        this.connectLastAndFirstAnchor && this.anchorPoints.length === 2
+          ? 2
+          : totalSegments;
       const segmentPosition = t * effectiveSegments;
       const segmentIndex = Math.floor(segmentPosition);
       const localT = segmentPosition - segmentIndex;
-      const actualSegmentIndex = segmentIndex >= effectiveSegments ? effectiveSegments - 1 : segmentIndex;
+      const actualSegmentIndex =
+        segmentIndex >= effectiveSegments
+          ? effectiveSegments - 1
+          : segmentIndex;
       const actualLocalT = segmentIndex >= effectiveSegments ? 1 : localT;
       const pair = this._anchorPairs[actualSegmentIndex];
       if (!pair || pair.length < 2 || !pair[0] || !pair[1]) {
         return new ColorPoint({
-          color: ((_a = this.anchorPoints[0]) == null ? void 0 : _a.color) || [0, 0, 0],
-          invertedLightness: this._invertedLightness
+          color: ((_a = this.anchorPoints[0]) == null ? void 0 : _a.color) || [
+            0, 0, 0,
+          ],
+          invertedLightness: this._invertedLightness,
         });
       }
       const p1position = pair[0].position;
       const p2position = pair[1].position;
-      const shouldInvertEase = this.shouldInvertEaseForSegment(actualSegmentIndex);
+      const shouldInvertEase =
+        this.shouldInvertEaseForSegment(actualSegmentIndex);
       const xyz = vectorOnLine(
         actualLocalT,
         p1position,
@@ -620,7 +665,7 @@ var poline = (() => {
       );
       return new ColorPoint({
         xyz,
-        invertedLightness: this._invertedLightness
+        invertedLightness: this._invertedLightness,
       });
     }
     /**
@@ -629,7 +674,12 @@ var poline = (() => {
      * @returns Whether easing should be inverted
      */
     shouldInvertEaseForSegment(segmentIndex) {
-      return !!(segmentIndex % 2 || this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 && segmentIndex === 0);
+      return !!(
+        segmentIndex % 2 ||
+        (this.connectLastAndFirstAnchor &&
+          this.anchorPoints.length === 2 &&
+          segmentIndex === 0)
+      );
     }
   };
   var { p5 } = globalThis;
@@ -637,9 +687,10 @@ var poline = (() => {
     console.info("p5 < 1.x detected, adding poline to p5 prototype");
     const poline = new Poline();
     p5.prototype.poline = poline;
-    const polineColors = () => poline.colors.map(
-      (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
-    );
+    const polineColors = () =>
+      poline.colors.map(
+        (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
+      );
     p5.prototype.registerMethod("polineColors", polineColors);
     globalThis.poline = poline;
     globalThis.polineColors = polineColors;

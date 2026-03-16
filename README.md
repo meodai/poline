@@ -19,9 +19,7 @@ I recommend using the **mjs** version of the library. This will allow you to use
 
 ```html
 <script type="module">
-  import { 
-    Poline 
-  } from 'https://unpkg.com/poline?module'
+  import { Poline } from "https://unpkg.com/poline?module";
 </script>
 ```
 
@@ -31,7 +29,7 @@ Begin your journey with **poline** by following this simple incantation:
 
 ```js
 // Import the magical construct
-import { Poline } from 'poline';
+import { Poline } from "poline";
 
 // Summon a new palette with default settings (random anchor colors)
 const poline = new Poline();
@@ -51,7 +49,7 @@ On the other hand, one can choose to provide their own **anchor** points, repres
 ```js
 new Poline({
   anchorColors: [
-    [309, 0.72, 0.80],
+    [309, 0.72, 0.8],
     [67, 0.32, 0.08],
     //...
   ],
@@ -80,13 +78,13 @@ The choice is yours, whether to provide your own anchor points during initializa
 
 ```js
 poline.addAnchorPoint({
-  color: [100, 0.91, 0.80]
+  color: [100, 0.91, 0.8],
 });
 
 // or
 
 poline.addAnchorPoint({
-  xyz: [0.43, 0.89, 0.91]
+  xyz: [0.43, 0.89, 0.91],
 });
 ```
 
@@ -95,7 +93,7 @@ You can also specify where to insert the new anchor by providing an `insertAtInd
 ```js
 poline.addAnchorPoint({
   color: [200, 0.5, 0.6],
-  insertAtIndex: 1 // Insert after the first anchor
+  insertAtIndex: 1, // Insert after the first anchor
 });
 ```
 
@@ -122,21 +120,21 @@ You can also override the default on a per-call basis:
 // Clamp this specific anchor point
 poline.addAnchorPoint({
   xyz: [0.9, 0.9, 0.5],
-  clamp: true  // Will be clamped to stay within color wheel
+  clamp: true, // Will be clamped to stay within color wheel
 });
 
 // Override the default to disable clamping for this call
 poline.updateAnchorPoint({
   pointIndex: 0,
   xyz: [1.0, 1.0, 0.5],
-  clamp: false  // Explicitly disable clamping
+  clamp: false, // Explicitly disable clamping
 });
 ```
 
 The `clampToCircle` helper function is also exported for use in your own code:
 
 ```js
-import { clampToCircle } from 'poline';
+import { clampToCircle } from "poline";
 
 const [clampedX, clampedY] = clampToCircle(0.9, 0.9);
 // Returns coordinates clamped to circle boundary
@@ -151,7 +149,7 @@ The ability to update existing anchors is made possible through the '**updateAnc
 ```js
 poline.updateAnchorPoint({
   point: poline.anchorPoints[0],
-  color: [286, 0.22, 0.22]
+  color: [286, 0.22, 0.22],
 });
 ```
 
@@ -160,7 +158,7 @@ You can also update an anchor by its index:
 ```js
 poline.updateAnchorPoint({
   pointIndex: 1,
-  color: [120, 0.8, 0.5]
+  color: [120, 0.8, 0.5],
 });
 ```
 
@@ -171,13 +169,10 @@ The **position function** in "**Poline**" plays a crucial role in determining th
 A position function is a mathematical function that maps a value **between 0 and 1** to another value between 0 and 1. By definition the same position function for all axes "**Poline**" will draw a straight line between the anchors. The chosen function will determine the distribution of colors between the anchors.
 
 ```js
-import {
-Poline, positionFunctions
-} from 'poline';
+import { Poline, positionFunctions } from "poline";
 
 new Poline({
-  positionFunction: 
-    positionFunctions.linearPosition,
+  positionFunction: positionFunctions.linearPosition,
 });
 ```
 
@@ -196,12 +191,12 @@ The following position functions are available and can be included by importing 
 
 Here's a visual representation of how these functions affect the distribution:
 
-| Function Name | Effect on Color Distribution |
-|---------------|------------------------------|
-| linearPosition | Even distribution of colors along the path |
+| Function Name       | Effect on Color Distribution                                |
+| ------------------- | ----------------------------------------------------------- |
+| linearPosition      | Even distribution of colors along the path                  |
 | exponentialPosition | Colors cluster near one end, spreading out toward the other |
-| sinusoidalPosition | Smooth acceleration and deceleration of colors |
-| arcPosition | Colors follow an arc-like distribution |
+| sinusoidalPosition  | Smooth acceleration and deceleration of colors              |
+| arcPosition         | Colors follow an arc-like distribution                      |
 
 ## Arcs
 
@@ -209,12 +204,9 @@ By defining **different position functions for each axis**, you can control the 
 
 ```js
 new Poline({
-  positionFunctionX: 
-    positionFunctions.sinusoidalPosition,
-  positionFunctionY: 
-    positionFunctions.quadraticPosition,
-  positionFunctionZ: 
-    positionFunctions.linearPosition,
+  positionFunctionX: positionFunctions.sinusoidalPosition,
+  positionFunctionY: positionFunctions.quadraticPosition,
+  positionFunctionZ: positionFunctions.linearPosition,
 });
 ```
 
@@ -237,6 +229,7 @@ With the power of hue shifting, "**Poline**" provides yet another level of custo
 ```js
 poline.shiftHue(1);
 ```
+
 The amount is a int or float between -Infinity and Infinity. It will permanently shift the hue of all colors in the palette.
 
 ## Color At Position
@@ -259,8 +252,8 @@ const endColor = poline.getColorAt(1);
 const quarterColor = poline.getColorAt(0.25);
 
 // Access the color values
-console.log(middleColor.hsl);     // HSL array [h, s, l]
-console.log(middleColor.hslCSS);  // CSS string "hsl(120, 80%, 60%)"
+console.log(middleColor.hsl); // HSL array [h, s, l]
+console.log(middleColor.hslCSS); // CSS string "hsl(120, 80%, 60%)"
 ```
 
 This method is particularly useful for:
@@ -275,9 +268,7 @@ This method is particularly useful for:
 In some situations, you might want to know which anchor is closest to a certain position or color. This method is used in the visualizer to highlight to select the closest anchor on click.
 
 ```js
-poline.getClosestAnchorPoint(
-  {xyz: [x, y, null], maxDistance: .1}
-)
+poline.getClosestAnchorPoint({ xyz: [x, y, null], maxDistance: 0.1 });
 ```
 
 The **maxDistance** argument is optional and will return null if the closest anchor is further away than the maxDistance.
@@ -289,10 +280,10 @@ The '**poline**' instance returns all colors as an array of **hsl**, **lch** or
 **oklch** arrays or alternatively as an array of **CSS** strings.
 
 ```js
-poline.colors           // Array of HSL values [[h, s, l], [h, s, l], ...]
-poline.colorsCSS        // Array of CSS HSL strings ['hsl(h, s%, l%)', ...]
-poline.colorsCSSlch     // Array of CSS LCH strings ['lch(l% c h)', ...]
-poline.colorsCSSoklch   // Array of CSS OKLCH strings ['oklch(l% c h)', ...]
+poline.colors; // Array of HSL values [[h, s, l], [h, s, l], ...]
+poline.colorsCSS; // Array of CSS HSL strings ['hsl(h, s%, l%)', ...]
+poline.colorsCSSlch; // Array of CSS LCH strings ['lch(l% c h)', ...]
+poline.colorsCSSoklch; // Array of CSS OKLCH strings ['oklch(l% c h)', ...]
 ```
 
 ## Remove Anchors
@@ -301,13 +292,11 @@ To remove an anchor, you can use the **removeAnchorPoint** method. It either tak
 
 ```js
 poline.removeAnchorPoint({
-  point: poline.anchorPoints[
-    poline.anchorPoints.length - 1
-  ]
+  point: poline.anchorPoints[poline.anchorPoints.length - 1],
 });
-  // or
+// or
 poline.removeAnchorPoint({
-  index: poline.anchorPoints.length - 1
+  index: poline.anchorPoints.length - 1,
 });
 ```
 
@@ -318,7 +307,7 @@ The magical construct of "**poline**" offers the power to invert the lightness c
 ```js
 // During initialization
 const poline = new Poline({
-  invertedLightness: true
+  invertedLightness: true,
 });
 
 // Or later
@@ -332,24 +321,24 @@ When inverted, colors near the center of the coordinate system will have higher 
 To keep the library as lightweight as possible, "**poline**" only supports the **hsl** color model out of the box. However, it is easily possible to use other color models by using a library like [culori](https://culorijs.org/api/).
 
 ```js
-import {Poline} from "poline";
-import {formatHex} from "culori";
+import { Poline } from "poline";
+import { formatHex } from "culori";
 const poline = new Poline(/** options */);
 
-const OKHslColors = [...poline.colors].map(
-  c => formatHex({ 
-    mode: 'okhsl', 
-    h: c[0], 
-    s: c[1], 
-    l: c[2]
+const OKHslColors = [...poline.colors].map((c) =>
+  formatHex({
+    mode: "okhsl",
+    h: c[0],
+    s: c[1],
+    l: c[2],
   })
 );
-const LCHColors = [...poline.colors].map(
-  c => formatHex({ 
-    mode: 'lch', 
+const LCHColors = [...poline.colors].map((c) =>
+  formatHex({
+    mode: "lch",
     h: c[0],
     c: c[1] * 51.484,
-    l: c[2] * 100,  
+    l: c[2] * 100,
   })
 );
 ```
@@ -363,18 +352,18 @@ const LCHColors = [...poline.colors].map(
 ```js
 const poline = new Poline({
   anchorColors: [
-    [210, 0.8, 0.6],  // Blue
-    [30, 0.8, 0.6]    // Orange
+    [210, 0.8, 0.6], // Blue
+    [30, 0.8, 0.6], // Orange
   ],
-  numPoints: 8
+  numPoints: 8,
 });
 
 // Generate a CSS linear gradient
 const colors = poline.colorsCSS;
-const gradient = `linear-gradient(in oklab, ${colors.join(', ')})`;
+const gradient = `linear-gradient(in oklab, ${colors.join(", ")})`;
 
 // Apply to an element
-document.getElementById('gradient').style.background = gradient;
+document.getElementById("gradient").style.background = gradient;
 ```
 
 ### Generating Color Schemes for Data Visualization
@@ -386,13 +375,13 @@ case, this makes a great diverging color scheme for a chart:
 // Create a palette with perceptually distinct colors
 const poline = new Poline({
   anchorColors: [
-    [10, 0.70, 0.90],
+    [10, 0.7, 0.9],
     [70, 0.97, 0],
-    [260, 0.70, 0.0]
+    [260, 0.7, 0.0],
   ],
   positionFunction: positionFunctions.linearPosition,
   numPoints: 7,
-  closedLoop: true
+  closedLoop: true,
 });
 
 // Use the colors for chart elements
@@ -410,20 +399,20 @@ let animationFrame;
 function animatePalette() {
   // Shift the hue slightly each frame
   poline.shiftHue(0.5);
-  
+
   // Update elements with new colors
-  const elements = document.querySelectorAll('.color-element');
+  const elements = document.querySelectorAll(".color-element");
   const colors = poline.colorsCSS;
-  
+
   elements.forEach((el, i) => {
     el.style.backgroundColor = colors[i % colors.length];
   });
-  
+
   animationFrame = requestAnimationFrame(animatePalette);
 }
 
 // Start/stop animation
-document.getElementById('toggle-animation').addEventListener('click', () => {
+document.getElementById("toggle-animation").addEventListener("click", () => {
   if (animationFrame) {
     cancelAnimationFrame(animationFrame);
     animationFrame = null;
@@ -448,10 +437,10 @@ Example of proper error handling:
 ```js
 try {
   const poline = new Poline({
-    anchorColors: [[100, 0.5, 0.5]] // Only one anchor color!
+    anchorColors: [[100, 0.5, 0.5]], // Only one anchor color!
   });
 } catch (error) {
-  console.error('Failed to summon palette:', error.message);
+  console.error("Failed to summon palette:", error.message);
   // Fallback to default settings
   const poline = new Poline();
 }
@@ -472,15 +461,15 @@ type PositionFunction = (t: number, reverse?: boolean) => number;
 
 // Options for creating a Poline instance
 type PolineOptions = {
-  anchorColors?: Vector3[];  // Optional: defaults to random pair
-  numPoints?: number;        // Optional: defaults to 4
+  anchorColors?: Vector3[]; // Optional: defaults to random pair
+  numPoints?: number; // Optional: defaults to 4
   positionFunction?: PositionFunction;
   positionFunctionX?: PositionFunction;
   positionFunctionY?: PositionFunction;
   positionFunctionZ?: PositionFunction;
   invertedLightness?: boolean;
   closedLoop?: boolean;
-  clampToCircle?: boolean;   // Optional: clamp anchor points to color wheel
+  clampToCircle?: boolean; // Optional: clamp anchor points to color wheel
 };
 
 // Color point collection
@@ -556,7 +545,7 @@ constructor(options?: ColorPointCollection)
 All position functions have the signature:
 
 ```typescript
-(t: number, reverse?: boolean) => number
+(t: number, reverse?: boolean) => number;
 ```
 
 Available functions:
@@ -579,24 +568,30 @@ Available functions:
 
 ```html
 <script type="module">
-  import { Poline, PolinePicker } from 'https://unpkg.com/poline/dist/picker.mjs';
+  import {
+    Poline,
+    PolinePicker,
+  } from "https://unpkg.com/poline/dist/picker.mjs";
 </script>
 
 <poline-picker id="picker" interactive allow-add-points></poline-picker>
 
 <script>
-  const picker = document.getElementById('picker');
-  
+  const picker = document.getElementById("picker");
+
   // Create and set a palette
   const poline = new Poline({
-    anchorColors: [[300, 0.8, 0.7], [60, 0.9, 0.5]],
-    numPoints: 6
+    anchorColors: [
+      [300, 0.8, 0.7],
+      [60, 0.9, 0.5],
+    ],
+    numPoints: 6,
   });
   picker.setPoline(poline);
-  
+
   // Listen for changes
-  picker.addEventListener('poline-change', (event) => {
-    console.log('New colors:', event.detail.poline.colorsCSS);
+  picker.addEventListener("poline-change", (event) => {
+    console.log("New colors:", event.detail.poline.colorsCSS);
   });
 </script>
 ```
@@ -616,7 +611,7 @@ The picker can be styled using CSS custom properties:
 poline-picker {
   width: 300px;
   height: 300px;
-  
+
   /* Customize the appearance */
   --poline-picker-line-color: #333;
   --poline-picker-bg-color: #fff;
@@ -628,7 +623,7 @@ poline-picker {
 The `<poline-picker>` element provides several methods for programmatic control:
 
 ```javascript
-const picker = document.querySelector('poline-picker');
+const picker = document.querySelector("poline-picker");
 
 // Set a new palette
 picker.setPoline(myPoline);
@@ -645,10 +640,10 @@ const newPoint = picker.addPointAtPosition(150, 100);
 The component dispatches a `poline-change` event whenever the palette is modified:
 
 ```javascript
-picker.addEventListener('poline-change', (event) => {
+picker.addEventListener("poline-change", (event) => {
   const { poline } = event.detail;
   // Access the updated palette
-  console.log('Updated palette:', poline.colorsCSS);
+  console.log("Updated palette:", poline.colorsCSS);
 });
 ```
 
@@ -662,10 +657,10 @@ npm install poline
 
 ```html
 <script type="module">
-  import { 
-    Poline, 
-    PolinePicker 
-  } from 'https://unpkg.com/poline/dist/picker.mjs'
+  import {
+    Poline,
+    PolinePicker,
+  } from "https://unpkg.com/poline/dist/picker.mjs";
 </script>
 ```
 
@@ -679,17 +674,17 @@ For the interactive `<poline-picker>` web component, use the picker build:
 
 ```html
 <script type="module">
-  import { 
-    Poline, 
-    PolinePicker 
-  } from 'https://unpkg.com/poline/dist/picker.mjs'
+  import {
+    Poline,
+    PolinePicker,
+  } from "https://unpkg.com/poline/dist/picker.mjs";
 </script>
 ```
 
 Or install via npm and import:
 
 ```javascript
-import { Poline, PolinePicker } from 'poline/dist/picker.mjs';
+import { Poline, PolinePicker } from "poline/dist/picker.mjs";
 ```
 
 ## Development
@@ -722,6 +717,7 @@ npm run build
 ```
 
 This will:
+
 1. Run the test suite
 2. Lint and format check the code
 3. Compile TypeScript to JavaScript

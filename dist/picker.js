@@ -9,21 +9,26 @@ var polinePicker = (() => {
       __defProp(target, name, { get: all[name], enumerable: true });
   };
   var __copyProps = (to, from, except, desc) => {
-    if (from && typeof from === "object" || typeof from === "function") {
+    if ((from && typeof from === "object") || typeof from === "function") {
       for (let key of __getOwnPropNames(from))
         if (!__hasOwnProp.call(to, key) && key !== except)
-          __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
+          __defProp(to, key, {
+            get: () => from[key],
+            enumerable:
+              !(desc = __getOwnPropDesc(from, key)) || desc.enumerable,
+          });
     }
     return to;
   };
-  var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+  var __toCommonJS = (mod) =>
+    __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
   // src/webcomponent.ts
   var webcomponent_exports = {};
   __export(webcomponent_exports, {
     Poline: () => Poline,
     PolinePicker: () => PolinePicker,
-    positionFunctions: () => positionFunctions
+    positionFunctions: () => positionFunctions,
   });
 
   // src/index.ts
@@ -50,9 +55,17 @@ var polinePicker = (() => {
     const z = s;
     return [x, y, z];
   };
-  var randomHSLPair = (startHue = Math.random() * 360, saturations = [Math.random(), Math.random()], lightnesses = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]) => [
+  var randomHSLPair = (
+    startHue = Math.random() * 360,
+    saturations = [Math.random(), Math.random()],
+    lightnesses = [0.75 + Math.random() * 0.2, 0.3 + Math.random() * 0.2]
+  ) => [
     [startHue, saturations[0], lightnesses[0]],
-    [(startHue + 60 + Math.random() * 180) % 360, saturations[1], lightnesses[1]]
+    [
+      (startHue + 60 + Math.random() * 180) % 360,
+      saturations[1],
+      lightnesses[1],
+    ],
   ];
   var clampToCircle = (x, y) => {
     const cx = 0.5;
@@ -63,9 +76,17 @@ var polinePicker = (() => {
     if (dist <= 0.5) {
       return [x, y];
     }
-    return [cx + dx / dist * 0.5, cy + dy / dist * 0.5];
+    return [cx + (dx / dist) * 0.5, cy + (dy / dist) * 0.5];
   };
-  var vectorOnLine = (t, p1, p2, invert = false, fx = (t2, invert2) => invert2 ? 1 - t2 : t2, fy = (t2, invert2) => invert2 ? 1 - t2 : t2, fz = (t2, invert2) => invert2 ? 1 - t2 : t2) => {
+  var vectorOnLine = (
+    t,
+    p1,
+    p2,
+    invert = false,
+    fx = (t2, invert2) => (invert2 ? 1 - t2 : t2),
+    fy = (t2, invert2) => (invert2 ? 1 - t2 : t2),
+    fz = (t2, invert2) => (invert2 ? 1 - t2 : t2)
+  ) => {
     const tModifiedX = fx(t, invert);
     const tModifiedY = fy(t, invert);
     const tModifiedZ = fz(t, invert);
@@ -74,7 +95,15 @@ var polinePicker = (() => {
     const z = (1 - tModifiedZ) * p1[2] + tModifiedZ * p2[2];
     return [x, y, z];
   };
-  var vectorsOnLine = (p1, p2, numPoints = 4, invert = false, fx = (t, invert2) => invert2 ? 1 - t : t, fy = (t, invert2) => invert2 ? 1 - t : t, fz = (t, invert2) => invert2 ? 1 - t : t) => {
+  var vectorsOnLine = (
+    p1,
+    p2,
+    numPoints = 4,
+    invert = false,
+    fx = (t, invert2) => (invert2 ? 1 - t : t),
+    fy = (t, invert2) => (invert2 ? 1 - t : t),
+    fz = (t, invert2) => (invert2 ? 1 - t : t)
+  ) => {
     const points = [];
     for (let i = 0; i < numPoints; i++) {
       const [x, y, z] = vectorOnLine(
@@ -119,9 +148,9 @@ var polinePicker = (() => {
   };
   var sinusoidalPosition = (t, reverse = false) => {
     if (reverse) {
-      return 1 - Math.sin((1 - t) * Math.PI / 2);
+      return 1 - Math.sin(((1 - t) * Math.PI) / 2);
     }
-    return Math.sin(t * Math.PI / 2);
+    return Math.sin((t * Math.PI) / 2);
   };
   var asinusoidalPosition = (t, reverse = false) => {
     if (reverse) {
@@ -147,7 +176,7 @@ var polinePicker = (() => {
     sinusoidalPosition,
     asinusoidalPosition,
     arcPosition,
-    smoothStepPosition
+    smoothStepPosition,
   };
   var distance = (p1, p2, hueMode = false) => {
     const a1 = p1[0];
@@ -165,11 +194,7 @@ var polinePicker = (() => {
     return Math.sqrt(a * a + b * b + c * c);
   };
   var ColorPoint = class {
-    constructor({
-      xyz,
-      color,
-      invertedLightness = false
-    } = {}) {
+    constructor({ xyz, color, invertedLightness = false } = {}) {
       this.x = 0;
       this.y = 0;
       this.z = 0;
@@ -178,13 +203,9 @@ var polinePicker = (() => {
       this._invertedLightness = invertedLightness;
       this.positionOrColor({ xyz, color, invertedLightness });
     }
-    positionOrColor({
-      xyz,
-      color,
-      invertedLightness = false
-    }) {
+    positionOrColor({ xyz, color, invertedLightness = false }) {
       this._invertedLightness = invertedLightness;
-      if (xyz && color || !xyz && !color) {
+      if ((xyz && color) || (!xyz && !color)) {
         throw new Error("Point must be initialized with either x,y,z or hsl");
       } else if (xyz) {
         this.x = xyz[0];
@@ -220,15 +241,15 @@ var polinePicker = (() => {
     }
     get hslCSS() {
       const [h, s, l] = this.color;
-      return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(l * 100).toFixed(
-        2
-      )}%)`;
+      return `hsl(${h.toFixed(2)}, ${(s * 100).toFixed(2)}%, ${(
+        l * 100
+      ).toFixed(2)}%)`;
     }
     get oklchCSS() {
       const [h, s, l] = this.color;
-      return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(3)} ${h.toFixed(
-        2
-      )})`;
+      return `oklch(${(l * 100).toFixed(2)}% ${(s * 0.4).toFixed(
+        3
+      )} ${h.toFixed(2)})`;
     }
     get lchCSS() {
       const [h, s, l] = this.color;
@@ -255,22 +276,24 @@ var polinePicker = (() => {
     }
   };
   var Poline = class {
-    constructor({
-      anchorColors = randomHSLPair(),
-      numPoints = 4,
-      positionFunction = sinusoidalPosition,
-      positionFunctionX,
-      positionFunctionY,
-      positionFunctionZ,
-      closedLoop,
-      invertedLightness,
-      clampToCircle: clampToCircle2
-    } = {
-      anchorColors: randomHSLPair(),
-      numPoints: 4,
-      positionFunction: sinusoidalPosition,
-      closedLoop: false
-    }) {
+    constructor(
+      {
+        anchorColors = randomHSLPair(),
+        numPoints = 4,
+        positionFunction = sinusoidalPosition,
+        positionFunctionX,
+        positionFunctionY,
+        positionFunctionZ,
+        closedLoop,
+        invertedLightness,
+        clampToCircle: clampToCircle2,
+      } = {
+        anchorColors: randomHSLPair(),
+        numPoints: 4,
+        positionFunction: sinusoidalPosition,
+        closedLoop: false,
+      }
+    ) {
       this._positionFunctionX = sinusoidalPosition;
       this._positionFunctionY = sinusoidalPosition;
       this._positionFunctionZ = sinusoidalPosition;
@@ -285,9 +308,12 @@ var polinePicker = (() => {
         (point) => new ColorPoint({ color: point, invertedLightness })
       );
       this._numPoints = numPoints + 2;
-      this._positionFunctionX = positionFunctionX || positionFunction || sinusoidalPosition;
-      this._positionFunctionY = positionFunctionY || positionFunction || sinusoidalPosition;
-      this._positionFunctionZ = positionFunctionZ || positionFunction || sinusoidalPosition;
+      this._positionFunctionX =
+        positionFunctionX || positionFunction || sinusoidalPosition;
+      this._positionFunctionY =
+        positionFunctionY || positionFunction || sinusoidalPosition;
+      this._positionFunctionZ =
+        positionFunctionZ || positionFunction || sinusoidalPosition;
       this.connectLastAndFirstAnchor = closedLoop || false;
       this._invertedLightness = invertedLightness || false;
       this._clampToCircle = clampToCircle2 || false;
@@ -308,7 +334,11 @@ var polinePicker = (() => {
         if (positionFunction.length !== 3) {
           throw new Error("Position function array must have 3 elements");
         }
-        if (typeof positionFunction[0] !== "function" || typeof positionFunction[1] !== "function" || typeof positionFunction[2] !== "function") {
+        if (
+          typeof positionFunction[0] !== "function" ||
+          typeof positionFunction[1] !== "function" ||
+          typeof positionFunction[2] !== "function"
+        ) {
           throw new Error("Position function array must have 3 functions");
         }
         this._positionFunctionX = positionFunction[0];
@@ -322,13 +352,16 @@ var polinePicker = (() => {
       this.updateAnchorPairs();
     }
     get positionFunction() {
-      if (this._positionFunctionX === this._positionFunctionY && this._positionFunctionX === this._positionFunctionZ) {
+      if (
+        this._positionFunctionX === this._positionFunctionY &&
+        this._positionFunctionX === this._positionFunctionZ
+      ) {
         return this._positionFunctionX;
       }
       return [
         this._positionFunctionX,
         this._positionFunctionY,
-        this._positionFunctionZ
+        this._positionFunctionZ,
       ];
     }
     set positionFunctionX(positionFunctionX) {
@@ -367,11 +400,13 @@ var polinePicker = (() => {
     }
     updateAnchorPairs() {
       this._anchorPairs = [];
-      const anchorPointsLength = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
+      const anchorPointsLength = this.connectLastAndFirstAnchor
+        ? this.anchorPoints.length
+        : this.anchorPoints.length - 1;
       for (let i = 0; i < anchorPointsLength; i++) {
         const pair = [
           this.anchorPoints[i],
-          this.anchorPoints[(i + 1) % this.anchorPoints.length]
+          this.anchorPoints[(i + 1) % this.anchorPoints.length],
         ];
         this._anchorPairs.push(pair);
       }
@@ -388,16 +423,15 @@ var polinePicker = (() => {
           this.positionFunctionY,
           this.positionFunctionZ
         ).map(
-          (p) => new ColorPoint({ xyz: p, invertedLightness: this._invertedLightness })
+          (p) =>
+            new ColorPoint({
+              xyz: p,
+              invertedLightness: this._invertedLightness,
+            })
         );
       });
     }
-    addAnchorPoint({
-      xyz,
-      color,
-      insertAtIndex,
-      clamp
-    }) {
+    addAnchorPoint({ xyz, color, insertAtIndex, clamp }) {
       let finalXyz = xyz;
       const shouldClamp = clamp ?? this._clampToCircle;
       if (shouldClamp && xyz) {
@@ -408,7 +442,7 @@ var polinePicker = (() => {
       const newAnchor = new ColorPoint({
         xyz: finalXyz,
         color,
-        invertedLightness: this._invertedLightness
+        invertedLightness: this._invertedLightness,
       });
       if (insertAtIndex !== void 0) {
         this.anchorPoints.splice(insertAtIndex, 0, newAnchor);
@@ -418,10 +452,7 @@ var polinePicker = (() => {
       this.updateAnchorPairs();
       return newAnchor;
     }
-    removeAnchorPoint({
-      point,
-      index
-    }) {
+    removeAnchorPoint({ point, index }) {
       if (!point && index === void 0) {
         throw new Error("Must provide a point or index");
       }
@@ -441,13 +472,7 @@ var polinePicker = (() => {
         throw new Error("Point not found");
       }
     }
-    updateAnchorPoint({
-      point,
-      pointIndex,
-      xyz,
-      color,
-      clamp
-    }) {
+    updateAnchorPoint({ point, pointIndex, xyz, color, clamp }) {
       if (pointIndex !== void 0) {
         point = this.anchorPoints[pointIndex];
       }
@@ -467,27 +492,22 @@ var polinePicker = (() => {
           point.position = xyz;
         }
       }
-      if (color)
-        point.hsl = color;
+      if (color) point.hsl = color;
       this.updateAnchorPairs();
       return point;
     }
-    getClosestAnchorPoint({
-      xyz,
-      hsl,
-      maxDistance = 1
-    }) {
+    getClosestAnchorPoint({ xyz, hsl, maxDistance = 1 }) {
       if (!xyz && !hsl) {
         throw new Error("Must provide a xyz or hsl");
       }
       let distances;
       if (xyz) {
-        distances = this.anchorPoints.map(
-          (anchor) => distance(anchor.position, xyz)
+        distances = this.anchorPoints.map((anchor) =>
+          distance(anchor.position, xyz)
         );
       } else if (hsl) {
-        distances = this.anchorPoints.map(
-          (anchor) => distance(anchor.hsl, hsl, true)
+        distances = this.anchorPoints.map((anchor) =>
+          distance(anchor.hsl, hsl, true)
         );
       }
       const minDistance = Math.min(...distances);
@@ -506,7 +526,7 @@ var polinePicker = (() => {
     }
     set invertedLightness(newStatus) {
       this._invertedLightness = newStatus;
-      this.anchorPoints.forEach((p) => p.invertedLightness = newStatus);
+      this.anchorPoints.forEach((p) => (p.invertedLightness = newStatus));
       this.updateAnchorPairs();
     }
     get invertedLightness() {
@@ -528,7 +548,9 @@ var polinePicker = (() => {
      * @returns {ColorPoint[]} A flat array of unique ColorPoint instances
      */
     get flattenedPoints() {
-      return this.points.flat().filter((p, i) => i != 0 ? i % this._numPoints : true);
+      return this.points
+        .flat()
+        .filter((p, i) => (i != 0 ? i % this._numPoints : true));
     }
     get colors() {
       const colors = this.flattenedPoints.map((p) => p.color);
@@ -541,7 +563,7 @@ var polinePicker = (() => {
       const methods = {
         hsl: (p) => p.hslCSS,
         oklch: (p) => p.oklchCSS,
-        lch: (p) => p.lchCSS
+        lch: (p) => p.lchCSS,
       };
       const cssColors = this.flattenedPoints.map(methods[mode]);
       if (this.connectLastAndFirstAnchor) {
@@ -580,23 +602,34 @@ var polinePicker = (() => {
       if (this.anchorPoints.length === 0) {
         throw new Error("No anchor points available");
       }
-      const totalSegments = this.connectLastAndFirstAnchor ? this.anchorPoints.length : this.anchorPoints.length - 1;
-      const effectiveSegments = this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 ? 2 : totalSegments;
+      const totalSegments = this.connectLastAndFirstAnchor
+        ? this.anchorPoints.length
+        : this.anchorPoints.length - 1;
+      const effectiveSegments =
+        this.connectLastAndFirstAnchor && this.anchorPoints.length === 2
+          ? 2
+          : totalSegments;
       const segmentPosition = t * effectiveSegments;
       const segmentIndex = Math.floor(segmentPosition);
       const localT = segmentPosition - segmentIndex;
-      const actualSegmentIndex = segmentIndex >= effectiveSegments ? effectiveSegments - 1 : segmentIndex;
+      const actualSegmentIndex =
+        segmentIndex >= effectiveSegments
+          ? effectiveSegments - 1
+          : segmentIndex;
       const actualLocalT = segmentIndex >= effectiveSegments ? 1 : localT;
       const pair = this._anchorPairs[actualSegmentIndex];
       if (!pair || pair.length < 2 || !pair[0] || !pair[1]) {
         return new ColorPoint({
-          color: ((_a = this.anchorPoints[0]) == null ? void 0 : _a.color) || [0, 0, 0],
-          invertedLightness: this._invertedLightness
+          color: ((_a = this.anchorPoints[0]) == null ? void 0 : _a.color) || [
+            0, 0, 0,
+          ],
+          invertedLightness: this._invertedLightness,
         });
       }
       const p1position = pair[0].position;
       const p2position = pair[1].position;
-      const shouldInvertEase = this.shouldInvertEaseForSegment(actualSegmentIndex);
+      const shouldInvertEase =
+        this.shouldInvertEaseForSegment(actualSegmentIndex);
       const xyz = vectorOnLine(
         actualLocalT,
         p1position,
@@ -608,7 +641,7 @@ var polinePicker = (() => {
       );
       return new ColorPoint({
         xyz,
-        invertedLightness: this._invertedLightness
+        invertedLightness: this._invertedLightness,
       });
     }
     /**
@@ -617,7 +650,12 @@ var polinePicker = (() => {
      * @returns Whether easing should be inverted
      */
     shouldInvertEaseForSegment(segmentIndex) {
-      return !!(segmentIndex % 2 || this.connectLastAndFirstAnchor && this.anchorPoints.length === 2 && segmentIndex === 0);
+      return !!(
+        segmentIndex % 2 ||
+        (this.connectLastAndFirstAnchor &&
+          this.anchorPoints.length === 2 &&
+          segmentIndex === 0)
+      );
     }
   };
   var { p5 } = globalThis;
@@ -625,9 +663,10 @@ var polinePicker = (() => {
     console.info("p5 < 1.x detected, adding poline to p5 prototype");
     const poline = new Poline();
     p5.prototype.poline = poline;
-    const polineColors = () => poline.colors.map(
-      (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
-    );
+    const polineColors = () =>
+      poline.colors.map(
+        (c) => `hsl(${Math.round(c[0])},${c[1] * 100}%,${c[2] * 100}%)`
+      );
     p5.prototype.registerMethod("polineColors", polineColors);
     globalThis.poline = poline;
     globalThis.polineColors = polineColors;
@@ -649,7 +688,7 @@ var polinePicker = (() => {
     // Gap between anchor and ring
     tickLength: 1.5,
     // Length of the tick at end of arc (pointing outward)
-    tickGap: 0.5
+    tickGap: 0.5,
     // Gap between ring and tick
   };
   var ROTARY_TURNS_TO_FULL = 1;
@@ -690,12 +729,11 @@ var polinePicker = (() => {
       this.allowAddPoints = allow;
     }
     addPointAtPosition(x, y) {
-      if (!this.poline)
-        return null;
+      if (!this.poline) return null;
       const normalizedX = x / this.svg.clientWidth;
       const normalizedY = y / this.svg.clientHeight;
       const newPoint = this.poline.addAnchorPoint({
-        xyz: [normalizedX, normalizedY, normalizedY]
+        xyz: [normalizedX, normalizedY, normalizedY],
       });
       this.updateSVG();
       this.dispatchPolineChange();
@@ -703,7 +741,8 @@ var polinePicker = (() => {
     }
     updateLightnessBackground() {
       var _a;
-      const picker = (_a = this.shadowRoot) == null ? void 0 : _a.querySelector(".picker");
+      const picker =
+        (_a = this.shadowRoot) == null ? void 0 : _a.querySelector(".picker");
       if (picker && this.poline) {
         if (this.poline.invertedLightness) {
           picker.style.setProperty("--maxL", "#000");
@@ -817,9 +856,7 @@ var polinePicker = (() => {
       this.shadowRoot.appendChild(pickerDiv);
       this.wheel = this.svg.querySelector(".wheel");
       this.line = this.svg.querySelector(".wheel__line");
-      this.saturationRings = this.svg.querySelector(
-        ".wheel__saturation-rings"
-      );
+      this.saturationRings = this.svg.querySelector(".wheel__saturation-rings");
       this.anchors = this.svg.querySelector(".wheel__anchors");
       this.points = this.svg.querySelector(".wheel__points");
       if (this.poline) {
@@ -845,26 +882,26 @@ var polinePicker = (() => {
         return;
       }
       const flattenedPoints = this.poline.flattenedPoints;
-      const pathPoints = flattenedPoints.map((p) => {
-        const cartesian = this.pointToCartesian(p);
-        if (!cartesian)
-          return "";
-        const [x, y] = cartesian;
-        return `${x},${y}`;
-      }).filter((point) => point !== "").join(" ");
+      const pathPoints = flattenedPoints
+        .map((p) => {
+          const cartesian = this.pointToCartesian(p);
+          if (!cartesian) return "";
+          const [x, y] = cartesian;
+          return `${x},${y}`;
+        })
+        .filter((point) => point !== "")
+        .join(" ");
       this.line.setAttribute("points", pathPoints);
       const updateCircles = (container, points, className, radiusFn) => {
         const existing = container.children;
         while (existing.length > points.length) {
           const last = existing[existing.length - 1];
-          if (last)
-            container.removeChild(last);
+          if (last) container.removeChild(last);
         }
         points.forEach((point, i) => {
           let circle = existing[i];
           const cartesian = this.pointToCartesian(point);
-          if (!cartesian)
-            return;
+          if (!cartesian) return;
           const [x = 0, y = 0] = cartesian;
           const r = radiusFn(point);
           const fill = point.hslCSS;
@@ -894,25 +931,24 @@ var polinePicker = (() => {
       );
     }
     updateSaturationRings() {
-      if (!this.poline || !this.saturationRings)
-        return;
+      if (!this.poline || !this.saturationRings) return;
       const anchors = this.poline.anchorPoints;
       const ringGroups = Array.from(
         this.saturationRings.querySelectorAll(".wheel__ring-group")
       );
       while (ringGroups.length > anchors.length) {
         const last = ringGroups.pop();
-        if (last)
-          last.remove();
+        if (last) last.remove();
       }
       anchors.forEach((anchor, i) => {
         const cartesian = this.pointToCartesian(anchor);
-        if (!cartesian)
-          return;
+        if (!cartesian) return;
         const [cx, cy] = cartesian;
         const saturation = anchor.z;
         const ringRadius = UI_METRICS.anchorRadius + UI_METRICS.ringGap + 1;
-        const isHovered = this.ringHoverIndex === i || this.ringAdjust && this.ringAdjust.anchorIndex === i;
+        const isHovered =
+          this.ringHoverIndex === i ||
+          (this.ringAdjust && this.ringAdjust.anchorIndex === i);
         let group = ringGroups[i];
         if (!group) {
           group = document.createElementNS(namespaceURI, "g");
@@ -934,9 +970,7 @@ var polinePicker = (() => {
         bgRing.setAttribute("cx", cx.toString());
         bgRing.setAttribute("cy", cy.toString());
         bgRing.setAttribute("r", ringRadius.toString());
-        const satArc = group.querySelector(
-          ".wheel__saturation-ring"
-        );
+        const satArc = group.querySelector(".wheel__saturation-ring");
         const startAngle = -Math.PI / 2;
         const endAngle = startAngle + saturation * Math.PI * 2;
         const arcPath = this.describeArc(
@@ -948,10 +982,14 @@ var polinePicker = (() => {
         );
         satArc.setAttribute("d", arcPath);
         const tick = group.querySelector(".wheel__ring-tick");
-        const tickStartX = cx + (ringRadius + UI_METRICS.tickGap) * Math.cos(endAngle);
-        const tickStartY = cy + (ringRadius + UI_METRICS.tickGap) * Math.sin(endAngle);
-        const tickEndX = tickStartX + Math.cos(endAngle) * UI_METRICS.tickLength;
-        const tickEndY = tickStartY + Math.sin(endAngle) * UI_METRICS.tickLength;
+        const tickStartX =
+          cx + (ringRadius + UI_METRICS.tickGap) * Math.cos(endAngle);
+        const tickStartY =
+          cy + (ringRadius + UI_METRICS.tickGap) * Math.sin(endAngle);
+        const tickEndX =
+          tickStartX + Math.cos(endAngle) * UI_METRICS.tickLength;
+        const tickEndY =
+          tickStartY + Math.sin(endAngle) * UI_METRICS.tickLength;
         tick.setAttribute("x1", tickStartX.toString());
         tick.setAttribute("y1", tickStartY.toString());
         tick.setAttribute("x2", tickEndX.toString());
@@ -986,31 +1024,28 @@ var polinePicker = (() => {
       return [x, y];
     }
     addEventListeners() {
-      if (!this.svg)
-        return;
+      if (!this.svg) return;
       this.svg.addEventListener("pointerdown", this.boundPointerDown);
       this.svg.addEventListener("pointermove", this.boundPointerMove);
       this.svg.addEventListener("pointerup", this.boundPointerUp);
     }
     removeEventListeners() {
-      if (!this.svg)
-        return;
+      if (!this.svg) return;
       this.svg.removeEventListener("pointerdown", this.boundPointerDown);
       this.svg.removeEventListener("pointermove", this.boundPointerMove);
       this.svg.removeEventListener("pointerup", this.boundPointerUp);
     }
     handlePointerDown(e) {
       e.stopPropagation();
-      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+      const { normalizedX, normalizedY } =
+        this.pointerToNormalizedCoordinates(e);
       const isTouch = window.matchMedia("(pointer: coarse)").matches;
       const ringHit = isTouch ? null : this.pickRing(normalizedX, normalizedY);
       if (ringHit !== null) {
         const anchor = this.poline.anchorPoints[ringHit];
-        if (!anchor)
-          return;
+        if (!anchor) return;
         const cartesian = this.pointToCartesian(anchor);
-        if (!cartesian)
-          return;
+        if (!cartesian) return;
         const [anchorX, anchorY] = cartesian;
         const svgX = normalizedX * svgscale;
         const svgY = normalizedY * svgscale;
@@ -1020,64 +1055,62 @@ var polinePicker = (() => {
           startSaturation: anchor.color[1],
           startAngle,
           prevAngle: startAngle,
-          accumulatedAngle: 0
+          accumulatedAngle: 0,
         };
         this.ringHoverIndex = ringHit;
         this.classList.add("ring-adjusting");
         this.updateSaturationRings();
         try {
           this.svg.setPointerCapture(e.pointerId);
-        } catch {
-        }
+        } catch {}
         return;
       }
       const closestAnchor = this.poline.getClosestAnchorPoint({
         xyz: [normalizedX, normalizedY, null],
-        maxDistance: 0.05
+        maxDistance: 0.05,
         // Smaller hit area for core
       });
       if (closestAnchor) {
         this.currentPoint = closestAnchor;
       } else if (this.allowAddPoints) {
         this.currentPoint = this.poline.addAnchorPoint({
-          xyz: [normalizedX, normalizedY, normalizedY]
+          xyz: [normalizedX, normalizedY, normalizedY],
         });
         this.updateSVG();
         this.dispatchPolineChange();
       }
     }
     handlePointerMove(e) {
-      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+      const { normalizedX, normalizedY } =
+        this.pointerToNormalizedCoordinates(e);
       if (this.ringAdjust) {
         const anchor = this.poline.anchorPoints[this.ringAdjust.anchorIndex];
-        if (!anchor)
-          return;
+        if (!anchor) return;
         const cartesian = this.pointToCartesian(anchor);
-        if (!cartesian)
-          return;
+        if (!cartesian) return;
         const [anchorX, anchorY] = cartesian;
         const svgX = normalizedX * svgscale;
         const svgY = normalizedY * svgscale;
         const curAngle = Math.atan2(svgY - anchorY, svgX - anchorX);
         let dA = curAngle - this.ringAdjust.prevAngle;
-        if (dA > Math.PI)
-          dA -= Math.PI * 2;
-        else if (dA < -Math.PI)
-          dA += Math.PI * 2;
+        if (dA > Math.PI) dA -= Math.PI * 2;
+        else if (dA < -Math.PI) dA += Math.PI * 2;
         this.ringAdjust.accumulatedAngle += dA;
         this.ringAdjust.prevAngle = curAngle;
         const turns = this.ringAdjust.accumulatedAngle / (Math.PI * 2);
-        const turnsToFull = e.shiftKey ? ROTARY_TURNS_TO_FULL_SHIFT : ROTARY_TURNS_TO_FULL;
+        const turnsToFull = e.shiftKey
+          ? ROTARY_TURNS_TO_FULL_SHIFT
+          : ROTARY_TURNS_TO_FULL;
         const deltaSat = turns / turnsToFull;
         let newSaturation = this.clamp01(
           this.ringAdjust.startSaturation + deltaSat
         );
-        if (newSaturation > 0.99)
-          newSaturation = 1;
-        if (newSaturation < 0.01)
-          newSaturation = 0;
+        if (newSaturation > 0.99) newSaturation = 1;
+        if (newSaturation < 0.01) newSaturation = 0;
         const atBound = newSaturation === 0 || newSaturation === 1;
-        const movingPastBound = newSaturation === 1 && deltaSat > 0 || newSaturation === 0 && deltaSat < 0;
+        const movingPastBound =
+          (newSaturation === 1 && deltaSat > 0) ||
+          (newSaturation === 0 && deltaSat < 0);
         if (atBound && movingPastBound) {
           this.ringAdjust.startSaturation = newSaturation;
           this.ringAdjust.accumulatedAngle = 0;
@@ -1085,7 +1118,7 @@ var polinePicker = (() => {
         }
         this.poline.updateAnchorPoint({
           point: anchor,
-          color: [anchor.color[0], newSaturation, anchor.color[2]]
+          color: [anchor.color[0], newSaturation, anchor.color[2]],
         });
         this.updateSVG();
         this.dispatchPolineChange();
@@ -1094,7 +1127,7 @@ var polinePicker = (() => {
       if (this.currentPoint) {
         this.poline.updateAnchorPoint({
           point: this.currentPoint,
-          xyz: [normalizedX, normalizedY, this.currentPoint.z]
+          xyz: [normalizedX, normalizedY, this.currentPoint.z],
         });
         this.updateSVG();
         this.dispatchPolineChange();
@@ -1113,13 +1146,13 @@ var polinePicker = (() => {
       if (this.ringAdjust) {
         try {
           this.svg.releasePointerCapture(e.pointerId);
-        } catch {
-        }
+        } catch {}
         this.classList.remove("ring-adjusting");
       }
       this.ringAdjust = null;
       this.currentPoint = null;
-      const { normalizedX, normalizedY } = this.pointerToNormalizedCoordinates(e);
+      const { normalizedX, normalizedY } =
+        this.pointerToNormalizedCoordinates(e);
       const ringHover = this.pickRing(normalizedX, normalizedY);
       if (ringHover !== this.ringHoverIndex) {
         this.ringHoverIndex = ringHover;
@@ -1128,20 +1161,20 @@ var polinePicker = (() => {
       }
     }
     pickRing(normalizedX, normalizedY) {
-      if (!this.poline)
-        return null;
+      if (!this.poline) return null;
       const svgX = normalizedX * svgscale;
       const svgY = normalizedY * svgscale;
       for (let i = 0; i < this.poline.anchorPoints.length; i++) {
         const anchor = this.poline.anchorPoints[i];
-        if (!anchor)
-          continue;
+        if (!anchor) continue;
         const cartesian = this.pointToCartesian(anchor);
-        if (!cartesian)
-          continue;
+        if (!cartesian) continue;
         const [cx, cy] = cartesian;
         const dist = Math.hypot(svgX - cx, svgY - cy);
-        if (dist > UI_METRICS.anchorRadius && dist <= UI_METRICS.ringOuterRadius) {
+        if (
+          dist > UI_METRICS.anchorRadius &&
+          dist <= UI_METRICS.ringOuterRadius
+        ) {
           return i;
         }
       }
@@ -1152,17 +1185,17 @@ var polinePicker = (() => {
     }
     pointerToNormalizedCoordinates(e) {
       const svgRect = this.svg.getBoundingClientRect();
-      const svgX = (e.clientX - svgRect.left) / svgRect.width * svgscale;
-      const svgY = (e.clientY - svgRect.top) / svgRect.height * svgscale;
+      const svgX = ((e.clientX - svgRect.left) / svgRect.width) * svgscale;
+      const svgY = ((e.clientY - svgRect.top) / svgRect.height) * svgscale;
       return {
         normalizedX: svgX / svgscale,
-        normalizedY: svgY / svgscale
+        normalizedY: svgY / svgscale,
       };
     }
     dispatchPolineChange() {
       this.dispatchEvent(
         new CustomEvent("poline-change", {
-          detail: { poline: this.poline }
+          detail: { poline: this.poline },
         })
       );
     }

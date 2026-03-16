@@ -4,10 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Poline Picker Example</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
-    <link href="https://fonts.googleapis.com/css2?family=Aboreto&amp;family=Work+Sans:wght@300;400&amp;display=swap"
-      rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Aboreto&amp;family=Work+Sans:wght@300;400&amp;display=swap"
+      rel="stylesheet"
+    />
     <style>
       :root {
         --light: #fff;
@@ -16,19 +18,19 @@
         --onBg: var(--dark);
         background: var(--bg);
         color: var(--onBg);
-        font-family: 'Work Sans', sans-serif;
+        font-family: "Work Sans", sans-serif;
         font-weight: 300;
         font-size: 0.9rem;
         accent-color: var(--c0);
       }
 
       body {
-        font-family: 'Work Sans', sans-serif;
+        font-family: "Work Sans", sans-serif;
         margin: 0;
         padding: 2rem;
         background: #f0f0f0;
       }
-      
+
       .container {
         display: flex;
         flex-direction: column;
@@ -39,10 +41,10 @@
       label {
         display: flex;
         margin: 0;
-        font-size: .8rem;
+        font-size: 0.8rem;
         justify-content: space-between;
         border: 1px solid #e0e0e0;
-        padding: .5rem 1.5rem;
+        padding: 0.5rem 1.5rem;
         background-color: var(--bg);
       }
 
@@ -59,24 +61,24 @@
       label:last-of-type {
         padding-bottom: 1.5rem;
       }
-      
+
       label + button {
         margin-top: 1.5rem;
       }
-      
+
       label i {
         text-align: right;
         font-style: normal;
       }
-      
+
       label .t {
         display: block;
         margin: 0;
         font-size: 1rem;
         flex: 0 1 auto;
-        font-family: 'Aboreto', cursive;
+        font-family: "Aboreto", cursive;
       }
-      
+
       select {
         display: block;
         padding: 0;
@@ -91,7 +93,7 @@
       }
 
       button {
-        font-family: 'Aboreto', cursive;
+        font-family: "Aboreto", cursive;
         background-color: var(--onBg);
         color: var(--bg);
         padding: 1em 1.75em;
@@ -113,24 +115,24 @@
         --poline-picker-line-color: #333;
         --poline-picker-bg-color: #fff;
       }
-      
+
       #colors,
       #colors-oklch,
       #colors-lch {
         display: flex;
-        margin-top: .2rem;
+        margin-top: 0.2rem;
         width: 300px;
         height: 10px;
         gap: 0.1em;
       }
-      
+
       .color-swatch {
         flex: 1 0 auto;
       }
-      
+
       h1 {
         color: #333;
-        font-family: 'Aboreto', cursive;
+        font-family: "Aboreto", cursive;
         font-size: 2.5rem;
         margin: 0;
         padding: 0;
@@ -138,14 +140,14 @@
         letter-spacing: -0.05em;
         margin-left: -0.06em;
       }
-      
+
       h2 {
-        font-family: 'Aboreto', cursive;
+        font-family: "Aboreto", cursive;
         font-size: 1rem;
         margin: 1rem 0 0 0;
         font-weight: normal;
       }
-      
+
       .instructions {
         color: #666;
         max-width: 400px;
@@ -172,19 +174,20 @@
           --bg: var(--dark);
           --onBg: var(--light);
         }
-        
+
         body {
           background: #1a1a1a;
         }
-        
+
         .instructions {
           color: #ccc;
         }
-        
-        h1, h2 {
+
+        h1,
+        h2 {
           color: var(--light);
         }
-        
+
         .key {
           background: #333;
           border-color: #555;
@@ -197,53 +200,50 @@
     <div class="container">
       <h1>Poline Picker</h1>
       <p class="instructions">
-        Experience the magic of "<strong>poline</strong>" for yourself, dear color explorer. 
-        Drag existing anchor points to adjust colors. 
-        <strong>Drag the outer ring</strong> of an anchor point to adjust its saturation.
-        Press <span class="key">P</span> to add a new point at cursor position,
-        and press <span class="key">⌫</span> to remove the last selected anchor point.
-        Try using the <span class="key">←</span> and <span class="key">→</span> keys to change the hue of all colors.
-        Hold <span class="key">Shift</span> while adjusting saturation for finer control.
+        Experience the magic of "<strong>poline</strong>" for yourself, dear
+        color explorer. Drag existing anchor points to adjust colors.
+        <strong>Drag the outer ring</strong> of an anchor point to adjust its
+        saturation. Press <span class="key">P</span> to add a new point at
+        cursor position, and press <span class="key">⌫</span> to remove the last
+        selected anchor point. Try using the <span class="key">←</span> and
+        <span class="key">→</span> keys to change the hue of all colors. Hold
+        <span class="key">Shift</span> while adjusting saturation for finer
+        control.
       </p>
 
       <div class="controls">
         <label>
           <span class="t">Steps</span>
-          <i><input type="range" min="1" max="15" value="5" id="steps"></i>
+          <i><input type="range" min="1" max="15" value="5" id="steps" /></i>
         </label>
         <label>
           <span class="t">Invert Lightness</span>
-          <i><input type="checkbox" id="invertedLightness"></i>
+          <i><input type="checkbox" id="invertedLightness" /></i>
         </label>
         <label>
           <span class="t">Closed Loop</span>
-          <i><input type="checkbox" id="closedLoop"></i>
+          <i><input type="checkbox" id="closedLoop" /></i>
         </label>
         <label class="hide">
           <span class="t">Allow Add Points</span>
-          <i><input type="checkbox" id="allowAddPoints"></i>
+          <i><input type="checkbox" id="allowAddPoints" /></i>
         </label>
         <label>
           <span><span class="t">Position fn X</span> (Hue / Light)</span>
-          <i><select id="positionFunctionX">
-            </select></i>
+          <i><select id="positionFunctionX"></select></i>
         </label>
         <label>
           <span><span class="t">Position fn Y</span> (Hue / Light)</span>
-          <i><select id="positionFunctionY">
-            </select></i>
+          <i><select id="positionFunctionY"></select></i>
         </label>
         <label>
           <span><span class="t">Position fn Z</span> (Saturation)</span>
-          <i><select id="positionFunctionZ">
-            </select></i>
+          <i><select id="positionFunctionZ"></select></i>
         </label>
         <button id="randomize">Randomize Anchors</button>
       </div>
 
       <poline-picker interactive></poline-picker>
-
-
 
       <article aria-label="Color Swatches">
         <h2>HSL</h2>
@@ -262,15 +262,19 @@
       const colorsContainer = document.getElementById("colors");
       const colorsOklchContainer = document.getElementById("colors-oklch");
       const colorsLchContainer = document.getElementById("colors-lch");
-      
+
       // Control elements
       const stepsInput = document.getElementById("steps");
       const allowAddPointsCheckbox = document.getElementById("allowAddPoints");
-      const invertedLightnessCheckbox = document.getElementById("invertedLightness");
+      const invertedLightnessCheckbox =
+        document.getElementById("invertedLightness");
       const closedLoopCheckbox = document.getElementById("closedLoop");
-      const positionFunctionXSelect = document.getElementById("positionFunctionX");
-      const positionFunctionYSelect = document.getElementById("positionFunctionY");
-      const positionFunctionZSelect = document.getElementById("positionFunctionZ");
+      const positionFunctionXSelect =
+        document.getElementById("positionFunctionX");
+      const positionFunctionYSelect =
+        document.getElementById("positionFunctionY");
+      const positionFunctionZSelect =
+        document.getElementById("positionFunctionZ");
       const randomizeButton = document.getElementById("randomize");
 
       // Initialize poline
@@ -288,12 +292,16 @@
       });
 
       // Populate position function selects
-      const positionSelects = [positionFunctionXSelect, positionFunctionYSelect, positionFunctionZSelect];
+      const positionSelects = [
+        positionFunctionXSelect,
+        positionFunctionYSelect,
+        positionFunctionZSelect,
+      ];
       const functionNames = Object.keys(positionFunctions);
-      
-      positionSelects.forEach(select => {
-        functionNames.forEach(name => {
-          const option = document.createElement('option');
+
+      positionSelects.forEach((select) => {
+        functionNames.forEach((name) => {
+          const option = document.createElement("option");
           option.value = name;
           option.textContent = name;
           select.appendChild(option);
@@ -301,18 +309,18 @@
       });
 
       // Set initial values
-      positionFunctionXSelect.value = 'smoothStepPosition';
-      positionFunctionYSelect.value = 'smoothStepPosition';
-      positionFunctionZSelect.value = 'linearPosition';
+      positionFunctionXSelect.value = "smoothStepPosition";
+      positionFunctionYSelect.value = "smoothStepPosition";
+      positionFunctionZSelect.value = "linearPosition";
 
       picker.setPoline(poline);
-      
+
       let lastMousePosition = { x: 0, y: 0 };
       let lastSelectedPoint = null;
 
       function createColorSwatches(container, colors) {
         container.innerHTML = "";
-        colors.forEach(color => {
+        colors.forEach((color) => {
           const swatch = document.createElement("div");
           swatch.className = "color-swatch";
           swatch.style.backgroundColor = color;
@@ -345,12 +353,12 @@
         const rect = picker.getBoundingClientRect();
         const x = (e.clientX - rect.left) / rect.width;
         const y = (e.clientY - rect.top) / rect.height;
-        
+
         const closestAnchor = poline.getClosestAnchorPoint({
           xyz: [x, y, null],
           maxDistance: 0.1,
         });
-        
+
         if (closestAnchor) {
           lastSelectedPoint = closestAnchor;
         }
@@ -385,16 +393,25 @@
         updatePolineAndColors();
       };
 
-      positionFunctionXSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionX'));
-      positionFunctionYSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionY'));
-      positionFunctionZSelect.addEventListener("change", createPositionFunctionHandler('positionFunctionZ'));
+      positionFunctionXSelect.addEventListener(
+        "change",
+        createPositionFunctionHandler("positionFunctionX")
+      );
+      positionFunctionYSelect.addEventListener(
+        "change",
+        createPositionFunctionHandler("positionFunctionY")
+      );
+      positionFunctionZSelect.addEventListener(
+        "change",
+        createPositionFunctionHandler("positionFunctionZ")
+      );
 
       randomizeButton.addEventListener("click", () => {
-        poline.anchorPoints.forEach(anchor => {
+        poline.anchorPoints.forEach((anchor) => {
           anchor.hsl = [
             (anchor.color[0] + (-90 + Math.random() * 180)) % 360,
             Math.random(),
-            anchor.color[2] + (-.05 + Math.random() * .1),
+            anchor.color[2] + (-0.05 + Math.random() * 0.1),
           ];
         });
         poline.updateAnchorPairs();
@@ -404,13 +421,16 @@
       // Keyboard shortcuts
       document.addEventListener("keydown", (e) => {
         if (e.key === "p" || e.key === "P") {
-          const newPoint = picker.addPointAtPosition(lastMousePosition.x, lastMousePosition.y);
+          const newPoint = picker.addPointAtPosition(
+            lastMousePosition.x,
+            lastMousePosition.y
+          );
           if (newPoint) {
             lastSelectedPoint = newPoint;
           }
           updateColors();
         }
-        
+
         if (e.key === "Backspace" || e.key === "Delete") {
           if (lastSelectedPoint && poline.anchorPoints.length > 2) {
             try {
@@ -422,12 +442,12 @@
             }
           }
         }
-        
+
         if (e.key === "ArrowLeft") {
           poline.shiftHue(-4);
           updatePolineAndColors();
         }
-        
+
         if (e.key === "ArrowRight") {
           poline.shiftHue(4);
           updatePolineAndColors();
