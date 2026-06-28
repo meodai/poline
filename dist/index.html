@@ -2357,6 +2357,12 @@ const LCHColors = [...poline.colors].map(
       } from "https://cdn.skypack.dev/culori@^3.1.1";
       import hljs from "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/es/highlight.min.js";
       import { rybHsl2rgb } from "https://esm.sh/rybitten/";
+      import {
+        relch,
+        reach,
+        toeInv,
+        oklchP3,
+      } from "https://esm.sh/nutelch/";
 
       import { Poline, positionFunctions, randomHSLPair } from "./index.mjs";
 
@@ -2391,6 +2397,34 @@ const LCHColors = [...poline.colors].map(
           },
         },
         {
+          key: "nutelchRelC",
+          mode: "oklch",
+          label: "nuteLrelCH",
+          fn: (hsl) => {
+            const { l, c, h } = relch({
+              lut: oklchP3,
+              l: toeInv(hsl[2]),
+              relC: hsl[1],
+              h: hsl[0],
+            });
+            return { l, c, h };
+          },
+        },
+        {
+          key: "nutelchReach",
+          mode: "oklch",
+          label: "nuteLreaCH",
+          fn: (hsl) => {
+            const { l, c, h } = reach({
+              lut: oklchP3,
+              l: toeInv(hsl[2]),
+              reach: hsl[1],
+              h: hsl[0],
+            });
+            return { l, c, h };
+          },
+        },
+        {
           key: "jch",
           label: "JCH",
           fn: (hsl) => {
@@ -2421,9 +2455,11 @@ const LCHColors = [...poline.colors].map(
       ];
 
       let currentHueModel = "hsl";
-      let currentModelFn = hueBasedModels.find(
-        (m) => m.key === currentHueModel
-      ).fn;
+      const modelByKey = (key) =>
+        hueBasedModels.find((m) => m.key === key);
+      let currentModelFn = modelByKey(currentHueModel).fn;
+      // culori mode can differ from the select key (e.g. nutelch models output oklch)
+      let currentMode = modelByKey(currentHueModel).mode || currentHueModel;
 
       const stepsToLabels = (steps = 360 / 10) =>
         new Array(steps)
@@ -2509,9 +2545,9 @@ const LCHColors = [...poline.colors].map(
 
         $model.addEventListener("change", (e) => {
           currentHueModel = e.target.value;
-          currentModelFn = hueBasedModels.find(
-            (m) => m.key === currentHueModel
-          ).fn;
+          const model = modelByKey(currentHueModel);
+          currentModelFn = model.fn;
+          currentMode = model.mode || currentHueModel;
           $models.forEach(($model) => ($model.value = currentHueModel));
           updateSVG();
         });
@@ -2679,7 +2715,7 @@ const LCHColors = [...poline.colors].map(
         $list.classList.add("export__list");
 
         const colorsOKlab = poline.colors.map((color) =>
-          toOKlab({ mode: currentHueModel, ...currentModelFn(color) })
+          toOKlab({ mode: currentMode, ...currentModelFn(color) })
         );
 
         const colorCSSOKlab = colorsOKlab.map((color) => formatCss(color));
@@ -2687,7 +2723,7 @@ const LCHColors = [...poline.colors].map(
         const colorsInGamut = colorsOKlab.map((c) => inRgb(c));
 
         const colorsHEX = poline.colors.map((color) =>
-          formatHex({ mode: currentHueModel, ...currentModelFn(color) })
+          formatHex({ mode: currentMode, ...currentModelFn(color) })
         );
 
         logColors(colorsHEX);
@@ -2767,9 +2803,9 @@ const LCHColors = [...poline.colors].map(
             i / poline.colors.length
           }; --c: ${
               formatCss(
-                toOKlab({ mode: currentHueModel, ...currentModelFn(c) })
+                toOKlab({ mode: currentMode, ...currentModelFn(c) })
               )
-              //formatHex({ mode: currentHueModel, ...currentModelFn(c) })
+              //formatHex({ mode: currentMode, ...currentModelFn(c) })
             }"></div>
         `;
           })
@@ -3032,7 +3068,7 @@ const LCHColors = [...poline.colors].map(
           $circle.style.setProperty("--circ", 2 * Math.PI * radius);
           $circle.style.setProperty("--s", point.color[1]);
           const c = formatHex({
-            mode: currentHueModel,
+            mode: currentMode,
             ...currentModelFn(point.color),
           });
           $circle.style.setProperty("--c", c);
@@ -3040,7 +3076,7 @@ const LCHColors = [...poline.colors].map(
 
         let cssColors = [...poline.colorsCSS];
         let colors = [...poline.colors].map((c) =>
-          formatHex({ mode: currentHueModel, ...currentModelFn(c) })
+          formatHex({ mode: currentMode, ...currentModelFn(c) })
         );
 
         document.documentElement.style.setProperty(
@@ -3844,9 +3880,8 @@ poline.invertedLightness = ${isInverted};`,
             $picker.classList.add("rings-enabled");
 
             currentHueModel = "okhsl";
-            currentModelFn = hueBasedModels.find(
-              (m) => m.key === currentHueModel
-            ).fn;
+            currentModelFn = modelByKey(currentHueModel).fn;
+            currentMode = modelByKey(currentHueModel).mode || currentHueModel;
             $models.forEach(($model) => ($model.value = currentHueModel));
           },
         },
